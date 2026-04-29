@@ -1,4 +1,2 @@
-phx-ashborn
-python-dotenv
-rich
-textual>=0.80.0
+fastapi>=0.68.0
+uvicorn[standard]>=0.15.0
