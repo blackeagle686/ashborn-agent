@@ -295,9 +295,7 @@ class ChatScreen(Screen):
     """Full-screen interactive chat interface."""
 
     BINDINGS = [
-        Binding("ctrl+q", "quit_app",       "Quit",    show=False),
         Binding("ctrl+l", "clear_chat",     "Clear",   show=False),
-        Binding("ctrl+k", "open_config",    "Config",  show=False),
         Binding("ctrl+b", "toggle_sidebar", "Sidebar", show=False),
         Binding("escape", "cancel_stream",  "Cancel",  show=False),
     ]

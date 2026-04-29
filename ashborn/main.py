@@ -41,6 +41,24 @@ class AshbornApp(App):
     CSS = ""                        # All CSS lives inside screens
     ENABLE_COMMAND_PALETTE = False  # Keep UI clean
 
+    BINDINGS = [
+        Binding("ctrl+k", "open_config", "Config", show=False),
+        Binding("ctrl+q", "quit_app",   "Quit",   show=False),
+    ]
+
+    def action_quit_app(self) -> None:
+        self.exit()
+
+    def action_open_config(self) -> None:
+        from .cli.setup_wizard import SetupWizard
+        from .cli.chat_screen import ChatScreen
+        
+        # If we are on the ChatScreen, use its reload callback
+        if isinstance(self.screen, ChatScreen):
+            self.push_screen(SetupWizard(), callback=self.screen._on_config_closed)
+        else:
+            self.push_screen(SetupWizard())
+
     def on_mount(self) -> None:
         # Apply the custom theme
         self.register_theme(ASHBORN_THEME)
