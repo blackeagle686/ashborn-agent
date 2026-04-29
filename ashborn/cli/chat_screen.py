@@ -18,7 +18,7 @@ import asyncio
 from datetime import datetime
 from textual.app import ComposeResult
 from textual.screen import Screen
-from textual.widgets import Static, TextArea, RichLog, Label
+from textual.widgets import Static, TextArea, RichLog, Label, Select
 from textual.containers import Container, Vertical, Horizontal
 from textual.binding import Binding
 from textual.reactive import reactive
@@ -245,6 +245,18 @@ class ChatInputBar(Horizontal):
         border: round #982598;
         background: #15173D;
     }
+    Select {
+        width: 14;
+        height: 3;
+        margin-top: 1;
+        margin-left: 1;
+        background: #15173D;
+        border: round #982598;
+        color: #F1E9E9;
+    }
+    Select:focus {
+        border: round #E491C9;
+    }
     #char-counter {
         color: #982598;
         width: auto;
@@ -260,6 +272,7 @@ class ChatInputBar(Horizontal):
     def compose(self) -> ComposeResult:
         yield Static("❯", id="input-prefix")
         yield ChatTextArea(id="chat-input", language=None)
+        yield Select([("Auto", "auto"), ("Plan", "plan"), ("Fast", "fast_ans")], value="auto", id="mode-select")
         yield Static("0", id="char-counter")
 
     def on_text_area_changed(self, event: TextArea.Changed) -> None:
@@ -500,6 +513,7 @@ class ChatScreen(Screen):
     def _do_send(self) -> None:
         input_bar = self.query_one("#input-bar", ChatInputBar)
         text = input_bar.get_text().strip()
+        mode = input_bar.query_one("#mode-select", Select).value
         if not text:
             return
         if self._streaming:
@@ -519,7 +533,7 @@ class ChatScreen(Screen):
             self.notify("⏳ Agent still loading, please wait...", severity="warning")
             return
 
-        self._start_stream(text)
+        self._start_stream(text, mode)
 
     # ── rendering ─────────────────────────────────────────────────────────────
 
@@ -550,28 +564,28 @@ class ChatScreen(Screen):
 
     # ── streaming ─────────────────────────────────────────────────────────────
 
-    def _start_stream(self, user_text: str) -> None:
+    def _start_stream(self, user_text: str, mode: str) -> None:
         self._streaming = True
         self.query_one("#sidebar", SidebarWidget).status = "⠋ Thinking..."
         self._set_status("⠋ Thinking...", "#E491C9")
         self.query_one("#thinking-spinner", ThinkingSpinner).show("Ashborn is thinking")
-        self._stream_worker = self.run_stream_worker(user_text)
+        self._stream_worker = self.run_stream_worker(user_text, mode)
 
     @work(exclusive=True, name="stream-response")
-    async def run_stream_worker(self, user_text: str) -> None:
+    async def run_stream_worker(self, user_text: str, mode: str) -> None:
         try:
-            await self._stream_response(user_text)
+            await self._stream_response(user_text, mode)
         except Exception as e:
             self._on_stream_error(str(e))
         finally:
             self._on_stream_done()
 
-    async def _stream_response(self, user_text: str) -> None:
+    async def _stream_response(self, user_text: str, mode: str) -> None:
         full_response = ""
         phase = "status"
         spinner = self.query_one("#thinking-spinner", ThinkingSpinner)
 
-        gen = self._agent.run_stream(user_text, mode="auto")
+        gen = self._agent.run_stream(user_text, mode=mode)
 
         async for event in gen:
             if event["type"] == "status":
