@@ -1,0 +1,2 @@
+[console_scripts]
+ashborn = main:main
