@@ -401,7 +401,17 @@ class ChatScreen(Screen):
         self._init_agent_worker()
 
     def _load_model_info(self) -> None:
-        load_dotenv(override=True)
+        from pathlib import Path
+        local_env = Path(".env")
+        global_env = Path.home() / ".ashborn" / ".env"
+        
+        if local_env.exists():
+            load_dotenv(local_env, override=True)
+        elif global_env.exists():
+            load_dotenv(global_env, override=True)
+        else:
+            load_dotenv(override=True) # Fallback to default behavior
+
         model = os.getenv("OPENAI_LLM_MODEL", "gpt-4o")
         self.query_one("#sidebar", SidebarWidget).model_name = model
 
@@ -420,7 +430,15 @@ class ChatScreen(Screen):
     async def _init_agent_worker(self) -> None:
         try:
             from agent import get_ashborn_agent
-            load_dotenv(override=True)
+            from pathlib import Path
+            local_env = Path(".env")
+            global_env = Path.home() / ".ashborn" / ".env"
+            
+            if local_env.exists():
+                load_dotenv(local_env, override=True)
+            elif global_env.exists():
+                load_dotenv(global_env, override=True)
+
             self._agent = await get_ashborn_agent()
             self._on_agent_ready()
         except Exception as e:
