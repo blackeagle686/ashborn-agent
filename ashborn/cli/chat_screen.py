@@ -228,11 +228,10 @@ class ChatInputBar(Horizontal):
         align: left middle;
     }
     #input-prefix {
-        color: #982598;
+        color: #FF6B00;
         text-style: bold;
         width: auto;
         padding: 0 1;
-        margin-top: 1;
     }
     ChatTextArea {
         background: #15173D;
@@ -248,7 +247,6 @@ class ChatInputBar(Horizontal):
     Select {
         width: 14;
         height: 3;
-        margin-top: 1;
         margin-left: 1;
         background: #15173D;
         border: round #982598;
@@ -261,7 +259,6 @@ class ChatInputBar(Horizontal):
         color: #982598;
         width: auto;
         padding: 0 1;
-        margin-top: 1;
     }
     #char-counter.warn   { color: #ffd700; }
     #char-counter.danger { color: #ff4444; }
