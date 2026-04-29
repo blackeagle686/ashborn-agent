@@ -15,12 +15,12 @@ class SplashScreen(Screen):
 
     DEFAULT_CSS = """
     SplashScreen {
-        background: #0d0d0d;
+        background: #15173D;
         align: center middle;
     }
 
     #splash-logo {
-        color: #ff8c00;
+        color: #982598;
         text-style: bold;
         text-align: center;
         width: auto;
@@ -28,7 +28,7 @@ class SplashScreen(Screen):
     }
 
     #splash-subtitle {
-        color: #3a3a3a;
+        color: #982598;
         text-align: center;
         width: auto;
         margin-top: 1;
@@ -36,8 +36,8 @@ class SplashScreen(Screen):
 
     /* Cinematic aura effect */
     .aura-1 { color: #ff4500; }
-    .aura-2 { color: #ff8c00; }
-    .aura-3 { color: #ffb347; }
+    .aura-2 { color: #982598; }
+    .aura-3 { color: #E491C9; }
     """
 
     def compose(self) -> ComposeResult:
@@ -61,7 +61,7 @@ class SplashScreen(Screen):
             "╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝\n"
             "               A G E N T   A U R A                         "
         )
-        self.query_one("#splash-logo", Static).update(Text(logo, style="bold #ff8c00"))
+        self.query_one("#splash-logo", Static).update(Text(logo, style="bold #982598"))
         self.query_one("#splash-subtitle", Static).update("powerd by phoenix-ai")
 
     def _dismiss(self) -> None:
