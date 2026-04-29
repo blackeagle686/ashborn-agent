@@ -18,11 +18,18 @@ client = OpenAI(api_key=api_key, base_url=BASE_URL)
 def run_command(command):
     """Runs a shell command and returns the output."""
     try:
-        result = subprocess.run(command, capture_output=True, text=True, check=True)
+        # Use utf-8 encoding explicitly to avoid cp1252 errors on Windows
+        result = subprocess.run(
+            command, 
+            capture_output=True, 
+            text=True, 
+            check=True, 
+            encoding="utf-8"
+        )
         return result.stdout.strip()
-    except subprocess.CalledProcessError as e:
-        print(f"Error running command {' '.join(command)}: {e.stderr}")
-        return None
+    except Exception as e:
+        # Return empty string instead of None to prevent .strip() crashes downstream
+        return ""
 
 def get_current_branch():
     return run_command(["git", "rev-parse", "--abbrev-ref", "HEAD"])
@@ -73,6 +80,10 @@ def smart_sync():
     run_command(["git", "add", "."])
     
     diff = get_diff()
+    if not diff:
+        print("[ ] No staged changes to commit.")
+        return
+
     print("[*] Generating commit message...")
     message = generate_commit_message(diff)
     
