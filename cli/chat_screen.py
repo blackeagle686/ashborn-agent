@@ -101,11 +101,22 @@ class ChatTextArea(TextArea):
         bubble = True
 
     def _on_key(self, event) -> None:
-        if event.key in ("ctrl+enter", "ctrl+j"):
+        # Plain Enter or Ctrl+J (fallback) sends the message
+        if event.key == "enter" and not (event.ctrl or event.shift):
             event.prevent_default()
             event.stop()
             self.post_message(self.SendMessage())
-            self.app.notify("Sending...", timeout=1)
+        elif event.key == "ctrl+j":
+            event.prevent_default()
+            event.stop()
+            self.post_message(self.SendMessage())
+        # Ctrl+Enter or Shift+Enter inserts a newline
+        elif event.key == "enter" and (event.ctrl or event.shift):
+            # We want to insert a newline. TextArea's default for 'enter' is newline.
+            # So we just strip the modifiers and let super handle it as a plain 'enter'.
+            event.ctrl = False
+            event.shift = False
+            super()._on_key(event)
         else:
             super()._on_key(event)
 
@@ -177,12 +188,12 @@ class SidebarWidget(Vertical):
         yield Static("─" * 22, classes="sb-div")
 
         shortcuts = [
-            ("Ctrl+Enter", "Send"),
-            ("Enter",      "New line"),
-            ("Ctrl+L",     "Clear chat"),
-            ("Ctrl+K",     "Config"),
-            ("Ctrl+B",     "Sidebar"),
-            ("Ctrl+Q",     "Quit"),
+            ("Enter",       "Send"),
+            ("Shift+Enter", "New line"),
+            ("Ctrl+L",      "Clear chat"),
+            ("Ctrl+K",      "Config"),
+            ("Ctrl+B",      "Sidebar"),
+            ("Ctrl+Q",      "Quit"),
             ("Esc",        "Cancel"),
         ]
         for key, desc in shortcuts:
@@ -383,7 +394,7 @@ class ChatScreen(Screen):
         # Input + Footer
         yield ChatInputBar(id="input-bar")
         yield Static(
-            " Ctrl+Enter: Send  │  Enter: New-line  │  Ctrl+L: Clear  │  Ctrl+K: Config  │  Ctrl+B: Sidebar  │  Ctrl+Q: Quit",
+            " Enter: Send  │  Shift+Enter: New-line  │  Ctrl+L: Clear  │  Ctrl+K: Config  │  Ctrl+B: Sidebar  │  Ctrl+Q: Quit",
             id="chat-footer",
         )
 
