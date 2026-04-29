@@ -1,6 +1,6 @@
 from phoenix.agent import Agent
 from phoenix import init_phoenix, startup_phoenix
-from tools.project_generator import project_generator_tool
+from .tools.project_generator import project_generator_tool
 
 async def get_ashborn_agent(on_startup_progress=None):
     """

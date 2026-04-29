@@ -17,7 +17,18 @@ from pathlib import Path
 import re
 
 
-ENV_PATH = Path(".env")
+# ── Configuration Path ────────────────────────────────────────────────────────
+# Use local .env if it exists, otherwise use the global home directory one
+LOCAL_ENV = Path(".env")
+GLOBAL_CONFIG_DIR = Path.home() / ".ashborn"
+GLOBAL_ENV = GLOBAL_CONFIG_DIR / ".env"
+
+def _get_env_path() -> Path:
+    if LOCAL_ENV.exists():
+        return LOCAL_ENV
+    if not GLOBAL_CONFIG_DIR.exists():
+        GLOBAL_CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    return GLOBAL_ENV
 
 LOGO_ART = """\
   ╔═╗ ╔═╗╦ ╦╔╗ ╔═╗╦═╗╔╗╔
@@ -243,7 +254,7 @@ class SetupWizard(Screen):
     @on(Button.Pressed, "#btn-skip")
     def handle_skip(self) -> None:
         """Skip wizard and go straight to chat (using whatever .env has)."""
-        from cli.chat_screen import ChatScreen
+        from .chat_screen import ChatScreen
         self.app.switch_screen(ChatScreen())
 
     @on(Input.Submitted)
@@ -298,7 +309,7 @@ class SetupWizard(Screen):
         self.set_timer(0.8, self._launch_chat)
 
     def _launch_chat(self) -> None:
-        from cli.chat_screen import ChatScreen
+        from .chat_screen import ChatScreen
         self.app.switch_screen(ChatScreen())
 
     def _set_status(self, msg: str, kind: str) -> None:
@@ -312,10 +323,11 @@ class SetupWizard(Screen):
 
 def _read_env() -> dict:
     """Parse .env into a dict (simple key=value, ignoring comments)."""
+    env_path = _get_env_path()
     result = {}
-    if not ENV_PATH.exists():
+    if not env_path.exists():
         return result
-    for line in ENV_PATH.read_text(encoding="utf-8").splitlines():
+    for line in env_path.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
             continue
@@ -327,9 +339,10 @@ def _read_env() -> dict:
 
 def _write_env(updates: dict) -> None:
     """Upsert keys into .env, preserving all other lines and comments."""
+    env_path = _get_env_path()
     lines: list[str] = []
-    if ENV_PATH.exists():
-        lines = ENV_PATH.read_text(encoding="utf-8").splitlines()
+    if env_path.exists():
+        lines = env_path.read_text(encoding="utf-8").splitlines()
 
     written_keys: set[str] = set()
     new_lines: list[str] = []
@@ -350,4 +363,4 @@ def _write_env(updates: dict) -> None:
         if key not in written_keys:
             new_lines.append(f'{key}="{val}"')
 
-    ENV_PATH.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+    env_path.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
