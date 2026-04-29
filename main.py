@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 from textual.app import App, ComposeResult
 
 from cli.theme import ASHBORN_THEME
+from cli.splash_screen import SplashScreen
 
 
 ENV_PATH = Path(".env")
@@ -48,6 +49,9 @@ class AshbornApp(App):
         else:
             from cli.setup_wizard import SetupWizard
             self.push_screen(SetupWizard())
+        
+        # Show splash on top of the initial screen
+        self.push_screen(SplashScreen())
 
 
 def main() -> None:
