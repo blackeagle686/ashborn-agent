@@ -13,6 +13,7 @@ from rich.markdown import Markdown
 from rich.rule import Rule
 from rich.text import Text
 from rich.theme import Theme
+from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn
 
 from agent import get_ashborn_agent
 
@@ -32,19 +33,45 @@ app = typer.Typer(help="Ashborn Agent CLI - Generate production-ready projects."
 console = Console(theme=custom_theme)
 
 async def _interactive_loop():
-    # Show an attractive spinner during initialization
-    with console.status("[info]Initializing Ashborn Agent services...[/info]", spinner="point"):
-        agent = await get_ashborn_agent()
+    # Show an attractive progress bar during initialization
+    with Progress(
+        SpinnerColumn(spinner_name="dots"),
+        TextColumn("[bold #ff8c00]{task.description}[/bold #ff8c00]"),
+        BarColumn(bar_width=40, complete_style="#ff8c00", finished_style="bold green"),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        TimeElapsedColumn(),
+        console=console,
+        transient=True
+    ) as progress:
+        startup_task = progress.add_task("Awakening Ashborn Agent...", total=100)
+        
+        def on_startup(p, m):
+            progress.update(startup_task, completed=p*100, description=f"{m}...")
+            
+        agent = await get_ashborn_agent(on_startup_progress=on_startup)
     
     console.print()
     console.print(Panel(
-        "[bold #ff8c00]🐦‍🔥 Ashborn Agent CLI[/bold #ff8c00]\n"
-        "[dim]Powered by Phoenix AI Framework[/dim]\n\n"
-        "Type [bold cyan]exit[/bold cyan] or [bold cyan]quit[/bold cyan] to leave. Ready to build!",
+        Text.assemble(
+            ("\n  🐦‍🔥 ", "bold #ff8c00"),
+            ("ASHBORN AGENT CLI", "bold #ff8c00 underline"),
+            ("\n  ", ""),
+            ("Powered by Phoenix AI Framework", "italic dim white"),
+            ("\n\n  ", ""),
+            ("Ready to manifest your vision into production-ready code.", "white"),
+            ("\n  ", ""),
+            ("Type ", "dim white"),
+            ("exit", "bold cyan"),
+            (" or ", "dim white"),
+            ("quit", "bold cyan"),
+            (" to leave. Let's build something amazing!", "dim white")
+        ),
         border_style="#ff8c00",
-        padding=(1, 2)
+        padding=(1, 4),
+        title="[bold white]WELCOME[/bold white]",
+        title_align="left"
     ))
-    console.print(Rule(style="dim"))
+    console.print(Rule(style="#ff8c00"))
     
     while True:
         console.print()
@@ -61,9 +88,9 @@ async def _interactive_loop():
         
         try:
             # Show a dynamic spinner while the agent thinks and acts
-            with console.status("[assistant]Ashborn is analyzing and planning...[/assistant]", spinner="bouncingBar") as status:
+            with console.status("[assistant]Ashborn is focusing...[/assistant]", spinner="bouncingBar") as status:
                 def update_status(message: str):
-                    status.update(f"[assistant]Ashborn: {message}[/assistant]")
+                    status.update(f"[assistant]🐦‍🔥 {message}[/assistant]")
                 
                 response = await agent.run(user_input, mode="auto", on_progress=update_status)
             
@@ -79,16 +106,27 @@ async def _interactive_loop():
             console.print(Rule(style="dim"))
 
 async def _generate_task(project_name: str, project_type: str):
-    with console.status("[info]Initializing Ashborn Agent services...[/info]", spinner="point"):
-        agent = await get_ashborn_agent()
-    
-    console.print(f"\n[success]Generating {project_type} project: {project_name}...[/success]\n")
-    prompt = f"Please generate a production-ready project named {project_name} of type {project_type}."
-    
     try:
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[bold green]{task.description}[/bold green]"),
+            BarColumn(),
+            console=console,
+            transient=True
+        ) as progress:
+            task = progress.add_task(f"Initializing for {project_name}...", total=100)
+            
+            def on_startup(p, m):
+                progress.update(task, completed=p*100, description=f"{m}...")
+                
+            agent = await get_ashborn_agent(on_startup_progress=on_startup)
+            
+        console.print(f"\n[success]🚀 Generating {project_type} project: {project_name}...[/success]\n")
+        prompt = f"Please generate a production-ready project named {project_name} of type {project_type}."
+        
         with console.status(f"[assistant]Ashborn is scaffolding {project_name}...[/assistant]", spinner="bouncingBar") as status:
             def update_status(message: str):
-                status.update(f"[assistant]Ashborn: {message}[/assistant]")
+                status.update(f"[assistant]🐦‍🔥 {message}[/assistant]")
             response = await agent.run(prompt, mode="plan", on_progress=update_status) 
             
         md = Markdown(response)

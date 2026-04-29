@@ -10,7 +10,10 @@ The following changes were made to the core Phoenix library inside the `.venv` t
 ### 2. Logging (`phoenix.observability.logger`)
 - **Dynamic Log Level**: Updated `get_logger` to respect `config.LOG_LEVEL`. This allows users to suppress telemetry logs by setting `LOG_LEVEL=WARNING`.
 
-### 3. Agent Loop (`phoenix.agent.loop`)
+### 3. Startup Progress (`phoenix.main`)
+- **Startup Callback**: Added `on_progress` support to `startup_phoenix`. It now reports progress percentages (0.1 to 1.0) and descriptive messages for each initialization step (Cache, LLM, Vector DB, VLM, Audio).
+
+### 4. Agent Loop (`phoenix.agent.loop`)
 - **Progress Callback**: Added `on_progress` support to `AgentLoop.run`.
 - **Descriptive Updates**: The loop now emits progress messages during:
     - Initial awareness (workspace analysis and objective thinking).
