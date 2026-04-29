@@ -9,6 +9,7 @@ Requires-Dist: textual>=0.80.0
 Requires-Dist: python-dotenv
 Requires-Dist: rich
 Requires-Dist: openai
+Requires-Dist: phx-ashborn
 Dynamic: license-file
 
                                                                  🐦‍🔥 Ashborn Agent
