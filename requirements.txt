@@ -1,0 +1,4 @@
+phx-ashborn
+python-dotenv
+rich
+typer
