@@ -465,8 +465,6 @@ class ChatScreen(Screen):
 
     # ── actions ───────────────────────────────────────────────────────────────
 
-    def action_quit_app(self) -> None:
-        self.app.exit()
 
     def action_clear_chat(self) -> None:
         self._history.clear()
@@ -475,9 +473,6 @@ class ChatScreen(Screen):
         self._print_welcome()
         self.query_one("#sidebar", SidebarWidget).message_count = 0
 
-    def action_open_config(self) -> None:
-        from .setup_wizard import SetupWizard
-        self.app.push_screen(SetupWizard(), callback=self._on_config_closed)
 
     def _on_config_closed(self, result=None) -> None:
         if result:
