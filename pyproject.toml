@@ -21,3 +21,6 @@ ashborn = "main:main"
 [tool.setuptools]
 packages = ["cli", "tools"]
 py-modules = ["main", "agent", "smart_git"]
+
+[tool.setuptools.package-data]
+"*" = ["*.py", "*.md", ".env.example"]
