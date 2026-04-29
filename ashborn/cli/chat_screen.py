@@ -100,7 +100,7 @@ class ChatTextArea(TextArea):
         """Posted when user presses Ctrl+Enter."""
         bubble = True
 
-    def _on_key(self, event) -> None:
+    def on_key(self, event) -> None:
         # Plain Enter or Ctrl+J (fallback) sends the message
         if event.key in ("enter", "ctrl+j"):
             event.prevent_default()
@@ -112,10 +112,11 @@ class ChatTextArea(TextArea):
             self.insert("\n")
             event.stop()
         elif event.key in ("ctrl+k", "ctrl+l", "ctrl+b", "ctrl+q"):
-            # Allow global shortcuts to bubble up to ChatScreen
-            pass
+            # DO NOT stop the event, let it bubble to the App
+            return 
         else:
-            super()._on_key(event)
+            # For all other keys, use default TextArea behavior
+            pass
 
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
