@@ -16,11 +16,12 @@ dependencies = [
 ]
 
 [project.scripts]
-ashborn = "main:main"
+ashborn = "ashborn.main:main"
 
 [tool.setuptools]
-packages = ["cli", "tools"]
-py-modules = ["main", "agent", "smart_git"]
+packages = ["ashborn", "ashborn.cli", "ashborn.tools"]
 
 [tool.setuptools.package-data]
-"*" = ["*.py", "*.md", ".env.example"]
+"ashborn" = ["*.py", "*.md", "ashborn-bg.png"]
+"ashborn.cli" = ["*.py"]
+"ashborn.tools" = ["*.py"]

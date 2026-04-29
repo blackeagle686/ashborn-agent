@@ -10,8 +10,8 @@ import sys
 from pathlib import Path
 from dotenv import load_dotenv
 from textual.app import App, ComposeResult
-from cli.theme import ASHBORN_THEME
-from cli.splash_screen import SplashScreen
+from .cli.theme import ASHBORN_THEME
+from .cli.splash_screen import SplashScreen
 
 
 # ── Configuration Path ────────────────────────────────────────────────────────
@@ -47,10 +47,10 @@ class AshbornApp(App):
         self.theme = "ashborn"
 
         if _has_valid_config():
-            from cli.chat_screen import ChatScreen
+            from .cli.chat_screen import ChatScreen
             self.push_screen(ChatScreen())
         else:
-            from cli.setup_wizard import SetupWizard
+            from .cli.setup_wizard import SetupWizard
             self.push_screen(SetupWizard())
         
         # Show splash on top of the initial screen
