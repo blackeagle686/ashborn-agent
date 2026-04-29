@@ -86,4 +86,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 </p>
 
 
-![ashborn background](./ashborn-bg)
+![ashborn background](./ashborn-bg.png)
