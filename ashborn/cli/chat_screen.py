@@ -111,12 +111,6 @@ class ChatTextArea(TextArea):
             # Manually insert a newline since we stopped the default
             self.insert("\n")
             event.stop()
-        elif event.key in ("ctrl+k", "ctrl+l", "ctrl+b", "ctrl+q"):
-            # DO NOT stop the event, let it bubble to the App
-            return 
-        else:
-            # For all other keys, use default TextArea behavior
-            pass
 
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────

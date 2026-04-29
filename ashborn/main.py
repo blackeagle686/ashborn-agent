@@ -43,8 +43,8 @@ class AshbornApp(App):
     ENABLE_COMMAND_PALETTE = False  # Keep UI clean
 
     BINDINGS = [
-        Binding("ctrl+k", "open_config", "Config", show=False),
-        Binding("ctrl+q", "quit_app",   "Quit",   show=False),
+        Binding("ctrl+k", "open_config", "Config", show=False, priority=True),
+        Binding("ctrl+q", "quit_app",   "Quit",   show=False, priority=True),
     ]
 
     def action_quit_app(self) -> None:
