@@ -1,2 +1,2 @@
 [console_scripts]
-ashborn = main:main
+ashborn = ashborn.main:main
