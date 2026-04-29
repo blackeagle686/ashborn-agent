@@ -1,4 +1,4 @@
 phx-ashborn
 python-dotenv
 rich
-typer
+textual>=0.80.0
