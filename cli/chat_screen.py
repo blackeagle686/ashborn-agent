@@ -102,21 +102,15 @@ class ChatTextArea(TextArea):
 
     def _on_key(self, event) -> None:
         # Plain Enter or Ctrl+J (fallback) sends the message
-        if event.key == "enter" and not (event.ctrl or event.shift):
-            event.prevent_default()
-            event.stop()
-            self.post_message(self.SendMessage())
-        elif event.key == "ctrl+j":
+        if event.key in ("enter", "ctrl+j"):
             event.prevent_default()
             event.stop()
             self.post_message(self.SendMessage())
         # Ctrl+Enter or Shift+Enter inserts a newline
-        elif event.key == "enter" and (event.ctrl or event.shift):
-            # We want to insert a newline. TextArea's default for 'enter' is newline.
-            # So we just strip the modifiers and let super handle it as a plain 'enter'.
-            event.ctrl = False
-            event.shift = False
-            super()._on_key(event)
+        elif event.key in ("ctrl+enter", "shift+enter"):
+            # Manually insert a newline since we stopped the default
+            self.insert("\n")
+            event.stop()
         else:
             super()._on_key(event)
 
