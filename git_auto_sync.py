@@ -43,7 +43,7 @@ def main():
                 if ret_code == 0:
                     print(f"Committed: {commit_msg}")
                     # Push
-                    ret_code, stdout, stderr = run_git_command(['git', 'push', '-u', 'origin', 'main'])
+                    ret_code, stdout, stderr = run_git_command(['git', 'push', 'origin', 'master'])
                     if ret_code == 0:
                         print(f"Pushed successfully.")
                     else:
