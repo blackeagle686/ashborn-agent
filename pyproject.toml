@@ -13,7 +13,7 @@ dependencies = [
     "python-dotenv",
     "rich",
     "openai",
-    "phoenix-ai",
+    "phx-ashborn",
 ]
 
 [project.scripts]
