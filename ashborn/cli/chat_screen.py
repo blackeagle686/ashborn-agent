@@ -429,7 +429,7 @@ class ChatScreen(Screen):
     @work(exclusive=True, name="init-agent")
     async def _init_agent_worker(self) -> None:
         try:
-            from agent import get_ashborn_agent
+            from ..agent import get_ashborn_agent
             from pathlib import Path
             local_env = Path(".env")
             global_env = Path.home() / ".ashborn" / ".env"
@@ -475,7 +475,7 @@ class ChatScreen(Screen):
         self.query_one("#sidebar", SidebarWidget).message_count = 0
 
     def action_open_config(self) -> None:
-        from cli.setup_wizard import SetupWizard
+        from .setup_wizard import SetupWizard
         self.app.push_screen(SetupWizard(), callback=self._on_config_closed)
 
     def _on_config_closed(self, _result=None) -> None:
