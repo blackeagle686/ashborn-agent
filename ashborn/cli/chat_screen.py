@@ -236,13 +236,13 @@ class ChatInputBar(Horizontal):
     }
     ChatTextArea {
         background: #15173D;
-        border: tall #982598;
+        border: round #982598;
         color: #F1E9E9;
         width: 1fr;
         height: 3;
     }
     ChatTextArea:focus {
-        border: tall #982598;
+        border: round #982598;
         background: #15173D;
     }
     #char-counter {

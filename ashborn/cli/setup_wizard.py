@@ -58,7 +58,7 @@ class SetupWizard(Screen):
         width: 70;
         height: auto;
         background: #15173D;
-        border: tall #982598;
+        border: round #982598;
         padding: 2 4;
         align: center middle;
     }
@@ -96,19 +96,19 @@ class SetupWizard(Screen):
     /* ── inputs ──────────────────────────────────────────────────── */
     Input {
         background: #15173D;
-        border: tall #982598;
+        border: round #982598;
         color: #F1E9E9;
         margin-bottom: 1;
         width: 100%;
     }
 
     Input:focus {
-        border: tall #982598;
+        border: round #982598;
         background: #15173D;
     }
 
     Input.error {
-        border: tall #ff4444;
+        border: round #ff4444;
     }
 
     /* ── divider ─────────────────────────────────────────────────── */
@@ -144,14 +144,14 @@ class SetupWizard(Screen):
     #btn-skip {
         background: #15173D;
         color: #E491C9;
-        border: tall #982598;
+        border: round #982598;
         padding: 0 4;
         margin-left: 2;
     }
 
     #btn-skip:hover {
         color: #F1E9E9;
-        border: tall #982598;
+        border: round #982598;
     }
 
     /* ── status message ──────────────────────────────────────────── */
