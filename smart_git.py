@@ -40,13 +40,13 @@ def generate_commit_message(diff):
         return None
     
     prompt = f"""
-    Generate a concise, professional Git commit message based on the following diff. 
-    Focus on 'what' and 'why' changes were made. 
-    Format: A single line summary (max 50 chars), followed by a blank line and then bullet points if necessary.
-    
-    DIFF:
-    {diff[:4000]}  # Truncate if too long
-    """
+Generate a concise, professional Git commit message based on the following diff. 
+Focus on 'what' and 'why' changes were made. 
+Format: A single line summary (max 50 chars), followed by a blank line and then bullet points if necessary.
+
+DIFF:
+{diff[:4000]}  # Truncate if too long
+"""
     
     try:
         response = client.chat.completions.create(

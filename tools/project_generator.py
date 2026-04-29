@@ -1,12 +1,10 @@
-# This tool helps scaffold production-ready project structures.
 import os
-import subprocess
-from phoenix.tools import Tool
+from phoenix.tools import tool
 
-def generate_project(project_name: str, project_type: str) -> str:
+@tool(name="project_generator", description="Generates boilerplate code for a production-ready project. Input: 'project_name' (str), 'project_type' (str). Supported types: 'python_microservice', 'cli'.")
+def project_generator_tool(project_name: str, project_type: str) -> str:
     """
     Generates a production-ready project structure based on the project type.
-    Supported types: 'python_microservice', 'cli'
     """
     try:
         os.makedirs(project_name, exist_ok=True)
@@ -31,9 +29,3 @@ def generate_project(project_name: str, project_type: str) -> str:
 def _create_file(path: str, content: str):
     with open(path, "w") as f:
         f.write(content)
-
-project_generator_tool = Tool(
-    name="project_generator",
-    description="Generates boilerplate code for a production-ready project. Provide the 'project_name' and 'project_type'.",
-    func=generate_project
-)
