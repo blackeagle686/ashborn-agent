@@ -49,7 +49,7 @@ class SetupWizard(Screen):
 
     DEFAULT_CSS = """
     SetupWizard {
-        background: #0d0d0d;
+        background: #15173D;
         align: center middle;
     }
 
@@ -57,8 +57,8 @@ class SetupWizard(Screen):
     #wizard-card {
         width: 70;
         height: auto;
-        background: #141414;
-        border: tall #ff8c00;
+        background: #15173D;
+        border: tall #982598;
         padding: 2 4;
         align: center middle;
     }
@@ -66,7 +66,7 @@ class SetupWizard(Screen):
     /* ── logo ────────────────────────────────────────────────────── */
     #logo {
         text-align: center;
-        color: #ff8c00;
+        color: #982598;
         text-style: bold;
         width: 100%;
         margin-bottom: 1;
@@ -74,37 +74,37 @@ class SetupWizard(Screen):
 
     #logo-sub {
         text-align: center;
-        color: #666666;
+        color: #E491C9;
         width: 100%;
         margin-bottom: 2;
     }
 
     /* ── section label ───────────────────────────────────────────── */
     .field-label {
-        color: #ffb347;
+        color: #E491C9;
         text-style: bold;
         margin-bottom: 0;
         padding-left: 1;
     }
 
     .field-hint {
-        color: #3a3a3a;
+        color: #982598;
         margin-bottom: 1;
         padding-left: 1;
     }
 
     /* ── inputs ──────────────────────────────────────────────────── */
     Input {
-        background: #1a1a1a;
-        border: tall #2a2a2a;
-        color: #e0e0e0;
+        background: #15173D;
+        border: tall #982598;
+        color: #F1E9E9;
         margin-bottom: 1;
         width: 100%;
     }
 
     Input:focus {
-        border: tall #ff8c00;
-        background: #1f1f1f;
+        border: tall #982598;
+        background: #15173D;
     }
 
     Input.error {
@@ -114,7 +114,7 @@ class SetupWizard(Screen):
     /* ── divider ─────────────────────────────────────────────────── */
     #divider {
         height: 1;
-        color: #2a2a2a;
+        color: #982598;
         width: 100%;
         content-align: center middle;
         margin-bottom: 1;
@@ -129,8 +129,8 @@ class SetupWizard(Screen):
     }
 
     #btn-save {
-        background: #ff8c00;
-        color: #0d0d0d;
+        background: #982598;
+        color: #15173D;
         text-style: bold;
         border: none;
         padding: 0 6;
@@ -138,20 +138,20 @@ class SetupWizard(Screen):
     }
 
     #btn-save:hover {
-        background: #ffb347;
+        background: #E491C9;
     }
 
     #btn-skip {
-        background: #1a1a1a;
-        color: #666666;
-        border: tall #2a2a2a;
+        background: #15173D;
+        color: #E491C9;
+        border: tall #982598;
         padding: 0 4;
         margin-left: 2;
     }
 
     #btn-skip:hover {
-        color: #e0e0e0;
-        border: tall #3a3a3a;
+        color: #F1E9E9;
+        border: tall #982598;
     }
 
     /* ── status message ──────────────────────────────────────────── */
@@ -176,7 +176,7 @@ class SetupWizard(Screen):
     /* ── footer hint ─────────────────────────────────────────────── */
     #wizard-footer {
         text-align: center;
-        color: #3a3a3a;
+        color: #982598;
         width: 100%;
         margin-top: 2;
     }
