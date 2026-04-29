@@ -111,6 +111,9 @@ class ChatTextArea(TextArea):
             # Manually insert a newline since we stopped the default
             self.insert("\n")
             event.stop()
+        elif event.key in ("ctrl+k", "ctrl+l", "ctrl+b", "ctrl+q"):
+            # Allow global shortcuts to bubble up to ChatScreen
+            pass
         else:
             super()._on_key(event)
 
@@ -478,8 +481,15 @@ class ChatScreen(Screen):
         from .setup_wizard import SetupWizard
         self.app.push_screen(SetupWizard(), callback=self._on_config_closed)
 
-    def _on_config_closed(self, _result=None) -> None:
-        self._load_model_info()
+    def _on_config_closed(self, result=None) -> None:
+        if result:
+            from phoenix.core.config import config
+            config.reload()
+            
+            self._load_model_info()
+            # Re-initialize the agent with new configuration
+            self._init_agent_worker()
+            self.notify("✓ Configuration updated. Agent re-initialized.", severity="information")
 
     def action_toggle_sidebar(self) -> None:
         sidebar = self.query_one("#sidebar", SidebarWidget)

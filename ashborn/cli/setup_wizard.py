@@ -309,8 +309,13 @@ class SetupWizard(Screen):
         self.set_timer(0.8, self._launch_chat)
 
     def _launch_chat(self) -> None:
-        from .chat_screen import ChatScreen
-        self.app.switch_screen(ChatScreen())
+        # If we were pushed (as a settings screen), just dismiss
+        if len(self.app.screen_stack) > 1:
+            self.dismiss(True)
+        else:
+            # First run: switch to chat
+            from .chat_screen import ChatScreen
+            self.app.switch_screen(ChatScreen())
 
     def _set_status(self, msg: str, kind: str) -> None:
         widget = self.query_one("#status-msg", Static)
