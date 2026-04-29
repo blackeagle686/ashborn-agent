@@ -14,6 +14,7 @@ from rich.rule import Rule
 from rich.text import Text
 from rich.theme import Theme
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn
+from rich.live import Live
 
 from agent import get_ashborn_agent
 
@@ -87,17 +88,25 @@ async def _interactive_loop():
         console.print()
         
         try:
-            # Show a dynamic spinner while the agent thinks and acts
-            with console.status("[assistant]Ashborn is focusing...[/assistant]", spinner="bouncingBar") as status:
-                def update_status(message: str):
-                    status.update(f"[assistant]🐦‍🔥 {message}[/assistant]")
-                
-                response = await agent.run(user_input, mode="auto", on_progress=update_status)
+            # Use Live to handle both status updates and streaming content
+            started_content = False
+            full_response = ""
             
-            # Render response as elegant Markdown (with syntax highlighting)
-            md = Markdown(response)
-            console.print(Text("Ashborn", style="assistant"))
-            console.print(md)
+            with Live(console=console, refresh_per_second=12, transient=True) as live:
+                async for event in agent.run_stream(user_input, mode="auto"):
+                    if event["type"] == "status":
+                        if not started_content:
+                            live.update(Panel(Text(f"🐦‍🔥 {event['content']}", style="assistant"), border_style="#ff8c00"))
+                    elif event["type"] == "chunk":
+                        if not started_content:
+                            # Transition to content display
+                            started_content = True
+                            live.transient = False # Keep the content in history
+                            console.print(Text("Ashborn", style="assistant"))
+                        
+                        full_response += event["content"]
+                        live.update(Markdown(full_response))
+            
             console.print()
             console.print(Rule(style="dim"))
             
@@ -124,13 +133,18 @@ async def _generate_task(project_name: str, project_type: str):
         console.print(f"\n[success]🚀 Generating {project_type} project: {project_name}...[/success]\n")
         prompt = f"Please generate a production-ready project named {project_name} of type {project_type}."
         
-        with console.status(f"[assistant]Ashborn is scaffolding {project_name}...[/assistant]", spinner="bouncingBar") as status:
-            def update_status(message: str):
-                status.update(f"[assistant]🐦‍🔥 {message}[/assistant]")
-            response = await agent.run(prompt, mode="plan", on_progress=update_status) 
-            
-        md = Markdown(response)
-        console.print(Panel(md, title="[assistant]Ashborn Output[/assistant]", border_style="green"))
+        with Live(console=console, refresh_per_second=12, transient=True) as live:
+            async for event in agent.run_stream(prompt, mode="plan"):
+                if event["type"] == "status":
+                    live.update(Panel(Text(f"🐦‍🔥 {event['content']}", style="assistant"), border_style="green"))
+                elif event["type"] == "chunk":
+                    if not started_content:
+                        started_content = True
+                        live.transient = False
+                        console.print(Text("Ashborn Output", style="assistant"))
+                    
+                    full_response += event["content"]
+                    live.update(Panel(Markdown(full_response), title="[assistant]Ashborn Output[/assistant]", border_style="green"))
     except Exception as e:
         console.print(f"\n[error]Error:[/error] {str(e)}")
 
