@@ -27,3 +27,13 @@ This document tracks the core library modifications made to the `phoenix` packag
 
 ### 6. Streaming Architecture (`phoenix.agent.loop`)
 - **Event-Driven Flow**: Implemented `run_stream` which yields `status` (for cognition) and `chunk` (for final answer) events, allowing for the premium two-phase UI transition in the CLI.
+
+### 7. Surgical File Patching (V1.2)
+- **`FileEditTool`**: Introduced a search-and-replace patching tool (`file_edit`) that supports multi-block updates and "Upsert" logic (appending if search string is not found).
+- **Precision Planning**: Re-engineered the `Planner`'s cognitive strategy to favor `file_read` -> `file_edit` loops. This significantly reduces token overhead and prevents file truncation during complex updates.
+- **Auto-Creation**: The new tool automatically handles directory and file creation if they don't exist, streamlining the project generation workflow.
+
+### 8. Semantic Response Caching (V1.3)
+- **Vector-Based Cache**: Implemented a `SemanticCache` that stores `(prompt, response)` pairs as embeddings.
+- **Fast Similarity Hits**: The `InsightEngine` now checks for semantically similar prompts before calling the LLM. If a match exceeds the `0.95` similarity threshold, the cached answer is returned instantly.
+- **Latency Reduction**: This update drastically improves response times for repeated or slightly varied user queries while maintaining high accuracy.
