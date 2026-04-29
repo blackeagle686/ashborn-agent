@@ -61,7 +61,7 @@ class SplashScreen(Screen):
             "╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝\n"
             "               A G E N T   A U R A                         "
         )
-        self.query_one("#splash-logo", Static).update(Text(logo, style="bold #982598"))
+        self.query_one("#splash-logo", Static).update(Text(logo, style="bold #FF6B00"))
         self.query_one("#splash-subtitle", Static).update("powerd by phoenix-ai")
 
     def _dismiss(self) -> None:

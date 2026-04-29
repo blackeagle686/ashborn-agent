@@ -66,7 +66,7 @@ class SetupWizard(Screen):
     /* ── logo ────────────────────────────────────────────────────── */
     #logo {
         text-align: center;
-        color: #982598;
+        color: #FF6B00;
         text-style: bold;
         width: 100%;
         margin-bottom: 1;
@@ -129,7 +129,7 @@ class SetupWizard(Screen):
     }
 
     #btn-save {
-        background: #982598;
+        background: #FF6B00;
         color: #15173D;
         text-style: bold;
         border: none;
@@ -138,7 +138,7 @@ class SetupWizard(Screen):
     }
 
     #btn-save:hover {
-        background: #E491C9;
+        background: #FF3333;
     }
 
     #btn-skip {

@@ -311,7 +311,7 @@ class ChatScreen(Screen):
         padding: 0 2;
     }
     #header-logo {
-        color: #982598;
+        color: #FF6B00;
         text-style: bold;
         width: auto;
     }
@@ -526,12 +526,12 @@ class ChatScreen(Screen):
     def _render_user_message(self, text: str) -> None:
         log = self.query_one("#chat-log", RichLog)
         ts = datetime.now().strftime("%H:%M")
-        log.write(Text.from_markup(f"[bold #E491C9]┌─ You[/] [dim]({ts})[/]"))
+        log.write(Text.from_markup(f"[bold #FF3333]┌─ You[/] [dim]({ts})[/]"))
         for line in text.splitlines():
             # In Rich markup, '[' is escaped by doubling it to '[['
             safe = line.replace("[", "[[")
-            log.write(Text.from_markup(f"[bold #E491C9]│[/] [#F1E9E9]{safe}[/]"))
-        log.write(Text.from_markup("[bold #E491C9]└" + "─" * 54 + "[/]"))
+            log.write(Text.from_markup(f"[bold #FF3333]│[/] [#F1E9E9]{safe}[/]"))
+        log.write(Text.from_markup("[bold #FF3333]└" + "─" * 54 + "[/]"))
         log.write("") # RichLog handles newlines better this way
         self._history.append(ChatMessage("user", text))
         self.query_one("#sidebar", SidebarWidget).message_count = len(self._history)
@@ -539,10 +539,10 @@ class ChatScreen(Screen):
     def _render_assistant_message(self, text: str) -> None:
         log = self.query_one("#chat-log", RichLog)
         ts = datetime.now().strftime("%H:%M")
-        log.write(Text.from_markup(f"[bold #982598]┌─ 🐦‍🔥 Ashborn[/] [dim]({ts})[/]"))
-        log.write(Text.from_markup("[bold #982598]│[/]"))
+        log.write(Text.from_markup(f"[bold #FF6B00]┌─ 🐦‍🔥 Ashborn[/] [dim]({ts})[/]"))
+        log.write(Text.from_markup("[bold #FF6B00]│[/]"))
         log.write(Markdown(text))
-        log.write(Text.from_markup("[bold #982598]└" + "─" * 54 + "[/]"))
+        log.write(Text.from_markup("[bold #FF6B00]└" + "─" * 54 + "[/]"))
         log.write("")
         log.scroll_end(animate=False)
         self._history.append(ChatMessage("assistant", text))
