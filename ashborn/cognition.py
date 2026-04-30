@@ -70,9 +70,9 @@ class AshbornReflector(Reflector):
         "If the output is flawed, provide constructive feedback for the next loop iteration."
     )
 
-    async def reflect(self, prompt, output, context=None):
+    async def reflect(self, objective, action, result):
         # The base reflect handles the verification loop
-        reflection = await super().reflect(prompt, output, context=context)
+        reflection = await super().reflect(objective, action, result)
         
         # We can trigger a background profile update here if needed
         # For now, the system instruction ensures profiling is part of the reflection text
