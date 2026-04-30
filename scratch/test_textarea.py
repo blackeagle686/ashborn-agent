@@ -1,16 +1,9 @@
 from textual.app import App, ComposeResult
-from textual.widgets import RichLog
+from textual.widgets import TextArea
 
 class TestApp(App):
-    CSS = """
-    RichLog {
-    }
-    """
     def compose(self) -> ComposeResult:
-        yield RichLog(id="log", selectable=True)
-
-    def on_mount(self) -> None:
-        self.query_one("#log").write("Hello world")
+        yield TextArea("Hello world", read_only=True, id="text")
 
 if __name__ == "__main__":
     app = TestApp()
