@@ -18,8 +18,8 @@ import asyncio
 from datetime import datetime
 from textual.app import ComposeResult
 from textual.screen import Screen
-from textual.widgets import Static, TextArea, RichLog, Label, Select
-from textual.containers import Container, Vertical, Horizontal
+from textual.widgets import Static, TextArea, RichLog, Label, Select, Button
+from textual.containers import Container, Vertical, Horizontal, VerticalScroll
 from textual.binding import Binding
 from textual.reactive import reactive
 from textual import on, work
@@ -92,6 +92,90 @@ class ThinkingSpinner(Static):
     def hide(self) -> None:
         self.remove_class("visible")
         self.update("")
+
+
+# ── Message Display Widget with Copy Button ───────────────────────────────────
+
+class MessageDisplay(Horizontal):
+    """A widget to display a single message with a copy button."""
+    
+    DEFAULT_CSS = """
+    MessageDisplay {
+        height: auto;
+        margin-bottom: 1;
+        padding: 0 1;
+    }
+    .msg-content-container {
+        width: 1fr;
+        height: auto;
+    }
+    .msg-header {
+        height: 1;
+        margin-left: 0;
+    }
+    .msg-body {
+        height: auto;
+        padding-left: 1;
+        margin-left: 0;
+    }
+    .msg-footer {
+        height: 1;
+        margin-left: 0;
+    }
+    .msg-copy-button {
+        width: 10;
+        min-width: 10;
+        height: 3;
+        margin-left: 1;
+        margin-top: 1;
+        background: #2E333A;
+        border: round #FFD700;
+        color: #FFD700;
+        text-style: bold;
+    }
+    .msg-copy-button:hover {
+        background: #FFD700;
+        color: #1B1F24;
+    }
+    """
+
+    def __init__(self, message: ChatMessage, **kwargs):
+        super().__init__(**kwargs)
+        self.message = message
+
+    def compose(self) -> ComposeResult:
+        with Vertical(classes="msg-content-container"):
+            # Header
+            if self.message.role == "user":
+                yield Static(f"[bold #FF3333]┌─ You[/] [dim]({self.message.timestamp})[/]", classes="msg-header")
+            else:
+                yield Static(f"[bold #FF6B00]┌─ 🐦‍🔥 Ashborn[/] [dim]({self.message.timestamp})[/]", classes="msg-header")
+            
+            # Content
+            # In user message, we might want to handle newlines
+            content = self.message.content
+            if self.message.role == "user":
+                # Escape brackets for Rich
+                safe_content = content.replace("[", "[[")
+                yield Static(f"[bold #FF3333]│[/] [#F1E9DD]{safe_content}[/]", classes="msg-body", markup=True)
+            else:
+                # For assistant, we use Horizontal to put the pipe next to markdown
+                with Horizontal(height="auto"):
+                    yield Static("[bold #FF6B00]│[/]", width=2)
+                    yield Static(Markdown(content), classes="msg-body")
+            
+            # Footer
+            if self.message.role == "user":
+                yield Static("[bold #FF3333]└" + "─" * 54 + "[/]", classes="msg-footer")
+            else:
+                yield Static("[bold #FF6B00]└" + "─" * 54 + "[/]", classes="msg-footer")
+
+        if self.message.role == "assistant":
+            yield Button("📋 Copy", variant="primary", classes="msg-copy-button")
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        self.app.copy_to_clipboard(self.message.content)
+        self.notify("✓ Copied to clipboard", severity="information")
 
 
 # ── Custom TextArea — fires SendMessage on Ctrl+Enter ─────────────────────────
@@ -361,6 +445,7 @@ class ChatScreen(Screen):
         scrollbar-color: #A89F91;
         scrollbar-color-hover: #F1E9DD;
         padding: 1 2;
+        overflow-y: scroll;
     }
 
     /* ── Footer ── */
@@ -392,13 +477,9 @@ class ChatScreen(Screen):
         with Horizontal(id="body"):
             yield SidebarWidget(id="sidebar")
             with Container(id="chat-log-container"):
-                yield RichLog(
-                    id="chat-log",
-                    highlight=True,
-                    markup=True,
-                    wrap=True,
-                    auto_scroll=True,
-                )
+                with VerticalScroll(id="chat-log"):
+                    # Welcome messages will be mounted here
+                    pass
                 # Animated spinner lives BELOW the log, inside the same column
                 yield ThinkingSpinner(id="thinking-spinner")
 
@@ -412,8 +493,7 @@ class ChatScreen(Screen):
     # ── lifecycle ─────────────────────────────────────────────────────────────
 
     def on_mount(self) -> None:
-        # Enable focus on chat log for accessibility and terminal selection
-        self.query_one("#chat-log", RichLog).can_focus = True
+        # We don't need to set can_focus on VerticalScroll as it handles children
         
         self._print_welcome()
         self._load_model_info()
@@ -438,11 +518,11 @@ class ChatScreen(Screen):
     # ── welcome banner ────────────────────────────────────────────────────────
 
     def _print_welcome(self) -> None:
-        log = self.query_one("#chat-log", RichLog)
-        log.write("")
-        log.write(Text.from_markup("[bold #A89F91]🐦‍🔥  How can I help you today?[/]"))
-        log.write(Text.from_markup("[dim]Type your request below and press [bold #A89F91]Ctrl+Enter[/] to send.[/]"))
-        log.write("")
+        log = self.query_one("#chat-log", VerticalScroll)
+        log.mount(Static(""))
+        log.mount(Static("[bold #A89F91]🐦‍🔥  How can I help you today?[/]", markup=True))
+        log.mount(Static("[dim]Type your request below and press [bold #A89F91]Ctrl+Enter[/] to send.[/]", markup=True))
+        log.mount(Static(""))
 
     # ── agent init ────────────────────────────────────────────────────────────
 
@@ -470,10 +550,11 @@ class ChatScreen(Screen):
 
     def _on_agent_error(self, err: str) -> None:
         self._set_status("● Error", "#ff4444")
-        log = self.query_one("#chat-log", RichLog)
-        log.write(Text.from_markup(
+        log = self.query_one("#chat-log", VerticalScroll)
+        log.mount(Static(
             f"[bold #ff4444]⚠  Agent init failed:[/] [#F1E9DD]{err}[/]\n"
-            f"[dim]Press [bold #A89F91]Ctrl+K[/] to check your configuration.[/]\n"
+            f"[dim]Press [bold #A89F91]Ctrl+K[/] to check your configuration.[/]\n",
+            markup=True
         ))
 
     # ── SendMessage from ChatTextArea ─────────────────────────────────────────
@@ -487,8 +568,10 @@ class ChatScreen(Screen):
 
     def action_clear_chat(self) -> None:
         self._history.clear()
-        log = self.query_one("#chat-log", RichLog)
-        log.clear()
+        log = self.query_one("#chat-log", VerticalScroll)
+        # Remove all MessageDisplay widgets
+        for child in log.children[:]:
+            child.remove()
         self._print_welcome()
         self.query_one("#sidebar", SidebarWidget).message_count = 0
 
@@ -546,8 +629,9 @@ class ChatScreen(Screen):
             return
 
         # ✅ Clear the screen for a fresh focus on this turn
-        log = self.query_one("#chat-log", RichLog)
-        log.clear()
+        log = self.query_one("#chat-log", VerticalScroll)
+        for child in log.children[:]:
+            child.remove()
 
         # Clear input and render user bubble at the top
         input_bar.clear()
@@ -563,28 +647,19 @@ class ChatScreen(Screen):
     # ── rendering ─────────────────────────────────────────────────────────────
 
     def _render_user_message(self, text: str) -> None:
-        log = self.query_one("#chat-log", RichLog)
-        ts = datetime.now().strftime("%H:%M")
-        log.write(Text.from_markup(f"[bold #FF3333]┌─ You[/] [dim]({ts})[/]"))
-        for line in text.splitlines():
-            # In Rich markup, '[' is escaped by doubling it to '[['
-            safe = line.replace("[", "[[")
-            log.write(Text.from_markup(f"[bold #FF3333]│[/] [#F1E9DD]{safe}[/]"))
-        log.write(Text.from_markup("[bold #FF3333]└" + "─" * 54 + "[/]"))
-        log.write("") # RichLog handles newlines better this way
-        self._history.append(ChatMessage("user", text))
+        log = self.query_one("#chat-log", VerticalScroll)
+        msg = ChatMessage("user", text)
+        log.mount(MessageDisplay(msg))
+        log.scroll_end(animate=False)
+        self._history.append(msg)
         self.query_one("#sidebar", SidebarWidget).message_count = len(self._history)
 
     def _render_assistant_message(self, text: str) -> None:
-        log = self.query_one("#chat-log", RichLog)
-        ts = datetime.now().strftime("%H:%M")
-        log.write(Text.from_markup(f"[bold #FF6B00]┌─ 🐦‍🔥 Ashborn[/] [dim]({ts})[/]"))
-        log.write(Text.from_markup("[bold #FF6B00]│[/]"))
-        log.write(Markdown(text))
-        log.write(Text.from_markup("[bold #FF6B00]└" + "─" * 54 + "[/]"))
-        log.write("")
+        log = self.query_one("#chat-log", VerticalScroll)
+        msg = ChatMessage("assistant", text)
+        log.mount(MessageDisplay(msg))
         log.scroll_end(animate=False)
-        self._history.append(ChatMessage("assistant", text))
+        self._history.append(msg)
         self.query_one("#sidebar", SidebarWidget).message_count = len(self._history)
 
     # ── streaming ─────────────────────────────────────────────────────────────
@@ -643,8 +718,8 @@ class ChatScreen(Screen):
 
     def _on_stream_error(self, err: str) -> None:
         self.query_one("#thinking-spinner", ThinkingSpinner).hide()
-        log = self.query_one("#chat-log", RichLog)
-        log.write(Text.from_markup(f"[bold #ff4444]⚠  Error:[/] [#F1E9DD]{err}[/]\n"))
+        log = self.query_one("#chat-log", VerticalScroll)
+        log.mount(Static(f"[bold #ff4444]⚠  Error:[/] [#F1E9DD]{err}[/]\n", markup=True))
 
     # ── helpers ───────────────────────────────────────────────────────────────
 
