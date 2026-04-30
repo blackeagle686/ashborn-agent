@@ -1,7 +1,7 @@
 import os
 from phoenix.tools import tool
 
-@tool(name="project_generator", description="Generates a complex, nested project structure. Input: 'base_path' (str), 'structure' (dict where keys are filenames and values are contents. Nested dicts create subdirectories). Use this for manifesting full architectural visions.")
+@tool(name="project_generator", description="Generates a complex, nested project structure. Input: 'base_path' (str), 'structure' (dict where keys are filenames and values are contents. Nested dicts create subdirectories). Use this for manifesting full architectural visions. IMPORTANT: You MUST provide complete, functional code in the content values. DO NOT use placeholders like '# code here' or 'pass'.")
 def project_generator_tool(base_path: str, structure: dict) -> str:
     """
     Recursively generates a project structure from a dictionary manifest.

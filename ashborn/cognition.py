@@ -15,9 +15,10 @@ class AshbornThinker(Thinker):
     Surgical Thinker for Ashborn.
     """
     SYSTEM_INSTRUCTION = (
-        "You are ASHBORN. Core Objective: Deconstruct user requests into surgical technical tasks. "
-        "Identity: Manifestation Engine. Efficiency is your aura. "
-        "Constraints: Be extremely concise. No fluff. Define 'Core Intent' and 'Success Criteria'."
+        "You are ASHBORN — The Great Architect. "
+        "Core Objective: Extract ALL technical specifications, architectural patterns, and file requirements from the user prompt. "
+        "Identity: Technical Strategist. Precision and completeness are your essence. "
+        "Constraints: Do not lose details. Identify libraries, file names, and specific features requested."
     )
 
     async def analyze(self, prompt: str, memory, session_id: str) -> str:
@@ -26,9 +27,13 @@ class AshbornThinker(Thinker):
             f"{self.SYSTEM_INSTRUCTION}\n\n"
             f"Context:\n{context}\n\n"
             f"User Request: {prompt}\n\n"
-            "Respond with: Intent | Requirements | Success Criteria"
+            "Respond with a Comprehensive Technical Specification including:\n"
+            "1. Architectural Goal\n"
+            "2. Required Files & Directories\n"
+            "3. Logic & Implementation Details\n"
+            "4. Success Criteria (Technical Verification)"
         )
-        return await self.llm.generate(full_prompt, session_id=None, max_tokens=200)
+        return await self.llm.generate(full_prompt, session_id=None, max_tokens=600)
 
 
 class AshbornPlanner(Planner):
@@ -36,18 +41,34 @@ class AshbornPlanner(Planner):
     Action-First Planner for Ashborn.
     """
     SYSTEM_INSTRUCTION = (
-        "You are the ASHBORN Planner. COMMAND: Take action immediately. "
+        "You are the ASHBORN Planner. COMMAND: Manifest the architectural vision immediately. "
         "Strategy: "
-        "1. For NEW PROJECTS: Use `project_generator` with a 'structure' manifest (JSON dictionary) to create all files at once. "
-        "2. For MODIFICATIONS: Use `file_read` then `file_edit`. "
-        "3. FOR SETUP: Use `terminal` for pip install or mkdir. "
-        "Rule: Never say 'I will do X' without including the tool call for X in the same response. "
-        "Finish only after tools have successfully executed."
+        "1. For NEW PROJECTS/FOLDERS: Use `project_generator`. You MUST include COMPLETE, functional code for every file in the 'structure' manifest. No placeholders. "
+        "2. For EXISTING FILES: Use `file_read` then `file_edit` for surgical patching. "
+        "3. FOR INFRASTRUCTURE: Use `terminal` for pip install, git, or complex migrations. "
+        "Rule: You are an execution engine. Output the necessary tool calls to achieve the objective in as few steps as possible."
     )
 
     async def stream_thinking(self, objective: str, previous_results: str = ""):
-        # Override to be extremely brief to avoid "thinking forever" feeling
-        yield "Analyzing next architectural step..."
+        """
+        Briefly explain the architectural next step before calling tools.
+        """
+        thinking_prompt = f"""
+        You are ASHBORN. Briefly explain your next action to the user.
+        Objective: {objective}
+        Last Result: {previous_results}
+        
+        Keep it to 2-3 sentences. Focus on WHAT you are manifesting next.
+        """
+        
+        stream_fn = getattr(self.llm, "generate_stream", None)
+        if callable(stream_fn):
+            async for chunk in stream_fn(thinking_prompt, session_id=None, max_tokens=150):
+                yield chunk
+        else:
+            text = await self.llm.generate(thinking_prompt, session_id=None, max_tokens=150)
+            for word in text.split():
+                yield word + " "
 
     def _build_planner_prompt(self, objective: str, previous_results: str = "") -> str:
         tool_info = json.dumps(self.tools.get_all_tools_info(), indent=2)
@@ -128,9 +149,9 @@ class AshbornReflector(Reflector):
     Decisive Reflector for Ashborn.
     """
     SYSTEM_INSTRUCTION = (
-        "You are the ASHBORN Reflector. Evaluate progress. "
-        "Crucial: If a tool was executed and didn't crash, progress was likely made. "
-        "Do not be pedantic. If the objective is close to completion, mark it done. "
+        "You are the ASHBORN Reflector. Evaluate the manifestation. "
+        "Rule: If the objective required creating files and they are missing or contain placeholders (like 'pass'), it is NOT complete. "
+        "Crucial: If the architectural vision has been manifested and verified, mark it done. "
         "Respond ONLY with JSON: {\"is_complete\": bool, \"reflection\": \"string\"}"
     )
 
