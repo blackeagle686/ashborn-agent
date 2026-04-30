@@ -7,7 +7,7 @@ async def get_ashborn_agent(on_startup_progress=None):
     Initializes the Phoenix framework, starts up services, and returns the Ashborn agent.
     """
     init_phoenix()
-    await startup_phoenix(on_progress=on_startup_progress)
+    await startup_phoenix()
     from .cognition import AshbornThinker, AshbornPlanner
     
     # 2. Create the agent with upgraded cognition modules
