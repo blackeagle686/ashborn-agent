@@ -61,7 +61,9 @@ class ThinkingSpinner(Static):
         outline: solid #FFD70044;
     }
     ThinkingSpinner.visible {
-        height: 3;
+        height: auto;
+        min-height: 3;
+        max-height: 5;
     }
     """
 
@@ -595,6 +597,11 @@ class ChatScreen(Screen):
             if event["type"] == "status":
                 # Update spinner label with agent status messages
                 spinner.show(event["content"][:55])
+            elif event["type"] == "thought":
+                # NEW: Capture planner reasoning text and show in UI
+                reasoning = event["content"]
+                # Show a scrolling preview of the thinking process
+                spinner.show(f"Thinking: {reasoning[-60:]}")
             elif event["type"] == "chunk":
                 if phase == "status":
                     phase = "streaming"

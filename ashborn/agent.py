@@ -13,7 +13,7 @@ async def get_ashborn_agent(on_startup_progress=None):
     # 2. Create the agent with upgraded cognition modules
     agent = Agent(
         thinker=AshbornThinker(),
-        planner=AshbornPlanner()
+            planner=AshbornPlanner()
     )
     
     agent.register_tool(project_generator_tool)
