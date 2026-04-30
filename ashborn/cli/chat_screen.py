@@ -355,7 +355,6 @@ class ChatInputBar(Horizontal):
     }
     ChatTextArea {
         background: #0A0C10;
-        border: round #30363D;
         color: #E6EDF3;
         width: 1fr;
         height: 3;
