@@ -51,19 +51,21 @@ class ThinkingSpinner(Static):
     DEFAULT_CSS = """
     ThinkingSpinner {
         height: 0;
-        background: #1B1F24;
-        border-top: tall #2E333A 20%;
-        border-bottom: tall #2E333A 20%;
-        color: #A89F91;
+        background: #12161D;
+        border-top: round #FF7B00 20%;
+        border-bottom: round #FF7B00 20%;
+        color: #E6EDF3;
         text-style: bold;
         padding: 0 2;
-        margin: 1 2;
-        outline: solid #FFD70044;
+        margin: 1 4;
+        outline: solid #FFD70022;
+        opacity: 0;
+        transition: height 300ms, opacity 300ms;
     }
     ThinkingSpinner.visible {
-        height: auto;
+        height: 3;
+        opacity: 1;
         min-height: 3;
-        max-height: 5;
     }
     """
 
@@ -81,7 +83,7 @@ class ThinkingSpinner(Static):
         dots = "." * ((self._frame_idx % 3) + 1)
         self.update(
             Text.from_markup(
-                f"  [bold #A89F91]{frame}[/]  [#A89F91]{self._label}[/][dim #A89F91]{dots}[/]"
+                f"  [bold #FF7B00]{frame}[/]  [#8B949E]{self._label}[/][dim #D4AF37]{dots}[/]"
             )
         )
 
@@ -103,46 +105,54 @@ class MessageDisplay(Horizontal):
     MessageDisplay {
         height: auto;
         margin-bottom: 1;
-        padding: 0 1;
+        padding: 0 2;
+        opacity: 0;
+    }
+    MessageDisplay.mounted {
+        opacity: 1;
+        transition: opacity 500ms;
     }
     .msg-content-container {
         width: 1fr;
         height: auto;
+        background: #1C2128;
+        border: round #30363D;
+        padding: 0 1;
+    }
+    .msg-content-container.user {
+        background: #12161D;
+        border: round #FF7B00;
+        margin-left: 10;
+    }
+    .msg-content-container.assistant {
+        background: #1C2128;
+        border: round #D4AF37;
+        margin-right: 10;
+        outline: solid #FFD70011;
     }
     .msg-header {
         height: 1;
-        margin-left: 0;
+        margin: 0 1;
+        color: #8B949E;
+        text-style: bold;
     }
     .msg-body {
         height: auto;
-        padding-left: 1;
-        margin-left: 0;
-    }
-    .msg-footer {
-        height: 1;
-        margin-left: 0;
+        padding: 0 1;
+        color: #E6EDF3;
     }
     .msg-copy-button {
         width: 10;
-        min-width: 10;
         height: 3;
         margin-left: 1;
-        margin-top: 1;
-        background: #2E333A;
-        border: round #FFD700;
-        color: #FFD700;
+        background: #30363D;
+        border: round #D4AF37;
+        color: #D4AF37;
         text-style: bold;
     }
     .msg-copy-button:hover {
-        background: #FFD700;
-        color: #1B1F24;
-    }
-    .msg-body-container {
-        height: auto;
-    }
-    .msg-pipe {
-        width: 2;
-        color: #FF6B00;
+        background: #D4AF37;
+        color: #0A0C10;
     }
     """
 
@@ -150,32 +160,28 @@ class MessageDisplay(Horizontal):
         super().__init__(**kwargs)
         self.message = message
 
+    def on_mount(self) -> None:
+        self.add_class("mounted")
+
     def compose(self) -> ComposeResult:
-        with Vertical(classes="msg-content-container"):
-            # Header
+        role_class = self.message.role
+        with Vertical(classes=f"msg-content-container {role_class}"):
+            # Header with role and timestamp
             if self.message.role == "user":
-                yield Static(f"[bold #FF3333]┌─ You[/] [dim]({self.message.timestamp})[/]", classes="msg-header")
+                yield Label(f"YOU  •  {self.message.timestamp}", classes="msg-header")
             else:
-                yield Static(f"[bold #FF6B00]┌─ 🐦‍🔥 Ashborn[/] [dim]({self.message.timestamp})[/]", classes="msg-header")
+                yield Label(f"ASHBORN  •  {self.message.timestamp}", classes="msg-header")
             
             # Content
-            # In user message, we might want to handle newlines
             content = self.message.content
             if self.message.role == "user":
-                # Escape brackets for Rich
                 safe_content = content.replace("[", "[[")
-                yield Static(f"[bold #FF3333]│[/] [#F1E9DD]{safe_content}[/]", classes="msg-body", markup=True)
+                yield Static(safe_content, classes="msg-body")
             else:
-                # For assistant, we use Horizontal to put the pipe next to markdown
-                with Horizontal(classes="msg-body-container"):
-                    yield Static("[bold]│[/]", classes="msg-pipe")
-                    yield Static(Markdown(content), classes="msg-body")
-            
-            # Footer
-            if self.message.role == "user":
-                yield Static("[bold #FF3333]└" + "─" * 54 + "[/]", classes="msg-footer")
-            else:
-                yield Static("[bold #FF6B00]└" + "─" * 54 + "[/]", classes="msg-footer")
+                yield Static(Markdown(content), classes="msg-body")
+
+        if self.message.role == "assistant":
+            yield Button("📋 Copy", variant="primary", classes="msg-copy-button")
 
         if self.message.role == "assistant":
             yield Button("📋 Copy", variant="primary", classes="msg-copy-button")
@@ -214,43 +220,42 @@ class SidebarWidget(Vertical):
 
     DEFAULT_CSS = """
     SidebarWidget {
-        width: 26;
-        min-width: 26;
-        background: #1B1F24;
-        border-right: tall #2E333A;
-        padding: 1 1;
+        width: 28;
+        background: #12161D;
+        border-right: thick #30363D;
+        padding: 1 2;
         margin: 1 0 1 1;
-        outline: solid #FFD70044;
-        display: none; /* Hidden by default for 'Simple' look */
+        outline: solid #FFD70011;
+        display: none;
     }
     SidebarWidget.visible { display: block; }
 
     .sb-title {
-        color: #A89F91;
+        color: #D4AF37;
         text-style: bold;
         text-align: center;
         width: 100%;
         margin-bottom: 1;
     }
     .sb-div {
-        color: #2E333A;
+        color: #30363D;
         width: 100%;
         margin-bottom: 1;
     }
     .sb-label {
-        color: #A89F91;
+        color: #8B949E;
         width: 100%;
-        margin-bottom: 0;
     }
     .sb-val {
-        color: #F1E9DD;
+        color: #E6EDF3;
         text-style: bold;
         width: 100%;
         margin-bottom: 1;
     }
     .sc-row {
-        color: #A89F91;
+        color: #8B949E;
         width: 100%;
+        padding: 0 1;
     }
     """
 
@@ -319,48 +324,47 @@ class ChatInputBar(Horizontal):
     DEFAULT_CSS = """
     ChatInputBar {
         height: 5;
-        background: #1B1F24;
-        border-top: tall #2E333A;
-        padding: 0 1;
+        background: #12161D;
+        border-top: thick #30363D;
+        padding: 0 2;
         align: left middle;
         margin: 0 1 1 1;
-        outline: solid #FFD70044;
+        outline: solid #FFD70011;
     }
     #input-prefix {
-        color: #FF6B00;
+        color: #FF7B00;
         text-style: bold;
         width: auto;
         padding: 0 1;
     }
     ChatTextArea {
-        background: #1B1F24;
-        border: round #2E333A;
-        color: #F1E9DD;
+        background: #0A0C10;
+        border: round #30363D;
+        color: #E6EDF3;
         width: 1fr;
         height: 3;
     }
     ChatTextArea:focus {
-        border: round #FFD700;
-        background: #1B1F24;
+        border: round #FF7B00;
     }
     Select {
-        width: 14;
+        width: 16;
         height: 3;
         margin-left: 1;
-        background: #1B1F24;
-        border: round #2E333A;
-        color: #F1E9DD;
+        background: #0A0C10;
+        border: round #30363D;
+        color: #E6EDF3;
     }
     Select:focus {
-        border: round #FFD700;
+        border: round #D4AF37;
     }
     #char-counter {
-        color: #A89F91;
+        color: #8B949E;
         width: auto;
         padding: 0 1;
     }
-    #char-counter.warn   { color: #ffd700; }
-    #char-counter.danger { color: #ff4444; }
+    #char-counter.warn   { color: #D4AF37; }
+    #char-counter.danger { color: #DA3633; }
     """
 
     MAX_CHARS = 4096
@@ -407,29 +411,29 @@ class ChatScreen(Screen):
 
     DEFAULT_CSS = """
     ChatScreen {
-        background: #1B1F24;
+        background: #0A0C10;
         layout: vertical;
     }
 
     /* ── Header ── */
     #chat-header {
         height: 3;
-        background: #1B1F24;
-        border-bottom: tall #2E333A 10%;
+        background: #12161D;
+        border-bottom: thick #30363D;
         layout: horizontal;
         align: left middle;
-        padding: 0 2;
+        padding: 0 4;
         margin: 1 1 0 1;
-        outline: solid #FFD70044;
+        outline: solid #FFD70011;
     }
     #header-logo {
-        color: #FF6B00;
+        color: #FF7B00;
         text-style: bold;
         width: auto;
     }
     #header-status {
-        color: #39d353;
-        text-style: italic;
+        color: #238636;
+        text-style: bold italic;
         width: 1fr;
         text-align: right;
     }
@@ -442,15 +446,16 @@ class ChatScreen(Screen):
     #chat-log-container {
         width: 1fr;
         height: 100%;
-        background: #1B1F24;
+        background: #0A0C10;
         layout: vertical;
     }
     #chat-log {
         width: 100%;
         height: 1fr;
-        background: #1B1F24;
-        scrollbar-color: #A89F91;
-        scrollbar-color-hover: #F1E9DD;
+        background: #0A0C10;
+        scrollbar-color: #30363D;
+        scrollbar-color-hover: #D4AF37;
+        scrollbar-gutter: stable;
         padding: 1 2;
         overflow-y: scroll;
     }
@@ -458,9 +463,8 @@ class ChatScreen(Screen):
     /* ── Footer ── */
     #chat-footer {
         height: 1;
-        background: #1B1F24;
-        border-top: tall #2E333A;
-        color: #A89F91;
+        background: #12161D;
+        color: #8B949E;
         text-align: center;
         padding: 0 1;
     }
@@ -527,8 +531,8 @@ class ChatScreen(Screen):
     def _print_welcome(self) -> None:
         log = self.query_one("#chat-log", VerticalScroll)
         log.mount(Static(""))
-        log.mount(Static("[bold #A89F91]🐦‍🔥  How can I help you today?[/]", markup=True))
-        log.mount(Static("[dim]Type your request below and press [bold #A89F91]Ctrl+Enter[/] to send.[/]", markup=True))
+        log.mount(Static("[bold #FF7B00]🐦‍🔥  How can I help you today?[/]", markup=True))
+        log.mount(Static("[dim #8B949E]Type your request below and press [bold #FF7B00]Enter[/] to send.[/]", markup=True))
         log.mount(Static(""))
 
     # ── agent init ────────────────────────────────────────────────────────────
