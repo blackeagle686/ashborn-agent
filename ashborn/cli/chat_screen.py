@@ -190,6 +190,7 @@ class SidebarWidget(Vertical):
             ("Ctrl+L",      "Clear chat"),
             ("Ctrl+K",      "Config"),
             ("Ctrl+B",      "Sidebar"),
+            ("Ctrl+Y",      "Copy Last"),
             ("Ctrl+Q",      "Quit"),
             ("Esc",        "Cancel"),
         ]
@@ -396,6 +397,7 @@ class ChatScreen(Screen):
                     highlight=True,
                     markup=True,
                     wrap=True,
+                    auto_scroll=True,
                     can_focus=True,
                 )
                 # Animated spinner lives BELOW the log, inside the same column
@@ -404,7 +406,7 @@ class ChatScreen(Screen):
         # Input + Footer
         yield ChatInputBar(id="input-bar")
         yield Static(
-            " Enter: Send  │  Shift+Enter: New-line  │  Ctrl+L: Clear  │  Ctrl+K: Config  │  Ctrl+B: Sidebar  │  Ctrl+Q: Quit",
+            " Enter: Send  │  Ctrl+Y: Copy Last  │  Ctrl+L: Clear  │  Ctrl+K: Config  │  Ctrl+B: Sidebar  │  Ctrl+Q: Quit",
             id="chat-footer",
         )
 
