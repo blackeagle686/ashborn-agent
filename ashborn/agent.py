@@ -19,6 +19,11 @@ async def get_ashborn_agent(on_startup_progress=None):
         }
     )
     
+    from phoenix.tools.io import FileReadTool, FileWriteTool, FileEditTool
+    
+    agent.register_tool(FileReadTool())
+    agent.register_tool(FileWriteTool())
+    agent.register_tool(FileEditTool())
     agent.register_tool(project_generator_tool)
     
     return agent
