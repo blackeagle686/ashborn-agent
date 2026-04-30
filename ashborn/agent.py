@@ -8,10 +8,11 @@ async def get_ashborn_agent(on_startup_progress=None):
     """
     init_phoenix()
     await startup_phoenix()
-    from .cognition import AshbornThinker, AshbornPlanner, AshbornReflector
+    from .cognition import AshbornThinker, AshbornPlanner, AshbornReflector, AshbornLoop
     
-    # 2. Create the agent with upgraded cognition modules
+    # Create the agent with the task-file driven loop and upgraded cognition modules
     agent = Agent(
+        loop_cls=AshbornLoop,
         component_factories={
             "thinker": lambda **ctx: AshbornThinker(ctx["llm"]),
             "planner": lambda **ctx: AshbornPlanner(ctx["llm"], ctx["tools"]),
