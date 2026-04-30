@@ -4,7 +4,7 @@ from textual.widgets import Static
 class TestApp(App):
     CSS = """
     Static {
-        shadow: outer #FFD700 30%;
+        outline: solid #FFD700;
     }
     """
     def compose(self) -> ComposeResult:
