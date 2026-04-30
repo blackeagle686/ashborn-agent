@@ -361,7 +361,6 @@ class ChatScreen(Screen):
         scrollbar-color: #A89F91;
         scrollbar-color-hover: #F1E9DD;
         padding: 1 2;
-        can-focus: true;
     }
 
     /* ── Footer ── */
@@ -413,6 +412,9 @@ class ChatScreen(Screen):
     # ── lifecycle ─────────────────────────────────────────────────────────────
 
     def on_mount(self) -> None:
+        # Enable focus on chat log for accessibility and terminal selection
+        self.query_one("#chat-log", RichLog).can_focus = True
+        
         self._print_welcome()
         self._load_model_info()
         self.query_one("#input-bar", ChatInputBar).focus_input()
