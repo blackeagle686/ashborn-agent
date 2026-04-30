@@ -364,8 +364,8 @@ class ChatInputBar(Horizontal):
         border: round #FF7B00;
     }
     Select {
-        width: 10;
-        height: 3;
+        width: 16;
+        height: 1;
         margin-left: 1;
         background: #0A0C10;
         border: round #30363D;
