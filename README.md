@@ -99,6 +99,9 @@ Ashborn is built exclusively on the **Phoenix AI Framework**, utilizing its core
 | **`phoenix.llm`** | High-performance streaming interface for LLM providers. |
 | **`phoenix.memory`** | Advanced semantic memory and vector storage management. |
 
+For a comprehensive deep-dive into the underlying architecture and advanced features, see the **[Phoenix AI Framework Guide](ashborn/phoneix-updates-notes.md)**.
+
+
 ---
 
 ## 📜 License
