@@ -4,9 +4,9 @@ pyproject.toml
 ashborn/__init__.py
 ashborn/agent.py
 ashborn/ashborn-bg.png
+ashborn/cognition.py
 ashborn/main.py
 ashborn/phoneix-updates-notes.md
-ashborn/smart_git.py
 ashborn/cli/__init__.py
 ashborn/cli/chat_screen.py
 ashborn/cli/setup_wizard.py
