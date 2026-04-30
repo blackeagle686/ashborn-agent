@@ -528,8 +528,8 @@ class ChatScreen(Screen):
     def _print_welcome(self) -> None:
         log = self.query_one("#chat-log", VerticalScroll)
         log.mount(Static(""))
-        log.mount(Static("[bold #FF7B00]🐦‍🔥  How can I help you today?[/]", markup=True))
-        log.mount(Static("[dim #8B949E]Type your request below and press [bold #FF7B00]Enter[/] to send.[/]", markup=True))
+        log.mount(Static("[bold #FF7B00]🐦‍🔥  Greetings. I am Ashborn.[/]", markup=True))
+        log.mount(Static("[dim #8B949E]The Ultimate Autonomous Architect is ready to manifest your vision.[/]", markup=True))
         log.mount(Static(""))
 
     # ── agent init ────────────────────────────────────────────────────────────
