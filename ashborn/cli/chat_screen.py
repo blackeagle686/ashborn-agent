@@ -199,8 +199,7 @@ class MessageDisplay(Horizontal):
             self.notify("✓ Copied to clipboard", severity="information")
         elif event.button.id == "reply-btn":
             # Quote the message in the input area
-            chat_screen = self.app.query_one(ChatScreen)
-            input_bar = chat_screen.query_one("#chat-input", ChatTextArea)
+            input_bar = self.screen.query_one("#chat-input", ChatTextArea)
             quote = f"> {self.message.content.splitlines()[0]}...\n"
             input_bar.load_text(quote)
             input_bar.focus()
