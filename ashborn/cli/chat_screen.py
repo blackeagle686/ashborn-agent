@@ -183,9 +183,6 @@ class MessageDisplay(Horizontal):
         if self.message.role == "assistant":
             yield Button("📋 Copy", variant="primary", classes="msg-copy-button")
 
-        if self.message.role == "assistant":
-            yield Button("📋 Copy", variant="primary", classes="msg-copy-button")
-
     def on_button_pressed(self, event: Button.Pressed) -> None:
         self.app.copy_to_clipboard(self.message.content)
         self.notify("✓ Copied to clipboard", severity="information")
