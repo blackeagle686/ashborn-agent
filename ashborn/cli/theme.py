@@ -5,28 +5,32 @@ All colors and styles are defined here to keep screens consistent.
 
 from textual.theme import Theme
 
-# ── Color Palette ──────────────────────────────────────────────────────────────
-PHOENIX_ORANGE   = "#ff8c00"
-PHOENIX_AMBER    = "#ffb347"
-PHOENIX_DARK     = "#1B1F24"
-PHOENIX_SURFACE  = "#1B1F24"
-PHOENIX_PANEL    = "#2E333A"
-PHOENIX_BORDER   = "#2E333A"
-PHOENIX_MUTED    = "#2E333A"
-PHOENIX_DIMTEXT  = "#A89F91"
-PHOENIX_TEXT     = "#F1E9DD"
-PHOENIX_CYAN     = "#A89F91"
-PHOENIX_GREEN    = "#39d353"
-PHOENIX_RED      = "#ff4444"
-PHOENIX_YELLOW   = "#ffd700"
-PHOENIX_GOLD     = "#FFD700"
+# ── Modern Premium Palette ───────────────────────────────────────────────────
+# Backgrounds
+PHOENIX_DARK     = "#0A0C10"  # Deep Onyx
+PHOENIX_SURFACE  = "#12161D"  # Obsidian Surface
+PHOENIX_PANEL    = "#1C2128"  # Slate Panel
 
+# Accents
+PHOENIX_ORANGE   = "#FF7B00"  # Vibrant Solar Orange
+PHOENIX_AMBER    = "#FF9500"  # Warm Glow
+PHOENIX_GOLD     = "#D4AF37"  # Metallic Gold
+PHOENIX_GLOW     = "#FFD700"  # Pure Gold Glow
 
-# ── Textual CSS vars injected via DEFAULT_CSS strings ──────────────────────────
+# Functional
+PHOENIX_BORDER   = "#30363D"  # Steel Border
+PHOENIX_MUTED    = "#484F58"  # Iron Gray
+PHOENIX_DIMTEXT  = "#8B949E"  # Muted Ash
+PHOENIX_TEXT     = "#E6EDF3"  # Soft Cloud
+PHOENIX_GREEN    = "#238636"  # Forest Emerald
+PHOENIX_RED      = "#DA3633"  # Crimson Edge
+PHOENIX_YELLOW   = "#D29922"  # Ochre Warning
+
+# ── Textual Theme ────────────────────────────────────────────────────────────
 ASHBORN_THEME = Theme(
     name="ashborn",
     primary=PHOENIX_ORANGE,
-    secondary=PHOENIX_CYAN,
+    secondary=PHOENIX_GOLD,
     accent=PHOENIX_AMBER,
     background=PHOENIX_DARK,
     surface=PHOENIX_SURFACE,
