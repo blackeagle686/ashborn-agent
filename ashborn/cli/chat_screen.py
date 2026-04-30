@@ -309,6 +309,7 @@ class ChatScreen(Screen):
     BINDINGS = [
         Binding("ctrl+l", "clear_chat",     "Clear",   show=False),
         Binding("ctrl+b", "toggle_sidebar", "Sidebar", show=False),
+        Binding("ctrl+y", "copy_last",      "Copy Last", show=False),
         Binding("escape", "cancel_stream",  "Cancel",  show=False),
     ]
 
@@ -395,7 +396,7 @@ class ChatScreen(Screen):
                     highlight=True,
                     markup=True,
                     wrap=True,
-                    auto_scroll=True,
+                    can_focus=True,
                 )
                 # Animated spinner lives BELOW the log, inside the same column
                 yield ThinkingSpinner(id="thinking-spinner")
@@ -513,6 +514,20 @@ class ChatScreen(Screen):
         self.query_one("#thinking-spinner", ThinkingSpinner).hide()
         self._set_status("● Ready", "#39d353")
         self.query_one("#sidebar", SidebarWidget).status = "● Ready"
+
+    def action_copy_last(self) -> None:
+        """Copies the last assistant response to the clipboard."""
+        # Find the last assistant message in history
+        assistant_msgs = [m for m in self._history if m.role == "assistant"]
+        if assistant_msgs:
+            last_msg = assistant_msgs[-1].content
+            try:
+                self.app.copy_to_clipboard(last_msg)
+                self.notify("✓ Last response copied to clipboard", severity="information")
+            except Exception:
+                self.notify("⚠ Clipboard copy failed (OSC 52 not supported?)", severity="error")
+        else:
+            self.notify("No response to copy", severity="warning")
 
     # ── core send ─────────────────────────────────────────────────────────────
 
