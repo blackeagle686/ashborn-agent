@@ -21,7 +21,7 @@ def _create_structure(base_path: str, structure: dict):
         else:
             # Ensure parent directory exists for keys that contain paths (e.g. "api/main.py")
             os.makedirs(os.path.dirname(path), exist_ok=True)
-            with open(path, "w") as f:
+            with open(path, "w", encoding='utf-8') as f:
                 f.write(str(content))
 
 @tool(name="terminal", description="Executes a bash command. SECURITY: This tool is restricted. Dangerous commands (rm -rf /, sudo, etc.) and system paths (/etc, /root, etc.) are FORBIDDEN.")
