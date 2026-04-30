@@ -22,12 +22,25 @@ def _create_structure(base_path: str, structure: dict):
             with open(path, "w") as f:
                 f.write(content)
 
-@tool(name="terminal", description="Executes a bash command in the terminal. Use for installing dependencies, running tests, or managing files.")
+@tool(name="terminal", description="Executes a bash command. SECURITY: This tool is restricted. Dangerous commands (rm -rf /, sudo, etc.) and system paths (/etc, /root, etc.) are FORBIDDEN.")
 def terminal_tool(command: str) -> str:
     """
-    Executes a shell command and returns the output.
+    Executes a shell command with security guards.
     """
     import subprocess
+    
+    # ── Security Layer: Forbidden Patterns ──
+    FORBIDDEN = [
+        "sudo", "rm -rf /", "rm -rf *", "rm -rf .", "mv /", "cp /",
+        "chown", "chmod", "dd if=", ":(){ :|:& };:", "/etc", "/root",
+        "/var", "/bin", "/sbin", "/usr/bin", "/usr/sbin"
+    ]
+    
+    cmd_lower = command.lower()
+    for pattern in FORBIDDEN:
+        if pattern in cmd_lower:
+            return f"Security Error: Command contains forbidden pattern '{pattern}'."
+
     try:
         result = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=30)
         output = result.stdout + result.stderr
