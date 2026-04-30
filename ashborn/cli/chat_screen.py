@@ -58,7 +58,7 @@ class ThinkingSpinner(Static):
         text-style: bold;
         padding: 0 2;
         margin: 1 2;
-        shadow: outer #FFD700 30%;
+        outline: solid #FFD70044;
     }
     ThinkingSpinner.visible {
         height: 3;
@@ -127,7 +127,7 @@ class SidebarWidget(Vertical):
         border-right: tall #2E333A;
         padding: 1 1;
         margin: 1 0 1 1;
-        shadow: outer #FFD700 30%;
+        outline: solid #FFD70044;
         display: none; /* Hidden by default for 'Simple' look */
     }
     SidebarWidget.visible { display: block; }
@@ -230,7 +230,7 @@ class ChatInputBar(Horizontal):
         padding: 0 1;
         align: left middle;
         margin: 0 1 1 1;
-        shadow: outer #FFD700 30%;
+        outline: solid #FFD70044;
     }
     #input-prefix {
         color: #FF6B00;
@@ -325,7 +325,7 @@ class ChatScreen(Screen):
         align: left middle;
         padding: 0 2;
         margin: 1 1 0 1;
-        shadow: outer #FFD700 30%;
+        outline: solid #FFD70044;
     }
     #header-logo {
         color: #FF6B00;
