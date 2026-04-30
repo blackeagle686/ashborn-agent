@@ -361,6 +361,7 @@ class ChatScreen(Screen):
         scrollbar-color: #A89F91;
         scrollbar-color-hover: #F1E9DD;
         padding: 1 2;
+        can-focus: true;
     }
 
     /* ── Footer ── */
@@ -398,7 +399,6 @@ class ChatScreen(Screen):
                     markup=True,
                     wrap=True,
                     auto_scroll=True,
-                    can_focus=True,
                 )
                 # Animated spinner lives BELOW the log, inside the same column
                 yield ThinkingSpinner(id="thinking-spinner")
