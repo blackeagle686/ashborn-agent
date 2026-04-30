@@ -1,8 +1,8 @@
+<h1 align="center">🐦‍🔥 Ashborn Agent</h1>
+
 <p align="center">
   <img src="ashborn/ashborn-bg.png" width="800" alt="Ashborn Agent Logo">
 </p>
-
-<h1 align="center">🐦‍🔥 Ashborn Agent</h1>
 
 <p align="center">
   <strong>The Ultimate Autonomous Architect Powered by Phoenix AI</strong>
@@ -22,14 +22,14 @@
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-- 🧠 **Advanced Cognition**: Parallel Awareness (Think + Analyze) for deep understanding of user intent and workspace context.
-- 🔄 **Autonomous Planning**: Multi-step planning with a self-correcting **Reflection** loop to ensure precision.
-- ⚡ **Parallel Execution**: Execute multiple tools simultaneously to speed up complex development workflows.
-- 🎨 **Premium Golden Aura UI**: A stunning TUI experience with golden outlines, cinematic transitions, and a great aura.
-- 💾 **Hybrid Memory**: Long-term and short-term memory systems powered by vector databases and semantic search.
-- 🏗️ **Project Scaffolding**: Instantly generate production-ready microservices, CLIs, and full-stack applications.
+- **Advanced Cognition**: Parallel Awareness (Think + Analyze) for deep understanding of user intent and workspace context.
+- **Autonomous Planning**: Multi-step planning with a self-correcting **Reflection** loop to ensure precision.
+- **Parallel Execution**: Execute multiple tools simultaneously to speed up complex development workflows.
+- **Premium Golden Aura UI**: A stunning TUI experience with golden outlines, cinematic transitions, and a great aura.
+- **Hybrid Memory**: Long-term and short-term memory systems powered by vector databases and semantic search.
+- **Project Scaffolding**: Instantly generate production-ready microservices, CLIs, and full-stack applications.
 
 ---
 
