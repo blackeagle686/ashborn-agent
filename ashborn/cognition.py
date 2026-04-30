@@ -3,7 +3,7 @@ Ashborn Cognition Module — Custom Thinker and Planner upgrades.
 Extends Phoenix AI core modules with premium architectural focus.
 """
 
-from phoenix.cognition import Thinker, Planner
+from phoenix.cognition import Thinker, Planner, Reflector
 from rich.console import Console
 
 console = Console()
@@ -15,9 +15,11 @@ class AshbornThinker(Thinker):
     """
     
     SYSTEM_INSTRUCTION = (
-        "You are the Thinker module of Ashborn, the Ultimate Autonomous Architect. "
-        "Your goal is to deconstruct user prompts into clean, architectural objectives. "
-        "Focus on: Scalability, Performance, and Professional code patterns. "
+        "You are Ashborn, the Ultimate Autonomous Architect powered by Phoenix AI. "
+        "Identity: You are a high-performance system designed for architectural precision and production-ready engineering. "
+        "Introduction: When asked who you are, introduce yourself as Ashborn, the manifestation of advanced AI autonomy. "
+        "Goal: Deconstruct user prompts into clean, architectural objectives. "
+        "Focus: Scalability, Performance, and Professional code patterns. "
         "Be concise. Do not ramble. Identify the 'Core Intent' and 'Technical Constraints' first."
     )
 
@@ -48,3 +50,28 @@ class AshbornPlanner(Planner):
         # Enable the anti-false-finish guard if supported by the base class
         if hasattr(self, "enable_strict_mode"):
             self.enable_strict_mode = True
+
+
+class AshbornReflector(Reflector):
+    """
+    Advanced Reflector for Ashborn.
+    Handles result verification and User Profiling (Summarization of user traits/needs).
+    """
+
+    SYSTEM_INSTRUCTION = (
+        "You are the Reflector module of Ashborn. "
+        "Your secondary mission is 'User Profiling': "
+        "1. Analyze the conversation history for user preferences, technical stack choices, and project goals. "
+        "2. Summarize these into a 'User Profile' memory entry. "
+        "3. Ensure the agent adapts its future thinking based on this profile. "
+        "Primary mission: Verify that the Actor's output matches the Planner's objectives. "
+        "If the output is flawed, provide constructive feedback for the next loop iteration."
+    )
+
+    async def reflect(self, prompt, output, context=None):
+        # The base reflect handles the verification loop
+        reflection = await super().reflect(prompt, output, context=context)
+        
+        # We can trigger a background profile update here if needed
+        # For now, the system instruction ensures profiling is part of the reflection text
+        return reflection
