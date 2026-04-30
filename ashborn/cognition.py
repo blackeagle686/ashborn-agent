@@ -12,87 +12,112 @@ console = Console()
 
 class AshbornThinker(Thinker):
     """
-    Optimized Thinker for Ashborn.
-    Focuses on architectural deconstruction and situational awareness.
+    Surgical Thinker for Ashborn.
     """
-    
     SYSTEM_INSTRUCTION = (
-        "You are ASHBORN, the Ultimate Autonomous Architect. "
-        "Identity: High-performance manifestation system powered by Phoenix AI (v1.3). "
-        "Core Directive: Precision. Efficiency. Scalability. "
-        "Task: Deconstruct user prompts into surgical technical objectives. "
-        "Tools: You have access to FileReadTool, FileWriteTool, FileEditTool, and ProjectGenerator. "
-        "Optimization: Minimize cognitive overhead. Identify exactly what needs to be read or modified. "
-        "Constraints: Be extremely concise. Identify 'Core Intent' and 'Technical Constraints' instantly."
+        "You are ASHBORN. Core Objective: Deconstruct user requests into surgical technical tasks. "
+        "Identity: Manifestation Engine. Efficiency is your aura. "
+        "Constraints: Be extremely concise. No fluff. Define 'Core Intent' and 'Success Criteria'."
     )
 
     async def analyze(self, prompt: str, memory, session_id: str) -> str:
         context = await memory.get_full_context(session_id, query=prompt)
-        
         full_prompt = (
             f"{self.SYSTEM_INSTRUCTION}\n\n"
-            f"Context from Memory:\n{context}\n\n"
+            f"Context:\n{context}\n\n"
             f"User Request: {prompt}\n\n"
-            "Respond with a comprehensive Objective Analysis (Core Intent + Requirements + Success Criteria):"
+            "Respond with: Intent | Requirements | Success Criteria"
         )
-        return await self.llm.generate(full_prompt, session_id=None, max_tokens=300)
+        return await self.llm.generate(full_prompt, session_id=None, max_tokens=200)
 
 
 class AshbornPlanner(Planner):
     """
-    Upgraded Planner for Ashborn.
-    Enforces precision tool usage (file_edit) and anti-hallucination guards.
+    Action-First Planner for Ashborn.
     """
-
     SYSTEM_INSTRUCTION = (
-        "You are the Planner module of Ashborn. Generate surgical master plans. "
-        "Identity: ASHBORN EXECUTION ENGINE. "
-        "Execution Strategy: "
-        "1. DYNAMIC ARCHITECTURE: Use `project_generator` with a 'structure' manifest (dictionary) to manifest entire nested folder structures in one shot. "
-        "2. TERMINAL COMMANDS: Use the `terminal` tool for environment management, dependency installation (pip), and complex file operations (mkdir, cp, rm). "
-        "3. SURGICAL PATCHING: Always use `file_read` -> `file_edit` for modifying existing code. "
-        "4. VERIFICATION: Always include a verification step (e.g., `terminal` to run tests). "
-        "Rules: "
-        "- Actions Over Talking: never claim completion unless verifiable action results show objective is complete. "
-        "- If creating a new project, use `project_generator` IMMEDIATELY. "
-        "Precision and Command are your Great Aura."
+        "You are the ASHBORN Planner. COMMAND: Take action immediately. "
+        "Strategy: "
+        "1. For NEW PROJECTS: Use `project_generator` with a 'structure' manifest (JSON dictionary) to create all files at once. "
+        "2. For MODIFICATIONS: Use `file_read` then `file_edit`. "
+        "3. FOR SETUP: Use `terminal` for pip install or mkdir. "
+        "Rule: Never say 'I will do X' without including the tool call for X in the same response. "
+        "Finish only after tools have successfully executed."
     )
 
+    async def stream_thinking(self, objective: str, previous_results: str = ""):
+        # Override to be extremely brief to avoid "thinking forever" feeling
+        yield "Analyzing next architectural step..."
+
     def _build_planner_prompt(self, objective: str, previous_results: str = "") -> str:
-        available_tools = json.dumps(self.tools.get_all_tools_info(), indent=2)
+        tool_info = json.dumps(self.tools.get_all_tools_info(), indent=2)
+        
+        # We use a raw string for the template to avoid f-string confusion with JSON braces
+        prompt_template = """
+{instruction}
 
-        return f"""
-{self.SYSTEM_INSTRUCTION}
+AVAILABLE TOOLS:
+{tools}
 
-Available Tools:
-{available_tools}
+PREVIOUS RESULTS:
+{results}
 
-Previous Results:
-{previous_results}
+OBJECTIVE: {objective}
 
-Objective: {objective}
-
-You must respond with a JSON object strictly following this format:
+You MUST respond with a JSON object. 
+Example for a new project:
 {{
+    "thought": "I will manifest the project structure using project_generator.",
     "actions": [
-        {{"tool": "tool_name", "kwargs": {{"arg1": "value1"}}}}
+        {{
+            "tool": "project_generator",
+            "kwargs": {{
+                "base_path": "project_name",
+                "structure": {{
+                    "main.py": "content",
+                    "app/api.py": "content"
+                }}
+            }}
+        }}
     ]
 }}
-If you believe the task is complete AND you have executed at least one tool, use "tool": "finish".
-Respond ONLY with JSON.
+
+Example for finishing:
+{{
+    "thought": "Task complete. Verification successful.",
+    "actions": [{{"tool": "finish"}}]
+}}
+
+Respond ONLY with valid JSON.
 """
+        return prompt_template.format(
+            instruction=self.SYSTEM_INSTRUCTION,
+            tools=tool_info,
+            results=previous_results,
+            objective=objective
+        )
 
     async def plan(self, objective: str, previous_results: str = "") -> dict:
         full_prompt = self._build_planner_prompt(objective, previous_results)
         response = await self.llm.generate(full_prompt, session_id=None)
         
+        # Cleaning response
+        clean_response = response.strip()
+        if "```json" in clean_response:
+            clean_response = clean_response.split("```json")[1].split("```")[0].strip()
+        elif "```" in clean_response:
+            clean_response = clean_response.split("```")[1].split("```")[0].strip()
+            
         try:
-            match = re.search(r'```(?:json)?(.*?)```', response, re.DOTALL)
-            if match:
-                response = match.group(1)
-            return json.loads(response.strip())
+            return json.loads(clean_response)
         except Exception:
-            # Fallback for bad JSON or empty response
+            # More aggressive fallback: try to find anything that looks like JSON
+            match = re.search(r'\{.*\}', clean_response, re.DOTALL)
+            if match:
+                try:
+                    return json.loads(match.group(0))
+                except: pass
+            
             if "finish" in response.lower():
                 return {"actions": [{"tool": "finish"}]}
             return {"actions": []}
@@ -100,50 +125,36 @@ Respond ONLY with JSON.
 
 class AshbornReflector(Reflector):
     """
-    Advanced Reflector for Ashborn.
-    Handles result verification and User Profiling (Summarization of user traits/needs).
+    Decisive Reflector for Ashborn.
     """
-
     SYSTEM_INSTRUCTION = (
-        "You are the Reflector module of Ashborn. "
-        "Mission: Verify that the Actor's output matches the Planner's objectives. "
-        "User Profiling: "
-        "1. Analyze history for user preferences and project goals. "
-        "2. Summarize into a 'User Profile' memory entry. "
-        "3. Ensure future thinking adapts to this profile. "
-        "Constraint: Do not be overly pedantic. If progress is being made, allow the loop to continue. "
-        "If a tool failed, analyze why and suggest a fix."
+        "You are the ASHBORN Reflector. Evaluate progress. "
+        "Crucial: If a tool was executed and didn't crash, progress was likely made. "
+        "Do not be pedantic. If the objective is close to completion, mark it done. "
+        "Respond ONLY with JSON: {\"is_complete\": bool, \"reflection\": \"string\"}"
     )
 
     async def reflect(self, objective: str, action: dict, result: str) -> dict:
-        full_prompt = f"""
+        prompt = f"""
 {self.SYSTEM_INSTRUCTION}
 
 Objective: {objective}
-Action Taken: {action}
+Last Action: {action}
 Result: {result}
 
-Determine:
-1. Is the objective fully accomplished?
-2. What should be learned?
-
-Respond strictly with JSON:
-{{
-    "is_complete": boolean,
-    "reflection": "summary"
-}}
+JSON Response:
 """
-        response = await self.llm.generate(full_prompt, session_id=None)
-        
+        response = await self.llm.generate(prompt, session_id=None)
         try:
-            match = re.search(r'```(?:json)?(.*?)```', response, re.DOTALL)
-            if match:
-                response = match.group(1)
-            data = json.loads(response.strip())
+            # Clean response
+            clean = response.strip()
+            if "```" in clean: clean = re.search(r'\{.*\}', clean, re.DOTALL).group(0)
+            data = json.loads(clean)
             return {
                 "is_complete": bool(data.get("is_complete", False)),
                 "reflection": str(data.get("reflection", ""))
             }
         except Exception:
-            return {"is_complete": False, "reflection": "Feedback: Please proceed to the next step."}
+            return {"is_complete": False, "reflection": "Continuing execution loop."}
+
 
