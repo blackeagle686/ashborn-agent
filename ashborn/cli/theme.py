@@ -19,6 +19,8 @@ PHOENIX_CYAN     = "#A89F91"
 PHOENIX_GREEN    = "#39d353"
 PHOENIX_RED      = "#ff4444"
 PHOENIX_YELLOW   = "#ffd700"
+PHOENIX_GOLD     = "#FFD700"
+
 
 # ── Textual CSS vars injected via DEFAULT_CSS strings ──────────────────────────
 ASHBORN_THEME = Theme(

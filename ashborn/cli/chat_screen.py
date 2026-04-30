@@ -58,6 +58,7 @@ class ThinkingSpinner(Static):
         text-style: bold;
         padding: 0 2;
         margin: 1 2;
+        shadow: outer #FFD700 30%;
     }
     ThinkingSpinner.visible {
         height: 3;
@@ -125,6 +126,8 @@ class SidebarWidget(Vertical):
         background: #1B1F24;
         border-right: tall #2E333A;
         padding: 1 1;
+        margin: 1 0 1 1;
+        shadow: outer #FFD700 30%;
         display: none; /* Hidden by default for 'Simple' look */
     }
     SidebarWidget.visible { display: block; }
@@ -226,6 +229,8 @@ class ChatInputBar(Horizontal):
         border-top: tall #2E333A;
         padding: 0 1;
         align: left middle;
+        margin: 0 1 1 1;
+        shadow: outer #FFD700 30%;
     }
     #input-prefix {
         color: #FF6B00;
@@ -241,7 +246,7 @@ class ChatInputBar(Horizontal):
         height: 3;
     }
     ChatTextArea:focus {
-        border: round #A89F91;
+        border: round #FFD700;
         background: #1B1F24;
     }
     Select {
@@ -253,7 +258,7 @@ class ChatInputBar(Horizontal):
         color: #F1E9DD;
     }
     Select:focus {
-        border: round #A89F91;
+        border: round #FFD700;
     }
     #char-counter {
         color: #A89F91;
@@ -319,6 +324,8 @@ class ChatScreen(Screen):
         layout: horizontal;
         align: left middle;
         padding: 0 2;
+        margin: 1 1 0 1;
+        shadow: outer #FFD700 30%;
     }
     #header-logo {
         color: #FF6B00;
