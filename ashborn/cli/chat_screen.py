@@ -29,7 +29,35 @@ from rich.text import Text
 from rich.markdown import Markdown
 
 import os
+import subprocess
+from pathlib import Path
 from dotenv import load_dotenv
+
+
+def robust_copy(app, text: str) -> bool:
+    """
+    Attempts to copy text to clipboard using OSC 52 (Textual default)
+    with a fallback to xclip on Linux.
+    """
+    try:
+        # 1. Try Textual's built-in (OSC 52)
+        app.copy_to_clipboard(text)
+        
+        # 2. Linux Fallback: xclip
+        if os.name == "posix":
+            try:
+                subprocess.run(
+                    ['xclip', '-selection', 'clipboard'],
+                    input=text.encode('utf-8'),
+                    check=False,
+                    stderr=subprocess.DEVNULL,
+                    stdout=subprocess.DEVNULL
+                )
+            except Exception:
+                pass
+        return True
+    except Exception:
+        return False
 
 
 # ── Message data class ────────────────────────────────────────────────────────
@@ -195,8 +223,10 @@ class MessageDisplay(Horizontal):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "copy-btn":
-            self.app.copy_to_clipboard(self.message.content)
-            self.notify("✓ Copied to clipboard", severity="information")
+            if robust_copy(self.app, self.message.content):
+                self.notify("✓ Copied to clipboard", severity="information")
+            else:
+                self.notify("⚠ Copy failed", severity="error")
         elif event.button.id == "reply-btn":
             # Quote the message in the input area
             input_bar = self.screen.query_one("#chat-input", ChatTextArea)
@@ -216,6 +246,19 @@ class ChatTextArea(TextArea):
         bubble = True
 
     def on_key(self, event) -> None:
+        # Ctrl+Y: Copy selection if exists, else bubble to screen for "Copy Last"
+        if event.key == "ctrl+y":
+            if self.selected_text:
+                if robust_copy(self.app, self.selected_text):
+                    self.notify("✓ Selection copied", severity="information")
+                else:
+                    self.notify("⚠ Copy failed", severity="error")
+                event.stop()
+                event.prevent_default()
+                return
+            # No selection -> let it bubble to ChatScreen.action_copy_last
+            return
+
         # Plain Enter or Ctrl+J (fallback) sends the message
         if event.key in ("enter", "ctrl+j"):
             event.prevent_default()
@@ -633,11 +676,10 @@ class ChatScreen(Screen):
         assistant_msgs = [m for m in self._history if m.role == "assistant"]
         if assistant_msgs:
             last_msg = assistant_msgs[-1].content
-            try:
-                self.app.copy_to_clipboard(last_msg)
+            if robust_copy(self.app, last_msg):
                 self.notify("✓ Last response copied to clipboard", severity="information")
-            except Exception:
-                self.notify("⚠ Clipboard copy failed (OSC 52 not supported?)", severity="error")
+            else:
+                self.notify("⚠ Clipboard copy failed", severity="error")
         else:
             self.notify("No response to copy", severity="warning")
 
