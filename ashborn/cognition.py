@@ -63,12 +63,24 @@ class AshbornPlanner(Planner):
         
         stream_fn = getattr(self.llm, "generate_stream", None)
         if callable(stream_fn):
-            async for chunk in stream_fn(thinking_prompt, session_id=None, max_tokens=150):
-                yield chunk
-        else:
+            try:
+                # Call the stream function and check if it returns an async iterator
+                stream = stream_fn(thinking_prompt, session_id=None, max_tokens=150)
+                if hasattr(stream, "__aiter__"):
+                    async for chunk in stream:
+                        yield chunk
+                    return
+            except Exception:
+                pass
+        
+        # Fallback to standard generation if streaming is unavailable or fails
+        try:
             text = await self.llm.generate(thinking_prompt, session_id=None, max_tokens=150)
-            for word in text.split():
-                yield word + " "
+            if text:
+                for word in text.split():
+                    yield word + " "
+        except Exception:
+            yield "Analyzing next architectural step..."
 
     def _build_planner_prompt(self, objective: str, previous_results: str = "") -> str:
         tool_info = json.dumps(self.tools.get_all_tools_info(), indent=2)
