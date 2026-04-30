@@ -15,12 +15,12 @@ class SplashScreen(Screen):
 
     DEFAULT_CSS = """
     SplashScreen {
-        background: #15173D;
+        background: #1B1F24;
         align: center middle;
     }
 
     #splash-logo {
-        color: #982598;
+        color: #A89F91;
         text-style: bold;
         text-align: center;
         width: auto;
@@ -28,16 +28,16 @@ class SplashScreen(Screen):
     }
 
     #splash-subtitle {
-        color: #982598;
+        color: #A89F91;
         text-align: center;
         width: auto;
         margin-top: 1;
     }
 
     /* Cinematic aura effect */
-    .aura-1 { color: #ff4500; }
-    .aura-2 { color: #982598; }
-    .aura-3 { color: #E491C9; }
+    .aura-1 { color: #A89F91; }
+    .aura-2 { color: #2E333A; }
+    .aura-3 { color: #F1E9DD; }
     """
 
     def compose(self) -> ComposeResult:

@@ -51,10 +51,10 @@ class ThinkingSpinner(Static):
     DEFAULT_CSS = """
     ThinkingSpinner {
         height: 0;
-        background: #15173D;
-        border-top: tall #982598 20%;
-        border-bottom: tall #982598 20%;
-        color: #982598;
+        background: #1B1F24;
+        border-top: tall #2E333A 20%;
+        border-bottom: tall #2E333A 20%;
+        color: #A89F91;
         text-style: bold;
         padding: 0 2;
         margin: 1 2;
@@ -78,7 +78,7 @@ class ThinkingSpinner(Static):
         dots = "." * ((self._frame_idx % 3) + 1)
         self.update(
             Text.from_markup(
-                f"  [bold #982598]{frame}[/]  [#E491C9]{self._label}[/][dim #E491C9]{dots}[/]"
+                f"  [bold #A89F91]{frame}[/]  [#A89F91]{self._label}[/][dim #A89F91]{dots}[/]"
             )
         )
 
@@ -122,38 +122,38 @@ class SidebarWidget(Vertical):
     SidebarWidget {
         width: 26;
         min-width: 26;
-        background: #15173D;
-        border-right: tall #982598;
+        background: #1B1F24;
+        border-right: tall #2E333A;
         padding: 1 1;
         display: none; /* Hidden by default for 'Simple' look */
     }
     SidebarWidget.visible { display: block; }
 
     .sb-title {
-        color: #982598;
+        color: #A89F91;
         text-style: bold;
         text-align: center;
         width: 100%;
         margin-bottom: 1;
     }
     .sb-div {
-        color: #982598;
+        color: #2E333A;
         width: 100%;
         margin-bottom: 1;
     }
     .sb-label {
-        color: #E491C9;
+        color: #A89F91;
         width: 100%;
         margin-bottom: 0;
     }
     .sb-val {
-        color: #F1E9E9;
+        color: #F1E9DD;
         text-style: bold;
         width: 100%;
         margin-bottom: 1;
     }
     .sc-row {
-        color: #E491C9;
+        color: #A89F91;
         width: 100%;
     }
     """
@@ -190,7 +190,7 @@ class SidebarWidget(Vertical):
         ]
         for key, desc in shortcuts:
             yield Static(
-                f"[bold #E491C9]{key:<12}[/] [#E491C9]{desc}[/]",
+                f"[bold #A89F91]{key:<12}[/] [#A89F91]{desc}[/]",
                 classes="sc-row",
                 markup=True,
             )
@@ -222,8 +222,8 @@ class ChatInputBar(Horizontal):
     DEFAULT_CSS = """
     ChatInputBar {
         height: 5;
-        background: #15173D;
-        border-top: tall #982598;
+        background: #1B1F24;
+        border-top: tall #2E333A;
         padding: 0 1;
         align: left middle;
     }
@@ -234,29 +234,29 @@ class ChatInputBar(Horizontal):
         padding: 0 1;
     }
     ChatTextArea {
-        background: #15173D;
-        border: round #982598;
-        color: #F1E9E9;
+        background: #1B1F24;
+        border: round #2E333A;
+        color: #F1E9DD;
         width: 1fr;
         height: 3;
     }
     ChatTextArea:focus {
-        border: round #982598;
-        background: #15173D;
+        border: round #A89F91;
+        background: #1B1F24;
     }
     Select {
         width: 14;
         height: 3;
         margin-left: 1;
-        background: #15173D;
-        border: round #982598;
-        color: #F1E9E9;
+        background: #1B1F24;
+        border: round #2E333A;
+        color: #F1E9DD;
     }
     Select:focus {
-        border: round #E491C9;
+        border: round #A89F91;
     }
     #char-counter {
-        color: #982598;
+        color: #A89F91;
         width: auto;
         padding: 0 1;
     }
@@ -307,15 +307,15 @@ class ChatScreen(Screen):
 
     DEFAULT_CSS = """
     ChatScreen {
-        background: #15173D;
+        background: #1B1F24;
         layout: vertical;
     }
 
     /* ── Header ── */
     #chat-header {
         height: 3;
-        background: #15173D;
-        border-bottom: tall #982598 10%;
+        background: #1B1F24;
+        border-bottom: tall #2E333A 10%;
         layout: horizontal;
         align: left middle;
         padding: 0 2;
@@ -340,24 +340,24 @@ class ChatScreen(Screen):
     #chat-log-container {
         width: 1fr;
         height: 100%;
-        background: #15173D;
+        background: #1B1F24;
         layout: vertical;
     }
     #chat-log {
         width: 100%;
         height: 1fr;
-        background: #15173D;
-        scrollbar-color: #982598;
-        scrollbar-color-hover: #982598;
+        background: #1B1F24;
+        scrollbar-color: #A89F91;
+        scrollbar-color-hover: #F1E9DD;
         padding: 1 2;
     }
 
     /* ── Footer ── */
     #chat-footer {
         height: 1;
-        background: #15173D;
-        border-top: tall #982598;
-        color: #982598;
+        background: #1B1F24;
+        border-top: tall #2E333A;
+        color: #A89F91;
         text-align: center;
         padding: 0 1;
     }
@@ -426,8 +426,8 @@ class ChatScreen(Screen):
     def _print_welcome(self) -> None:
         log = self.query_one("#chat-log", RichLog)
         log.write("")
-        log.write(Text.from_markup("[bold #982598]🐦‍🔥  How can I help you today?[/]"))
-        log.write(Text.from_markup("[dim]Type your request below and press [bold #E491C9]Ctrl+Enter[/] to send.[/]"))
+        log.write(Text.from_markup("[bold #A89F91]🐦‍🔥  How can I help you today?[/]"))
+        log.write(Text.from_markup("[dim]Type your request below and press [bold #A89F91]Ctrl+Enter[/] to send.[/]"))
         log.write("")
 
     # ── agent init ────────────────────────────────────────────────────────────
@@ -458,8 +458,8 @@ class ChatScreen(Screen):
         self._set_status("● Error", "#ff4444")
         log = self.query_one("#chat-log", RichLog)
         log.write(Text.from_markup(
-            f"[bold #ff4444]⚠  Agent init failed:[/] [#F1E9E9]{err}[/]\n"
-            f"[dim]Press [bold #E491C9]Ctrl+K[/] to check your configuration.[/]\n"
+            f"[bold #ff4444]⚠  Agent init failed:[/] [#F1E9DD]{err}[/]\n"
+            f"[dim]Press [bold #A89F91]Ctrl+K[/] to check your configuration.[/]\n"
         ))
 
     # ── SendMessage from ChatTextArea ─────────────────────────────────────────
@@ -541,7 +541,7 @@ class ChatScreen(Screen):
         for line in text.splitlines():
             # In Rich markup, '[' is escaped by doubling it to '[['
             safe = line.replace("[", "[[")
-            log.write(Text.from_markup(f"[bold #FF3333]│[/] [#F1E9E9]{safe}[/]"))
+            log.write(Text.from_markup(f"[bold #FF3333]│[/] [#F1E9DD]{safe}[/]"))
         log.write(Text.from_markup("[bold #FF3333]└" + "─" * 54 + "[/]"))
         log.write("") # RichLog handles newlines better this way
         self._history.append(ChatMessage("user", text))
@@ -564,7 +564,7 @@ class ChatScreen(Screen):
     def _start_stream(self, user_text: str, mode: str) -> None:
         self._streaming = True
         self.query_one("#sidebar", SidebarWidget).status = "⠋ Thinking..."
-        self._set_status("⠋ Thinking...", "#E491C9")
+        self._set_status("⠋ Thinking...", "#A89F91")
         self.query_one("#thinking-spinner", ThinkingSpinner).show("Ashborn is thinking")
         self._stream_worker = self.run_stream_worker(user_text, mode)
 
@@ -591,7 +591,7 @@ class ChatScreen(Screen):
             elif event["type"] == "chunk":
                 if phase == "status":
                     phase = "streaming"
-                    self._set_status("⠿ Streaming...", "#E491C9")
+                    self._set_status("⠿ Streaming...", "#A89F91")
                 full_response += event["content"]
                 preview = full_response.split("\n")[0][:50]
                 spinner.show(f"Writing: {preview}…")
@@ -611,7 +611,7 @@ class ChatScreen(Screen):
     def _on_stream_error(self, err: str) -> None:
         self.query_one("#thinking-spinner", ThinkingSpinner).hide()
         log = self.query_one("#chat-log", RichLog)
-        log.write(Text.from_markup(f"[bold #ff4444]⚠  Error:[/] [#F1E9E9]{err}[/]\n"))
+        log.write(Text.from_markup(f"[bold #ff4444]⚠  Error:[/] [#F1E9DD]{err}[/]\n"))
 
     # ── helpers ───────────────────────────────────────────────────────────────
 
