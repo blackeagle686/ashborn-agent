@@ -141,18 +141,26 @@ class MessageDisplay(Horizontal):
         padding: 0 1;
         color: #E6EDF3;
     }
-    .msg-copy-button {
-        width: 10;
+    .msg-btn {
+        width: 8;
+        min-width: 8;
         height: 3;
         margin-left: 1;
-        background: #30363D;
+        background: #1C2128;
         border: round #D4AF37;
-        color: #D4AF37;
+        color: #E6EDF3;
         text-style: bold;
+        padding: 0;
     }
-    .msg-copy-button:hover {
+    .msg-btn:hover {
         background: #D4AF37;
         color: #0A0C10;
+        border: round #FFD700;
+    }
+    .msg-action-column {
+        width: 9;
+        height: auto;
+        align: center top;
     }
     """
 
@@ -181,11 +189,22 @@ class MessageDisplay(Horizontal):
                 yield Static(Markdown(content), classes="msg-body")
 
         if self.message.role == "assistant":
-            yield Button("📋 Copy", variant="primary", classes="msg-copy-button")
+            with Vertical(classes="msg-action-column"):
+                yield Button("Copy", classes="msg-btn", id="copy-btn")
+                yield Button("Reply", classes="msg-btn", id="reply-btn")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        self.app.copy_to_clipboard(self.message.content)
-        self.notify("✓ Copied to clipboard", severity="information")
+        if event.button.id == "copy-btn":
+            self.app.copy_to_clipboard(self.message.content)
+            self.notify("✓ Copied to clipboard", severity="information")
+        elif event.button.id == "reply-btn":
+            # Quote the message in the input area
+            chat_screen = self.app.query_one(ChatScreen)
+            input_bar = chat_screen.query_one("#chat-input", ChatTextArea)
+            quote = f"> {self.message.content.splitlines()[0]}...\n"
+            input_bar.load_text(quote)
+            input_bar.focus()
+            self.notify("↩ Quoted response", severity="information")
 
 
 # ── Custom TextArea — fires SendMessage on Ctrl+Enter ─────────────────────────
