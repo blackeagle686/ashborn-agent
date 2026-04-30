@@ -1,7 +1,7 @@
 import os
 from phoenix.tools import tool
 
-@tool(name="project_generator", description="Generates boilerplate code for a production-ready project. Input: 'project_name' (str), 'project_type' (str). Supported types: 'python_microservice', 'cli'.")
+@tool(name="project_generator", description="Generates BASIC boilerplate structure ONLY. Input: 'project_name' (str), 'project_type' (str). WARNING: This tool creates generic placeholders. You MUST follow up with 'file_write' to implement the user's specific technical logic.")
 def project_generator_tool(project_name: str, project_type: str) -> str:
     """
     Generates a production-ready project structure based on the project type.
