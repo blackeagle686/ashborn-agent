@@ -140,6 +140,10 @@ class MessageDisplay(Horizontal):
     .msg-body-container {
         height: auto;
     }
+    .msg-pipe {
+        width: 2;
+        color: #FF6B00;
+    }
     """
 
     def __init__(self, message: ChatMessage, **kwargs):
@@ -164,7 +168,7 @@ class MessageDisplay(Horizontal):
             else:
                 # For assistant, we use Horizontal to put the pipe next to markdown
                 with Horizontal(classes="msg-body-container"):
-                    yield Static("[bold #FF6B00]│[/]", width=2)
+                    yield Static("[bold]│[/]", classes="msg-pipe")
                     yield Static(Markdown(content), classes="msg-body")
             
             # Footer
