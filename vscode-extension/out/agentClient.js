@@ -110,6 +110,27 @@ class AgentClient {
             this._activeRequest = req;
         });
     }
+    async sendToolResult(callId, result) {
+        return new Promise((resolve, reject) => {
+            const body = JSON.stringify({ call_id: callId, result });
+            const req = http.request({
+                hostname: "127.0.0.1",
+                port: this._port,
+                path: "/tool/result",
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Content-Length": Buffer.byteLength(body),
+                },
+            }, (res) => {
+                res.resume();
+                res.on("end", resolve);
+            });
+            req.on("error", reject);
+            req.write(body);
+            req.end();
+        });
+    }
     async reset() {
         return new Promise((resolve, reject) => {
             const req = http.request({
