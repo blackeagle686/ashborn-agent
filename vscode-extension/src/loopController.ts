@@ -102,17 +102,17 @@ export class LoopController {
   private async _searchWorkspace(query: string, isRegex: boolean, include?: string, exclude?: string): Promise<string> {
     const results: string[] = [];
     try {
-      await vscode.workspace.findTextInFiles(
+      await (vscode.workspace as any).findTextInFiles(
         { pattern: query, isRegExp: isRegex },
         { 
           include: include || undefined,
           exclude: exclude || undefined,
           maxResults: 50 
         },
-        (result) => {
+        (result: any) => {
           const relPath = vscode.workspace.asRelativePath(result.uri);
           results.push(`FILE: ${relPath}`);
-          result.results.forEach(res => {
+          result.results.forEach((res: any) => {
             if ('range' in res) {
               const line = res.range.start.line + 1;
               const preview = res.preview.text.trim();
