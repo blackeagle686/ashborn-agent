@@ -18,7 +18,7 @@
   "main": "./out/extension.js",
   "contributes": {
     "viewsContainers": {
-      "activitybar": [
+      "auxiliarybar": [
         {
           "id": "ashborn-sidebar",
           "title": "Ashborn Agent",
