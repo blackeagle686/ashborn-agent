@@ -65,16 +65,11 @@ export async function activate(ctx: vscode.ExtensionContext) {
   // This overrides VS Code's tendency to merge views or hide the bar.
   const enforceLayout = async () => {
     try {
-      // 1. Focus the view (this opens the sidebar if hidden)
+      // 1. Focus the view (this opens the panel if hidden)
       await vscode.commands.executeCommand("ashborn.chatView.focus");
       
-      // 2. Try to move it to the auxiliary bar (right side)
-      // Note: 'vscode.moveView' is a hidden command but often works.
-      // If it fails, we rely on the package.json auxiliarybar contribution.
-      await vscode.commands.executeCommand("vscode.moveView", "ashborn.chatView", "auxiliarybar");
-      
-      // 3. Ensure the auxiliary bar is actually visible
-      await vscode.commands.executeCommand("workbench.action.showAuxiliaryBar");
+      // 2. Ensure the panel is actually visible and on the right
+      await vscode.commands.executeCommand("workbench.action.focusPanel");
     } catch (e) {
       // Ignore if commands aren't supported in this version
     }
