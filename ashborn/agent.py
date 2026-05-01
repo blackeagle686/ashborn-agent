@@ -1,5 +1,6 @@
 from phoenix import Agent, init_phoenix, startup_phoenix
 from .tools.project_generator import project_generator_tool
+from .tools.file_tools import file_read_lines_tool, file_update_multi_tool
 
 async def get_ashborn_agent(on_startup_progress=None):
     """
@@ -27,5 +28,7 @@ async def get_ashborn_agent(on_startup_progress=None):
     agent.register_tool(FileEditTool())
     agent.register_tool(project_generator_tool)
     agent.register_tool(terminal_tool)
+    agent.register_tool(file_read_lines_tool)   # numbered output for precise edits
+    agent.register_tool(file_update_multi_tool) # surgical multi-block editor
     
     return agent
