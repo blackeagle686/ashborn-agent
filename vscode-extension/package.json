@@ -100,6 +100,11 @@
         "command": "workbench.view.explorer",
         "key": "ctrl+b",
         "when": "!terminalFocus"
+      },
+      {
+        "command": "ashborn-sidebar.focus",
+        "key": "ctrl+alt+i",
+        "when": "!terminalFocus"
       }
     ]
   },
