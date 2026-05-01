@@ -577,3 +577,51 @@ html, body {
   cursor: not-allowed;
   transform: none;
 }
+
+/* ── Mention List Autocomplete ─────────────────────────────────────────── */
+.mention-list {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(15, 15, 25, 0.95);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  max-height: 250px;
+  overflow-y: auto;
+  margin-bottom: 8px;
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
+  z-index: 100;
+  animation: slideUpFade 0.2s ease-out;
+}
+
+.mention-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-dim);
+  transition: var(--transition-smooth);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.mention-item:last-child { border-bottom: none; }
+
+.mention-item:hover, .mention-item.selected {
+  background: rgba(157, 56, 198, 0.2);
+  color: #fff;
+}
+
+.mention-icon {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.mention-path {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
