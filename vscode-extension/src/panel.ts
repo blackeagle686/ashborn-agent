@@ -66,6 +66,11 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
       case "reset":
         this.reset();
         break;
+      case "getFiles":
+        const files = await vscode.workspace.findFiles("**/*", "**/node_modules/**", 1000);
+        const relPaths = files.map(f => vscode.workspace.asRelativePath(f));
+        this._post({ type: "files", files: relPaths });
+        break;
     }
   }
 
