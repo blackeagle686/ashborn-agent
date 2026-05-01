@@ -70,10 +70,30 @@ async function activate(ctx) {
             _provider._runAgent(task, "plan");
         }
     }));
+    // ── Layout Enforcement ───────────────────────────────────────────────────
+    // We force the Ashborn view to the secondary sidebar (right) on startup
+    // This overrides VS Code's tendency to merge views or hide the bar.
+    const enforceLayout = async () => {
+        try {
+            // 1. Focus the view (this opens the sidebar if hidden)
+            await vscode.commands.executeCommand("ashborn.chatView.focus");
+            // 2. Try to move it to the auxiliary bar (right side)
+            // Note: 'vscode.moveView' is a hidden command but often works.
+            // If it fails, we rely on the package.json auxiliarybar contribution.
+            await vscode.commands.executeCommand("vscode.moveView", "ashborn.chatView", "auxiliarybar");
+            // 3. Ensure the auxiliary bar is actually visible
+            await vscode.commands.executeCommand("workbench.action.showAuxiliaryBar");
+        }
+        catch (e) {
+            // Ignore if commands aren't supported in this version
+        }
+    };
+    // Run layout enforcement shortly after activation
+    setTimeout(enforceLayout, 2000);
     // Watch for .ashborn-focus file to pop open the sidebar reliably
     const focusWatcher = vscode.workspace.createFileSystemWatcher("**/.ashborn-focus");
     const handleFocus = async (uri) => {
-        await vscode.commands.executeCommand("ashborn.chatView.focus");
+        await enforceLayout();
         try {
             await vscode.workspace.fs.delete(uri);
         }
