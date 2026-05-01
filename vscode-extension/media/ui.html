@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'none'; style-src {{CSS_URI}} 'unsafe-inline'; script-src {{JS_URI}} 'unsafe-inline'; img-src data:;"
+  />
+  <title>Ashborn Agent</title>
+  <link rel="stylesheet" href="{{CSS_URI}}" />
+</head>
+<body>
+
+  <!-- ── Top Control Bar ─────────────────────────────────────────── -->
+  <div class="topbar">
+    <div class="topbar-title">
+      <span class="flame">🔥</span>
+      <span>Ashborn</span>
+    </div>
+    <div class="topbar-controls">
+      <button id="btn-run"   class="btn btn-primary" title="Run Agent (plan mode)">▶ Run</button>
+      <button id="btn-stop"  class="btn btn-danger"  title="Stop execution">⏹</button>
+      <button id="btn-reset" class="btn btn-ghost"   title="Reset session">🔄</button>
+    </div>
+  </div>
+
+  <!-- ── Status Bar ──────────────────────────────────────────────── -->
+  <div class="statusbar" id="statusbar">
+    <span class="status-dot idle" id="status-dot"></span>
+    <span id="status-text">Idle</span>
+  </div>
+
+  <!-- ── Chat History ────────────────────────────────────────────── -->
+  <div class="chat-container" id="chat-container">
+    <div class="welcome">
+      <div class="welcome-icon">🔥</div>
+      <div class="welcome-title">Ashborn Agent</div>
+      <div class="welcome-sub">Your autonomous dev partner.<br/>Describe a task and I'll execute it.</div>
+    </div>
+  </div>
+
+  <!-- ── Input Area ─────────────────────────────────────────────── -->
+  <div class="input-area">
+    <div class="mode-row">
+      <label class="mode-label">Mode:</label>
+      <select id="mode-select" class="mode-select">
+        <option value="auto">Auto</option>
+        <option value="plan">Plan (full loop)</option>
+        <option value="fast_ans">Fast Answer</option>
+      </select>
+    </div>
+    <div class="input-row">
+      <textarea
+        id="input"
+        class="input-box"
+        placeholder="Describe your task… (Shift+Enter for newline)"
+        rows="3"
+      ></textarea>
+      <button id="btn-send" class="btn btn-send" title="Send (Enter)">➤</button>
+    </div>
+  </div>
+
+  <script src="{{JS_URI}}"></script>
+</body>
+</html>
