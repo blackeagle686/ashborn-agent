@@ -56,11 +56,14 @@ export class LoopController {
         fullTask,
         sessionId,
         mode,
-        (evt) => {
+        async (evt: any) => {
           if (!this._running) return;
 
           if (evt.type === "session") {
             newSessionId = evt.session_id;
+          } else if (evt.type === "vscode_tool") {
+            const result = await this._handleVscodeTool(evt.tool, evt.arguments);
+            await this._client.sendToolResult(evt.call_id, result);
           } else if (evt.type === "status") {
             this._stepCount++;
             onEvent({
@@ -87,5 +90,40 @@ export class LoopController {
     }
 
     return newSessionId;
+  }
+
+  private async _handleVscodeTool(tool: string, args: any): Promise<string> {
+    if (tool === "search") {
+      return await this._searchWorkspace(args.query, args.is_regex, args.include, args.exclude);
+    }
+    return `ERROR: Unknown VS Code tool: ${tool}`;
+  }
+
+  private async _searchWorkspace(query: string, isRegex: boolean, include?: string, exclude?: string): Promise<string> {
+    const results: string[] = [];
+    try {
+      await vscode.workspace.findTextInFiles(
+        { pattern: query, isRegExp: isRegex },
+        { 
+          include: include || undefined,
+          exclude: exclude || undefined,
+          maxResults: 50 
+        },
+        (result) => {
+          const relPath = vscode.workspace.asRelativePath(result.uri);
+          results.push(`FILE: ${relPath}`);
+          result.results.forEach(res => {
+            if ('range' in res) {
+              const line = res.range.start.line + 1;
+              const preview = res.preview.text.trim();
+              results.push(`  L${line}: ${preview}`);
+            }
+          });
+        }
+      );
+      return results.join('\n') || "No results found.";
+    } catch (err: any) {
+      return `ERROR during search: ${err.message}`;
+    }
   }
 }
