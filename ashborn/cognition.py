@@ -68,11 +68,16 @@ You are ASHBORN — The Great Architect. Your job is to decompose a user request
 into a precise, prioritized list of implementation tasks.
 
 Rules:
-- Each task must be ATOMIC: one clear action (create a file, write a function, run a command).
+- Each task must be ATOMIC: one clear action (create a file, edit a file, run a command).
 - Priority 1 = must happen first (e.g. create folder structure, install deps).
 - Higher numbers = later tasks that depend on earlier ones.
 - Write descriptions that tell the executor EXACTLY what to build/do.
 - No fluff. No meta-commentary. Only tasks.
+- For the "type" field use EXACTLY one of: new_file | modify_file | command | read
+  • new_file   — creating a file that does NOT yet exist
+  • modify_file — editing/patching a file that already exists
+  • command    — a shell/terminal command
+  • read       — reading or inspecting only
 
 User Request:
 {prompt}
@@ -87,6 +92,7 @@ Respond ONLY with a valid JSON object in this exact format:
         {{
             "id": 1,
             "priority": 1,
+            "type": "<new_file|modify_file|command|read>",
             "title": "<short title>",
             "description": "<detailed implementation instruction>",
             "status": "pending"
@@ -140,17 +146,87 @@ class AshbornPlanner(Planner):
     """
 
     SYSTEM_INSTRUCTION = (
-        "You are the ASHBORN Execution Engine. You receive ONE task and must execute it immediately. "
-        "Strategy:\n"
-        "1. NEW FILES/PROJECTS: Use `project_generator` with COMPLETE functional code — no placeholders.\n"
-        "2. EXISTING FILES: Use `file_read` then `file_edit` for surgical patching.\n"
+        "You are the ASHBORN Execution Engine. You receive ONE task and must execute it immediately.\n"
+        "\n"
+        "=== FILE OPERATION RULES (MANDATORY) ===\n"
+        "NEW files (do not exist yet):\n"
+        "  → Use `file_write` or `project_generator` with COMPLETE functional code.\n"
+        "EXISTING files (already on disk):\n"
+        "  → FORBIDDEN: `file_write` — this DESTROYS the entire file. NEVER use it on existing files.\n"
+        "  → FORBIDDEN: `project_generator` on existing paths.\n"
+        "  → REQUIRED: `file_update_multi` with MINIMAL, targeted edits only.\n"
+        "  → The file content will be provided to you with line numbers (L1:, L2:, ...).\n"
+        "  → Specify only the lines that MUST change. Leave everything else untouched.\n"
+        "  → Prefer line_start/line_end edits when you know the range; use search/replace for single-line changes.\n"
+        "\n"
+        "=== OTHER TOOLS ===\n"
         "3. INFRASTRUCTURE: Use `terminal` for pip install, git, mkdir, etc.\n"
-        "4. READING/INSPECTING: Use `file_read`.\n"
+        "4. READING/INSPECTING: Use `file_read_lines` to read with line numbers.\n"
+        "\n"
         "Rule: Output only the tool calls needed. Finish only after verifiable success."
     )
 
-    def _build_task_prompt(self, task: dict, previous_results: str = "") -> str:
+    # ── File path detection ────────────────────────────────────────────────────
+    _FILE_PATH_RE = re.compile(
+        r'(?:^|\s|["\'])'
+        r'([\w./\-]+\.(?:py|js|ts|jsx|tsx|json|yaml|yml|toml|txt|md|sh|env|cfg|ini|html|css|sql|go|rs|java|c|cpp|h))'
+        r'(?:$|\s|["\'])',
+        re.MULTILINE
+    )
+
+    def _detect_existing_files(self, task: dict) -> list:
+        """Scan task title + description for file paths that actually exist on disk."""
+        text = task.get("title", "") + " " + task.get("description", "")
+        candidates = self._FILE_PATH_RE.findall(text)
+        return [p for p in candidates if os.path.isfile(p)]
+
+    def _read_file_for_prompt(self, file_path: str, max_lines: int = 300) -> str:
+        """Read a file and return it with line numbers for injection into the LLM prompt."""
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+            total = len(lines)
+            truncated = total > max_lines
+            display = lines[:max_lines]
+            numbered = [f"L{i+1}: {l.rstrip()}" for i, l in enumerate(display)]
+            result = f"[{file_path}] — {total} lines total\n" + "\n".join(numbered)
+            if truncated:
+                result += f"\n... (truncated, showing first {max_lines} lines)"
+            return result
+        except Exception as ex:
+            return f"Could not read {file_path}: {ex}"
+
+    def _build_task_prompt(self, task: dict, previous_results: str = "",
+                           file_contents: dict = None) -> str:
         tool_info = json.dumps(self.tools.get_all_tools_info(), indent=2)
+        task_type = task.get("type", "")
+
+        # Build file context section
+        file_context = ""
+        if file_contents:
+            sections = []
+            for path, content in file_contents.items():
+                sections.append(
+                    f"=== EXISTING FILE: {path} ===\n"
+                    f"{content}\n"
+                    f"=== END OF {path} ==="
+                )
+            file_context = (
+                "\nEXISTING FILE CONTENT (read before editing — use line numbers for edits):\n"
+                + "\n\n".join(sections)
+                + "\n"
+            )
+
+        # Extra reminder for modify_file tasks
+        modify_reminder = ""
+        if task_type == "modify_file" or file_contents:
+            modify_reminder = (
+                "\n⚠ MODIFY TASK — The file(s) above already exist. "
+                "You MUST use `file_update_multi` with MINIMAL edits. "
+                "DO NOT use `file_write` or `project_generator`. "
+                "Reference exact line numbers from the file content above.\n"
+            )
+
         return f"""{self.SYSTEM_INSTRUCTION}
 
 AVAILABLE TOOLS:
@@ -158,8 +234,9 @@ AVAILABLE TOOLS:
 
 PREVIOUS RESULTS (from earlier tasks):
 {previous_results or 'None'}
-
+{file_context}{modify_reminder}
 CURRENT TASK:
+Type       : {task_type or 'unspecified'}
 Title      : {task.get('title', '')}
 Priority   : {task.get('priority', '')}
 Description: {task.get('description', '')}
@@ -218,8 +295,26 @@ Respond ONLY with valid JSON.
         return self._parse_plan(response)
 
     async def plan_task(self, task: dict, previous_results: str = "") -> dict:
-        """Task-aware planning — called directly by AshbornLoop."""
-        full_prompt = self._build_task_prompt(task, previous_results)
+        """
+        Two-phase task-aware planning:
+          Phase 1 — If the task involves existing file(s), read them directly
+                     and inject their content (with line numbers) into the prompt.
+          Phase 2 — Ask the LLM to produce MINIMAL surgical edits based on the
+                     actual file content it can now see.
+        """
+        file_contents = None
+        task_type = task.get("type", "")
+
+        # Detect existing files whenever type is modify_file OR type is unspecified
+        # (we auto-detect to be safe)
+        if task_type != "new_file" and task_type != "command":
+            existing = self._detect_existing_files(task)
+            if existing:
+                file_contents = {}
+                for path in existing:
+                    file_contents[path] = self._read_file_for_prompt(path)
+
+        full_prompt = self._build_task_prompt(task, previous_results, file_contents=file_contents)
         response = await self.llm.generate(full_prompt, session_id=None)
         return self._parse_plan(response)
 
