@@ -97,12 +97,12 @@
     ],
     "keybindings": [
       {
-        "command": "workbench.view.explorer",
+        "command": "workbench.action.toggleSidebarVisibility",
         "key": "ctrl+b",
         "when": "!terminalFocus"
       },
       {
-        "command": "ashborn-sidebar.focus",
+        "command": "workbench.action.toggleAuxiliaryBar",
         "key": "ctrl+alt+i",
         "when": "!terminalFocus"
       }
