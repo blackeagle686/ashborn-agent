@@ -132,4 +132,32 @@ export class LoopController {
       return `ERROR during search: ${err.message}`;
     }
   }
+
+  private async _resolveMentions(text: string): Promise<string> {
+    const mentions = text.match(/@[\w./\-]+/g);
+    if (!mentions) return "";
+
+    const results: string[] = [];
+    const root = vscode.workspace.workspaceFolders?.[0]?.uri;
+    if (!root) return "";
+
+    for (const mention of mentions) {
+      const relPath = mention.substring(1);
+      const uri = vscode.Uri.joinPath(root, relPath);
+      try {
+        const stat = await vscode.workspace.fs.stat(uri);
+        if (stat.type === vscode.FileType.File) {
+          const content = await vscode.workspace.fs.readFile(uri);
+          results.push(`FILE: ${relPath}\n\`\`\`\n${content.toString()}\n\`\`\``);
+        } else if (stat.type === vscode.FileType.Directory) {
+          const files = await vscode.workspace.fs.readDirectory(uri);
+          const list = files.map(([name, type]) => `${type === vscode.FileType.Directory ? 'DIR: ' : 'FILE: '}${name}`).join('\n');
+          results.push(`DIRECTORY: ${relPath}\nCONTENTS:\n${list}`);
+        }
+      } catch {
+        // ignore invalid paths
+      }
+    }
+    return results.join('\n\n');
+  }
 }
