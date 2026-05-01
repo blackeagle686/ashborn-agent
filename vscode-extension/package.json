@@ -1,0 +1,92 @@
+{
+  "name": "ashborn-agent",
+  "displayName": "Ashborn Agent 🔥",
+  "description": "AI-powered autonomous developer agent — powered by Phoenix AI",
+  "version": "1.0.0",
+  "publisher": "ashborn",
+  "engines": { "vscode": "^1.74.0" },
+  "categories": ["Other", "Machine Learning"],
+  "icon": "media/icon.png",
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "ashborn-sidebar",
+          "title": "Ashborn Agent",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "ashborn-sidebar": [
+        {
+          "type": "webview",
+          "id": "ashborn.chatView",
+          "name": "Chat"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "ashborn.sendMessage",
+        "title": "Ashborn: Send Message",
+        "icon": "$(send)"
+      },
+      {
+        "command": "ashborn.runAgent",
+        "title": "Ashborn: ▶ Run Agent (Auto Mode)"
+      },
+      {
+        "command": "ashborn.stopAgent",
+        "title": "Ashborn: ⏹ Stop Agent"
+      },
+      {
+        "command": "ashborn.resetSession",
+        "title": "Ashborn: 🔄 Reset Session"
+      },
+      {
+        "command": "ashborn.startServer",
+        "title": "Ashborn: Start Server"
+      }
+    ],
+    "configuration": {
+      "title": "Ashborn Agent",
+      "properties": {
+        "ashborn.serverPort": {
+          "type": "number",
+          "default": 8765,
+          "description": "Port for the Ashborn agent server"
+        },
+        "ashborn.venvPath": {
+          "type": "string",
+          "default": "venv",
+          "description": "Path to Python venv (relative to workspace root, or absolute)"
+        },
+        "ashborn.autoStartServer": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically start the agent server when the extension activates"
+        },
+        "ashborn.defaultMode": {
+          "type": "string",
+          "enum": ["auto", "plan", "fast_ans"],
+          "default": "auto",
+          "description": "Default agent execution mode"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "^18.0.0",
+    "typescript": "^5.3.0",
+    "@vscode/vsce": "^2.22.0"
+  }
+}
