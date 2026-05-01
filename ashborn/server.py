@@ -1,18 +1,18 @@
-"""
-Ashborn Agent — FastAPI Server
-Exposes the agent via HTTP + Server-Sent Events for the VS Code extension.
-Run: uvicorn ashborn.server:app --host 127.0.0.1 --port 8765
-"""
 import asyncio
 import json
 import uuid
 import logging
 from contextlib import asynccontextmanager
+from contextvars import ContextVar
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import Optional
+
+# ── IPC Context ───────────────────────────────────────────────────────────────
+# Allows tools to access the VS Code IPC bridge for the current request
+vscode_ipc_context: ContextVar[Optional[callable]] = ContextVar("vscode_ipc", default=None)
 
 logging.basicConfig(
     level=logging.WARNING,
@@ -59,27 +59,6 @@ class ToolResult(BaseModel):
     call_id: str
     result: str
 
-# ── IPC Helper ────────────────────────────────────────────────────────────────
-async def call_vscode_tool(tool_name: str, arguments: dict) -> str:
-    """Used by agent tools to request info from VS Code."""
-    call_id = str(uuid.uuid4())
-    loop = asyncio.get_event_loop()
-    future = loop.create_future()
-    _ipc_responses[call_id] = future
-
-    # The actual emission happens via the active SSE stream. 
-    # We rely on the agent emitting a 'vscode_tool' event.
-    # (The agent logic in cognition/planner.py will handle this)
-    
-    try:
-        # Wait for the /tool/result endpoint to fulfill this future
-        # Timeout after 60s
-        return await asyncio.wait_for(future, timeout=60.0)
-    except asyncio.TimeoutError:
-        return "ERROR: VS Code tool call timed out."
-    finally:
-        _ipc_responses.pop(call_id, None)
-
 # ── Routes ────────────────────────────────────────────────────────────────────
 @app.get("/health")
 async def health():
@@ -121,16 +100,18 @@ async def chat_stream(req: ChatRequest):
             _ipc_responses.pop(call_id, None)
 
     async def _run_agent():
+        # Set the IPC context for this specific task
+        token = vscode_ipc_context.set(_vscode_call)
         try:
             async for event in _agent.run_stream(
-                req.task, session_id=session_id, mode=req.mode,
-                context_overrides={"vscode_call": _vscode_call}
+                req.task, session_id=session_id, mode=req.mode
             ):
                 await queue.put(event)
         except Exception as exc:
             log.exception("Stream error")
             await queue.put({"type": "error", "content": str(exc)})
         finally:
+            vscode_ipc_context.reset(token)
             await queue.put({"type": "done"})
 
     async def _generate():
