@@ -1,0 +1,13 @@
+{
+  "original_prompt": "create a called simple.txt",
+  "tasks": [
+    {
+      "id": 1,
+      "priority": 1,
+      "type": "new_file",
+      "title": "Create simple.txt in workspace root",
+      "description": "Create a new file named 'simple.txt' in the liberay-app directory (workspace root) and write the text 'hello ashborn' into it.",
+      "status": "pending"
+    }
+  ]
+}
