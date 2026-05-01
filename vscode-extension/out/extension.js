@@ -70,6 +70,10 @@ async function activate(ctx) {
             _provider._runAgent(task, "plan");
         }
     }));
+    // Focus the sidebar automatically if launched via the `ashborn` CLI
+    if (process.env.ASHBORN_FOCUS_GUI) {
+        vscode.commands.executeCommand("ashborn.chatView.focus");
+    }
     // Auto-start server
     if (autoStart) {
         const ready = await client.healthCheck();
