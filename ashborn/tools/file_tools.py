@@ -178,3 +178,31 @@ def file_update_multi_tool(file_path: str, edits: list) -> str:
         f"Successfully updated {file_path} — "
         f"{applied_line} line-range edit(s), {applied_str} search-replace edit(s) applied."
     )
+
+
+# ── Tool 3: Reliable File Creator ─────────────────────────────────────────────
+
+@tool(
+    name="file_write",
+    description=(
+        "Creates a NEW file with the specified content. "
+        "Use this ONLY for files that do not exist yet. "
+        "Input: 'file_path' (str), 'content' (str). "
+        "Automatically creates parent directories if they are missing."
+    )
+)
+def file_write_tool(file_path: str, content: str) -> str:
+    \"\"\"
+    Creates or overwrites a file. Ensures parent directories exist.
+    \"\"\"
+    try:
+        # Create parent directories if needed
+        dir_path = os.path.dirname(file_path)
+        if dir_path and not os.path.exists(dir_path):
+            os.makedirs(dir_path, exist_ok=True)
+            
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        return f"Successfully created file: {file_path}"
+    except Exception as ex:
+        return f"ERROR creating file {file_path}: {ex}"
