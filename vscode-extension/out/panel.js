@@ -107,8 +107,8 @@ class AshbornViewProvider {
         const htmlPath = path.join(this._extensionUri.fsPath, "media", "ui.html");
         let html = fs.readFileSync(htmlPath, "utf-8");
         html = html
-            .replace("{{CSS_URI}}", cssUri.toString())
-            .replace("{{JS_URI}}", jsUri.toString());
+            .replaceAll("{{CSS_URI}}", cssUri.toString())
+            .replaceAll("{{JS_URI}}", jsUri.toString());
         return html;
     }
 }
