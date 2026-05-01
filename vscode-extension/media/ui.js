@@ -216,18 +216,103 @@
       </div>`;
   });
 
-  // Enter to send, Shift+Enter for newline
+  // ── Mention List logic ──────────────────────────────────────────────────────
+  const mentionList = document.getElementById("mention-list");
+  let allFiles = [];
+  let filteredFiles = [];
+  let selectedIndex = 0;
+  let mentionStartIdx = -1;
+
+  function showMentionList(show) {
+    mentionList.style.display = show ? "block" : "none";
+    if (!show) {
+      selectedIndex = 0;
+      filteredFiles = [];
+    }
+  }
+
+  function renderMentionList() {
+    mentionList.innerHTML = "";
+    filteredFiles.forEach((file, i) => {
+      const item = document.createElement("div");
+      item.className = "mention-item" + (i === selectedIndex ? " selected" : "");
+      const icon = file.endsWith("/") ? "📁" : "📄";
+      item.innerHTML = `<span class="mention-icon">${icon}</span><span class="mention-path">${file}</span>`;
+      item.onclick = () => selectMention(file);
+      mentionList.appendChild(item);
+    });
+    if (filteredFiles.length > 0) {
+      const selectedItem = mentionList.children[selectedIndex];
+      if (selectedItem) selectedItem.scrollIntoView({ block: "nearest" });
+    }
+  }
+
+  function selectMention(file) {
+    const text = input.value;
+    const before = text.substring(0, mentionStartIdx);
+    const after = text.substring(input.selectionStart);
+    input.value = before + "@" + file + " " + after;
+    showMentionList(false);
+    input.focus();
+    // trigger auto-resize
+    input.dispatchEvent(new Event('input'));
+  }
+
+  input.addEventListener("input", (e) => {
+    // Auto-resize
+    input.style.height = "auto";
+    input.style.height = Math.min(input.scrollHeight, 140) + "px";
+
+    // Mention detection
+    const text = input.value;
+    const cursor = input.selectionStart;
+    const lastAt = text.lastIndexOf("@", cursor - 1);
+
+    if (lastAt !== -1) {
+      const query = text.substring(lastAt + 1, cursor);
+      // Only trigger if @ is at start or after space
+      if (lastAt === 0 || /\s/.test(text[lastAt - 1])) {
+        if (!query.includes(" ")) {
+          mentionStartIdx = lastAt;
+          if (allFiles.length === 0) {
+            vscode.postMessage({ type: "getFiles" });
+          }
+          filteredFiles = allFiles.filter(f => f.toLowerCase().includes(query.toLowerCase())).slice(0, 10);
+          if (filteredFiles.length > 0) {
+            selectedIndex = 0;
+            showMentionList(true);
+            renderMentionList();
+            return;
+          }
+        }
+      }
+    }
+    showMentionList(false);
+  });
+
   input.addEventListener("keydown", (e) => {
+    if (mentionList.style.display === "block") {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        selectedIndex = (selectedIndex + 1) % filteredFiles.length;
+        renderMentionList();
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        selectedIndex = (selectedIndex - 1 + filteredFiles.length) % filteredFiles.length;
+        renderMentionList();
+      } else if (e.key === "Enter" || e.key === "Tab") {
+        e.preventDefault();
+        selectMention(filteredFiles[selectedIndex]);
+      } else if (e.key === "Escape") {
+        showMentionList(false);
+      }
+      return;
+    }
+
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
-  });
-
-  // Auto-resize textarea
-  input.addEventListener("input", () => {
-    input.style.height = "auto";
-    input.style.height = Math.min(input.scrollHeight, 140) + "px";
   });
 
   // ── Messages FROM extension host ──────────────────────────────────────────────
