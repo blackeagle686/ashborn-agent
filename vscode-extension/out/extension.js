@@ -100,6 +100,45 @@ async function activate(ctx) {
     else {
         setStatus("stopped", port);
     }
+    // Open the Ashborn Dashboard if no editors are open
+    if (vscode.window.visibleTextEditors.length === 0) {
+        showDashboard(ctx);
+    }
+}
+function showDashboard(ctx) {
+    const panel = vscode.window.createWebviewPanel("ashborn.dashboard", "Ashborn", vscode.ViewColumn.One, { enableScripts: true, localResourceRoots: [vscode.Uri.joinPath(ctx.extensionUri, "media")] });
+    const iconUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(ctx.extensionUri, "media", "icon.svg"));
+    panel.webview.html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body {
+          background: radial-gradient(circle at 50% 50%, #1a0f2e 0%, #08080c 100%);
+          color: white;
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          font-family: sans-serif;
+          margin: 0;
+          overflow: hidden;
+        }
+        .logo { width: 200px; height: 200px; animation: pulse 4s infinite ease-in-out; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
+        h1 { margin-top: 20px; font-weight: 200; letter-spacing: 4px; color: #9d38c6; }
+        .hint { margin-top: 40px; color: #6b6b80; font-size: 0.9em; }
+        kbd { background: #333; padding: 2px 6px; border-radius: 4px; color: #fff; }
+      </style>
+    </head>
+    <body>
+      <img src="${iconUri}" class="logo">
+      <h1>ASHBORN</h1>
+      <div class="hint">Press <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>I</kbd> to open Chat</div>
+    </body>
+    </html>
+  `;
 }
 // ── Deactivate ────────────────────────────────────────────────────────────────
 function deactivate() {
