@@ -1,9 +1,12 @@
 import * as http from "http";
 
 export type AgentEvent = {
-  type: "session" | "status" | "chunk" | "done" | "error";
+  type: "session" | "status" | "chunk" | "done" | "error" | "vscode_tool";
   content?: string;
   session_id?: string;
+  tool?: string;
+  arguments?: any;
+  call_id?: string;
 };
 
 export class AgentClient {
@@ -96,6 +99,31 @@ export class AgentClient {
       req.write(body);
       req.end();
       this._activeRequest = req;
+    });
+  }
+
+  async sendToolResult(callId: string, result: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const body = JSON.stringify({ call_id: callId, result });
+      const req = http.request(
+        {
+          hostname: "127.0.0.1",
+          port: this._port,
+          path: "/tool/result",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Content-Length": Buffer.byteLength(body),
+          },
+        },
+        (res) => {
+          res.resume();
+          res.on("end", resolve);
+        }
+      );
+      req.on("error", reject);
+      req.write(body);
+      req.end();
     });
   }
 
