@@ -1,0 +1,15 @@
+{
+	"name": "Ashborn Icons",
+	"icons": {
+		"window-closed": {
+			"description": "The Ashborn Flame Logo",
+			"character": "\\eaf2",
+			"fontId": "ashborn-icons"
+		}
+	},
+	"iconDefinitions": {
+		"ashborn-logo": {
+			"fontCharacter": "\\eaf2"
+		}
+	}
+}
