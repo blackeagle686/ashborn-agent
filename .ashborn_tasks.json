@@ -1,0 +1,13 @@
+{
+  "original_prompt": "create file called simple2.txt containig on hello ashborn",
+  "tasks": [
+    {
+      "id": 1,
+      "priority": 1,
+      "type": "new_file",
+      "title": "Create simple2.txt with content 'hello ashborn'",
+      "description": "Create a new file named 'simple2.txt' in the workspace root (liberay-app) and write the exact string 'hello ashborn' into it.",
+      "status": "pending"
+    }
+  ]
+}
