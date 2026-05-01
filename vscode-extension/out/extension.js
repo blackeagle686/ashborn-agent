@@ -70,13 +70,22 @@ async function activate(ctx) {
             _provider._runAgent(task, "plan");
         }
     }));
-    // Handle vscode://ashborn.ashborn-agent/focus to open the sidebar
-    vscode.window.registerUriHandler({
-        handleUri(uri) {
-            if (uri.path === '/focus') {
-                vscode.commands.executeCommand("ashborn.chatView.focus");
-            }
+    // Watch for .ashborn-focus file to pop open the sidebar reliably
+    const focusWatcher = vscode.workspace.createFileSystemWatcher("**/.ashborn-focus");
+    const handleFocus = async (uri) => {
+        await vscode.commands.executeCommand("ashborn.chatView.focus");
+        try {
+            await vscode.workspace.fs.delete(uri);
         }
+        catch { }
+    };
+    focusWatcher.onDidCreate(handleFocus);
+    focusWatcher.onDidChange(handleFocus);
+    ctx.subscriptions.push(focusWatcher);
+    // Check if file already exists on startup
+    vscode.workspace.findFiles(".ashborn-focus", null, 1).then(files => {
+        if (files.length > 0)
+            handleFocus(files[0]);
     });
     // Auto-start server
     if (autoStart) {
