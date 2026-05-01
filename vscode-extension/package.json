@@ -4,10 +4,17 @@
   "description": "AI-powered autonomous developer agent — powered by Phoenix AI",
   "version": "1.0.0",
   "publisher": "ashborn",
-  "engines": { "vscode": "^1.74.0" },
-  "categories": ["Other", "Machine Learning"],
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other",
+    "Machine Learning"
+  ],
   "icon": "media/icon.png",
-  "activationEvents": ["onStartupFinished"],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "viewsContainers": {
@@ -71,7 +78,11 @@
         },
         "ashborn.defaultMode": {
           "type": "string",
-          "enum": ["auto", "plan", "fast_ans"],
+          "enum": [
+            "auto",
+            "plan",
+            "fast_ans"
+          ],
           "default": "auto",
           "description": "Default agent execution mode"
         }
@@ -84,9 +95,9 @@
     "package": "vsce package --no-dependencies"
   },
   "devDependencies": {
-    "@types/vscode": "^1.74.0",
     "@types/node": "^18.0.0",
-    "typescript": "^5.3.0",
-    "@vscode/vsce": "^2.22.0"
+    "@types/vscode": "^1.74.0",
+    "@vscode/vsce": "^2.21.1",
+    "typescript": "^5.3.0"
   }
 }
