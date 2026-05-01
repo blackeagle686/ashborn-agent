@@ -9,8 +9,8 @@ Pipeline:
   5. AshbornLoop     → Deletes task file when all tasks are done
 """
 
-from phoenix.cognition import Thinker, Planner, Reflector
-from phoenix.agent.loop import AgentLoop
+from phoenix.framework.agent.cognition import Thinker, Planner, Reflector
+from phoenix.framework.agent.core.loop import AgentLoop
 from rich.console import Console
 import json
 import re
