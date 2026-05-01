@@ -94,6 +94,13 @@
         "label": "Ashborn Icons",
         "path": "./media/ashborn-icons.json"
       }
+    ],
+    "keybindings": [
+      {
+        "command": "workbench.view.explorer",
+        "key": "ctrl+b",
+        "when": "!terminalFocus"
+      }
     ]
   },
   "scripts": {
