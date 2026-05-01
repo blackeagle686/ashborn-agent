@@ -59,11 +59,16 @@ class LoopController {
             return;
         this._running = true;
         this._stepCount = 0;
-        // Prepend workspace context
-        const ctx = this._context.collect();
-        const fullTask = ctx
-            ? `${task}\n\n---\n[Workspace Context]\n${ctx}`
-            : task;
+        // Prepend workspace context and resolve @mentions
+        const mentionCtx = await this._resolveMentions(task);
+        const workspaceCtx = this._context.collect();
+        let fullTask = task;
+        if (mentionCtx) {
+            fullTask += `\n\n---\n[Attached Files Content]\n${mentionCtx}`;
+        }
+        if (workspaceCtx) {
+            fullTask += `\n\n---\n[Workspace Context]\n${workspaceCtx}`;
+        }
         onEvent({ type: "status", state: "thinking", content: "🧠 Thinking…" });
         let newSessionId = sessionId;
         try {
@@ -136,6 +141,35 @@ class LoopController {
         catch (err) {
             return `ERROR during search: ${err.message}`;
         }
+    }
+    async _resolveMentions(text) {
+        const mentions = text.match(/@[\w./\-]+/g);
+        if (!mentions)
+            return "";
+        const results = [];
+        const root = vscode.workspace.workspaceFolders?.[0]?.uri;
+        if (!root)
+            return "";
+        for (const mention of mentions) {
+            const relPath = mention.substring(1);
+            const uri = vscode.Uri.joinPath(root, relPath);
+            try {
+                const stat = await vscode.workspace.fs.stat(uri);
+                if (stat.type === vscode.FileType.File) {
+                    const content = await vscode.workspace.fs.readFile(uri);
+                    results.push(`FILE: ${relPath}\n\`\`\`\n${content.toString()}\n\`\`\``);
+                }
+                else if (stat.type === vscode.FileType.Directory) {
+                    const files = await vscode.workspace.fs.readDirectory(uri);
+                    const list = files.map(([name, type]) => `${type === vscode.FileType.Directory ? 'DIR: ' : 'FILE: '}${name}`).join('\n');
+                    results.push(`DIRECTORY: ${relPath}\nCONTENTS:\n${list}`);
+                }
+            }
+            catch {
+                // ignore invalid paths
+            }
+        }
+        return results.join('\n\n');
     }
 }
 exports.LoopController = LoopController;
