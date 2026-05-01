@@ -180,7 +180,14 @@ async function startServer(ctx, port) {
     const python = path.join(venvPath, "bin", "python3");
     setStatus("starting", port);
     vscode.window.showInformationMessage("🔥 Starting Ashborn Agent server…");
-    _serverProcess = cp.spawn(python, ["-m", "uvicorn", "ashborn.server:app", "--host", "127.0.0.1", "--port", String(port), "--log-level", "warning"], { cwd: ASHBORN_DIR, stdio: ["ignore", "pipe", "pipe"] });
+    _serverProcess = cp.spawn(python, ["-m", "uvicorn", "ashborn.server:app", "--host", "127.0.0.1", "--port", String(port), "--log-level", "warning"], {
+        cwd: ws || ASHBORN_DIR,
+        env: {
+            ...process.env,
+            PYTHONPATH: ASHBORN_DIR
+        },
+        stdio: ["ignore", "pipe", "pipe"]
+    });
     _serverProcess.stdout?.on("data", (d) => console.log("[ashborn-server]", d.toString().trim()));
     _serverProcess.stderr?.on("data", (d) => console.error("[ashborn-server]", d.toString().trim()));
     _serverProcess.on("exit", (code) => {
