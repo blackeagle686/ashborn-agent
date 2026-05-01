@@ -1,5 +1,4 @@
-from phoenix.agent import Agent
-from phoenix import init_phoenix, startup_phoenix
+from phoenix import Agent, init_phoenix, startup_phoenix
 from .tools.project_generator import project_generator_tool
 
 async def get_ashborn_agent(on_startup_progress=None):
@@ -21,7 +20,7 @@ async def get_ashborn_agent(on_startup_progress=None):
     )
     
     from .tools.project_generator import project_generator_tool, terminal_tool
-    from phoenix.tools.io import FileReadTool, FileWriteTool, FileEditTool
+    from phoenix.framework.agent.tools import FileReadTool, FileWriteTool, FileEditTool
     
     agent.register_tool(FileReadTool())
     agent.register_tool(FileWriteTool())
