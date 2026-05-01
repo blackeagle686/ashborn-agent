@@ -15,12 +15,20 @@ rm -rf "$DIST_DIR" "$BUILD_DIR"
 mkdir -p "$DIST_DIR" "$BUILD_DIR"
 
 # 2. Build VS Code Extension
-echo "📦 Building VS Code Extension..."
+echo "📦 Building VS Code Extension (Manual Packaging)..."
 cd "$PROJECT_ROOT/vscode-extension"
 npm install
 npm run compile
-# Use local vsce if global fails
-./node_modules/.bin/vsce package -o "$BUILD_DIR/ashborn-agent.vsix"
+# Create a temporary directory for extension content
+EXT_TEMP="$BUILD_DIR/extension_content"
+mkdir -p "$EXT_TEMP/extension"
+cp -r package.json out/ media/ "$EXT_TEMP/extension/"
+# Copy production node_modules
+cp -r node_modules "$EXT_TEMP/extension/"
+# Zip it up as .vsix (which is just a zip)
+cd "$EXT_TEMP"
+zip -rq "$BUILD_DIR/ashborn-agent.vsix" .
+rm -rf "$EXT_TEMP"
 
 # 3. Package Backend
 echo "📦 Packaging Python Backend..."
