@@ -1,6 +1,7 @@
 """
 Integration test for the new surgical file editing tools.
 Tests: import, file_read_lines, and file_update_multi (line-range + search-replace).
+Note: @tool returns a FunctionTool instance; call .func() for direct invocation in tests.
 """
 import sys, os
 sys.path.insert(0, os.path.join(os.getcwd(), "venv/lib/python3.12/site-packages"))
@@ -27,6 +28,10 @@ except Exception as e:
     print(f"✗ {e}")
     sys.exit(1)
 
+# Shortcut: access underlying functions via .func
+read_lines = file_read_lines_tool.func
+update_multi = file_update_multi_tool.func
+
 # ── Create a temp file for functional tests ────────────────────────────────
 TMPFILE = "scratch/_test_edit_target.py"
 os.makedirs("scratch", exist_ok=True)
@@ -44,13 +49,13 @@ def add(a, b):
 """)
 
 print("\n=== 2. file_read_lines Test ===")
-result = file_read_lines_tool(file_path=TMPFILE)
+result = read_lines(file_path=TMPFILE)
 print(result)
 assert "L1:" in result and "TIMEOUT" in result, "file_read_lines failed"
 print("✓ file_read_lines returns numbered output")
 
 print("\n=== 3. file_update_multi — line_range edit ===")
-result = file_update_multi_tool(
+result = update_multi(
     file_path=TMPFILE,
     edits=[{"line_start": 2, "line_end": 2, "new_content": "TIMEOUT = 60"}]
 )
@@ -62,7 +67,7 @@ assert "VERSION" in content, "line_range edit destroyed other content!"
 print("✓ line_range edit applied, rest of file intact")
 
 print("\n=== 4. file_update_multi — search/replace edit ===")
-result = file_update_multi_tool(
+result = update_multi(
     file_path=TMPFILE,
     edits=[{"search": 'VERSION = "1.0"', "replace": 'VERSION = "2.0"'}]
 )
@@ -74,7 +79,7 @@ assert "def greet" in content, "search/replace destroyed rest of file!"
 print("✓ search/replace applied, rest of file intact")
 
 print("\n=== 5. file_update_multi — overlap detection ===")
-result = file_update_multi_tool(
+result = update_multi(
     file_path=TMPFILE,
     edits=[
         {"line_start": 2, "line_end": 4, "new_content": "X = 1"},
@@ -86,7 +91,7 @@ assert "Overlapping" in result, "Overlap detection failed!"
 print("✓ Overlapping edit correctly rejected")
 
 print("\n=== 6. file_update_multi — search not found ===")
-result = file_update_multi_tool(
+result = update_multi(
     file_path=TMPFILE,
     edits=[{"search": "THIS_DOES_NOT_EXIST", "replace": "nope"}]
 )
@@ -95,18 +100,23 @@ assert "not found" in result.lower(), "Missing search string should fail!"
 print("✓ Missing search text correctly reported")
 
 print("\n=== 7. AshbornPlanner._detect_existing_files ===")
-# fake a planner with minimal stub
 class FakeLLM: pass
 class FakeTools:
     def get_all_tools_info(self): return []
 planner = AshbornPlanner.__new__(AshbornPlanner)
 planner.llm = FakeLLM()
 planner.tools = FakeTools()
-task = {"title": f"edit {TMPFILE}", "description": f"Change timeout in {TMPFILE}"}
+task = {"title": f"edit {TMPFILE}", "description": f"Change timeout in {TMPFILE}", "type": "modify_file"}
 detected = planner._detect_existing_files(task)
 print(f"  Detected: {detected}")
-assert TMPFILE in detected, "File detection failed"
+assert TMPFILE in detected, f"File detection failed — got {detected}"
 print("✓ _detect_existing_files correctly found existing file in task")
+
+print("\n=== 8. _read_file_for_prompt ===")
+numbered = planner._read_file_for_prompt(TMPFILE)
+print(numbered)
+assert "L1:" in numbered and "L2:" in numbered, "_read_file_for_prompt format wrong"
+print("✓ _read_file_for_prompt returns numbered file content")
 
 print("\n=== All tests passed ✓ ===")
 os.remove(TMPFILE)
