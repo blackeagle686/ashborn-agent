@@ -41,11 +41,17 @@ export class LoopController {
     this._running = true;
     this._stepCount = 0;
 
-    // Prepend workspace context
-    const ctx = this._context.collect();
-    const fullTask = ctx
-      ? `${task}\n\n---\n[Workspace Context]\n${ctx}`
-      : task;
+    // Prepend workspace context and resolve @mentions
+    const mentionCtx = await this._resolveMentions(task);
+    const workspaceCtx = this._context.collect();
+    
+    let fullTask = task;
+    if (mentionCtx) {
+      fullTask += `\n\n---\n[Attached Files Content]\n${mentionCtx}`;
+    }
+    if (workspaceCtx) {
+      fullTask += `\n\n---\n[Workspace Context]\n${workspaceCtx}`;
+    }
 
     onEvent({ type: "status", state: "thinking", content: "🧠 Thinking…" });
 
