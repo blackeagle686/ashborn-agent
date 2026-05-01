@@ -9,9 +9,9 @@ from phoenix.framework.agent import tool
     )
 )
 async def vscode_search_tool(query: str, is_regex: bool = False, include: str = None, exclude: str = None, **context) -> str:
-    \"\"\"
+    """
     Performs a workspace-wide search by calling back into the VS Code extension.
-    \"\"\"
+    """
     # 'vscode_call' is injected by the server into the tool's context
     vscode_call = context.get("vscode_call")
     if not vscode_call:
