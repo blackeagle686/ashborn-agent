@@ -95,22 +95,58 @@ async def chat_stream(req: ChatRequest):
         return StreamingResponse(_error(), media_type="text/event-stream")
 
     session_id = req.session_id or str(uuid.uuid4())
+    queue = asyncio.Queue()
 
-    async def _generate():
-        yield f"data: {json.dumps({'type':'session','session_id':session_id})}\n\n"
+    async def _emit_event(event: dict):
+        await queue.put(event)
+
+    async def _vscode_call(tool_name: str, arguments: dict) -> str:
+        call_id = str(uuid.uuid4())
+        future = asyncio.get_event_loop().create_future()
+        _ipc_responses[call_id] = future
+        
+        # Emit the tool request to the frontend
+        await _emit_event({
+            "type": "vscode_tool",
+            "call_id": call_id,
+            "tool": tool_name,
+            "arguments": arguments
+        })
+        
         try:
-            # We inject the call_vscode_tool helper into the agent's context 
-            # so its tools can use it.
+            return await asyncio.wait_for(future, timeout=60.0)
+        except asyncio.TimeoutError:
+            return "ERROR: VS Code tool call timed out."
+        finally:
+            _ipc_responses.pop(call_id, None)
+
+    async def _run_agent():
+        try:
             async for event in _agent.run_stream(
                 req.task, session_id=session_id, mode=req.mode,
-                context_overrides={"vscode_call": call_vscode_tool}
+                context_overrides={"vscode_call": _vscode_call}
             ):
-                yield f"data: {json.dumps(event)}\n\n"
+                await queue.put(event)
         except Exception as exc:
             log.exception("Stream error")
-            yield f"data: {json.dumps({'type':'error','content':str(exc)})}\n\n"
+            await queue.put({"type": "error", "content": str(exc)})
         finally:
-            yield f"data: {json.dumps({'type':'done'})}\n\n"
+            await queue.put({"type": "done"})
+
+    async def _generate():
+        # Start the agent task in the background
+        agent_task = asyncio.create_task(_run_agent())
+        
+        # Always send session ID first
+        yield f"data: {json.dumps({'type':'session','session_id':session_id})}\n\n"
+        
+        while True:
+            event = await queue.get()
+            yield f"data: {json.dumps(event)}\n\n"
+            if event.get("type") == "done":
+                break
+        
+        await agent_task
 
     return StreamingResponse(_generate(), media_type="text/event-stream")
 
