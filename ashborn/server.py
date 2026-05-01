@@ -28,7 +28,7 @@ _ipc_responses = {}
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global _agent
-    log.warning("🔥 Initializing Ashborn Agent …")
+    log.warning(f"🔥 Initializing Ashborn Agent in {os.getcwd()} …")
     try:
         from ashborn.agent import get_ashborn_agent
         _agent = await get_ashborn_agent()
