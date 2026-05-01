@@ -112,8 +112,8 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
     let html = fs.readFileSync(htmlPath, "utf-8");
 
     html = html
-      .replace("{{CSS_URI}}", cssUri.toString())
-      .replace("{{JS_URI}}", jsUri.toString());
+      .replaceAll("{{CSS_URI}}", cssUri.toString())
+      .replaceAll("{{JS_URI}}", jsUri.toString());
 
     return html;
   }
