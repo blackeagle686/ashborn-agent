@@ -102,7 +102,7 @@
         "when": "!terminalFocus"
       },
       {
-        "command": "ashborn.chatView.focus",
+        "command": "workbench.action.togglePanel",
         "key": "ctrl+alt+i",
         "when": "!terminalFocus"
       }
