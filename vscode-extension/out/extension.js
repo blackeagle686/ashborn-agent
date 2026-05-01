@@ -98,19 +98,17 @@ async function startServer(ctx, port) {
         return;
     }
     const ws = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-    if (!ws) {
-        vscode.window.showErrorMessage("Open the ashborn-agent folder in VS Code first.");
-        return;
-    }
+    // The global installation path of Ashborn Agent
+    const ASHBORN_DIR = "/home/tlk/Documents/Projects/my_AItools/ashborn-agent";
     const config = vscode.workspace.getConfiguration("ashborn");
     const venvRel = config.get("venvPath") ?? "venv";
     const venvPath = path.isAbsolute(venvRel)
         ? venvRel
-        : path.join(ws, venvRel);
+        : path.join(ASHBORN_DIR, venvRel);
     const python = path.join(venvPath, "bin", "python3");
     setStatus("starting", port);
     vscode.window.showInformationMessage("🔥 Starting Ashborn Agent server…");
-    _serverProcess = cp.spawn(python, ["-m", "uvicorn", "ashborn.server:app", "--host", "127.0.0.1", "--port", String(port), "--log-level", "warning"], { cwd: ws, stdio: ["ignore", "pipe", "pipe"] });
+    _serverProcess = cp.spawn(python, ["-m", "uvicorn", "ashborn.server:app", "--host", "127.0.0.1", "--port", String(port), "--log-level", "warning"], { cwd: ASHBORN_DIR, stdio: ["ignore", "pipe", "pipe"] });
     _serverProcess.stdout?.on("data", (d) => console.log("[ashborn-server]", d.toString().trim()));
     _serverProcess.stderr?.on("data", (d) => console.error("[ashborn-server]", d.toString().trim()));
     _serverProcess.on("exit", (code) => {
