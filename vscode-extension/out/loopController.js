@@ -123,7 +123,7 @@ class LoopController {
             }, (result) => {
                 const relPath = vscode.workspace.asRelativePath(result.uri);
                 results.push(`FILE: ${relPath}`);
-                result.results.forEach(res => {
+                result.results.forEach((res) => {
                     if ('range' in res) {
                         const line = res.range.start.line + 1;
                         const preview = res.preview.text.trim();
