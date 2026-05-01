@@ -14,18 +14,16 @@ npm install
 echo "🔨 Compiling TypeScript..."
 npm run compile
 
-echo "📦 Packaging extension..."
-npx vsce@1.103.1 package
+echo "📦 Installing extension into VS Code directly..."
+EXT_DIR="$HOME/.vscode/extensions/ashborn-agent-1.0.0"
+rm -rf "$EXT_DIR"
+mkdir -p "$EXT_DIR"
 
-VSIX_FILE=$(ls *.vsix | tail -n 1)
+# Copy essential files
+cp -r package.json tsconfig.json media out "$EXT_DIR/"
+# Copy node_modules too, but vsce normally strips devDependencies.
+# For direct install, we can copy the whole node_modules
+cp -r node_modules "$EXT_DIR/"
 
-if [ -z "$VSIX_FILE" ]; then
-    echo "❌ Failed to package extension."
-    exit 1
-fi
-
-echo "🚀 Installing extension into VS Code..."
-code --install-extension "$VSIX_FILE" --force
-
-echo "✅ Extension installed successfully!"
-echo "Reload VS Code to start using the Ashborn Agent."
+echo "✅ Extension installed successfully to $EXT_DIR!"
+echo "Please reload your VS Code window (Ctrl+Shift+P -> Developer: Reload Window) to activate Ashborn Agent."
