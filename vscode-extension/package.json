@@ -87,7 +87,14 @@
           "description": "Default agent execution mode"
         }
       }
-    }
+    },
+    "productIconThemes": [
+      {
+        "id": "ashborn-icons",
+        "label": "Ashborn Icons",
+        "path": "./media/ashborn-icons.json"
+      }
+    ]
   },
   "scripts": {
     "compile": "tsc -p ./",
