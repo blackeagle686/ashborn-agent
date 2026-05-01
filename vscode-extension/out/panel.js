@@ -107,7 +107,7 @@ class AshbornViewProvider {
         const htmlPath = path.join(this._extensionUri.fsPath, "media", "ui.html");
         let html = fs.readFileSync(htmlPath, "utf-8");
         html = html
-            .replace(/\{\{CSP_SOURCE\}\}/g, webview.cspSource)
+            .replace(/<meta http-equiv="Content-Security-Policy" [^>]*>/i, `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} data:;">`)
             .replace(/\{\{CSS_URI\}\}/g, cssUri.toString())
             .replace(/\{\{JS_URI\}\}/g, jsUri.toString());
         return html;
