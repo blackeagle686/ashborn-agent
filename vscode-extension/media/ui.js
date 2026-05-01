@@ -358,6 +358,12 @@
         setInputEnabled(true);
         break;
 
+      case "files":
+        allFiles = msg.files || [];
+        // Trigger a re-filter if already typing
+        input.dispatchEvent(new Event('input'));
+        break;
+
       case "reset":
         // handled by button
         break;
