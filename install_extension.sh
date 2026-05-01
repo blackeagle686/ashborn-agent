@@ -14,8 +14,8 @@ npm install
 echo "🔨 Compiling TypeScript..."
 npm run compile
 
-echo "📦 Installing extension into VS Code directly..."
-EXT_DIR="$HOME/.vscode/extensions/ashborn-agent-1.0.0"
+echo "📦 Installing extension into Ashborn IDE profile..."
+EXT_DIR="$HOME/.ashborn/ide-extensions/ashborn-agent-1.0.0"
 rm -rf "$EXT_DIR"
 mkdir -p "$EXT_DIR"
 
