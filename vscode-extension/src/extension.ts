@@ -187,7 +187,14 @@ async function startServer(ctx: vscode.ExtensionContext, port: number) {
   _serverProcess = cp.spawn(
     python,
     ["-m", "uvicorn", "ashborn.server:app", "--host", "127.0.0.1", "--port", String(port), "--log-level", "warning"],
-    { cwd: ASHBORN_DIR, stdio: ["ignore", "pipe", "pipe"] }
+    { 
+      cwd: ws || ASHBORN_DIR, 
+      env: { 
+        ...process.env, 
+        PYTHONPATH: ASHBORN_DIR 
+      },
+      stdio: ["ignore", "pipe", "pipe"] 
+    }
   );
 
   _serverProcess.stdout?.on("data", (d: Buffer) =>
