@@ -54,6 +54,8 @@ let build: ba.IBuildApi = await connection.getBuildApi();
 
 These clients are available:
 
+* Advanced Security Alert
+* Advanced Security Management
 * Build
 * Core
 * Dashboard
@@ -71,6 +73,8 @@ These clients are available:
 * TaskAgent
 * Task
 * Test
+* TestPlan
+* TestResults
 * Tfvc
 * Wiki
 * Work
