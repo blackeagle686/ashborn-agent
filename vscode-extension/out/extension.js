@@ -144,10 +144,10 @@ async function startServer(ctx, port) {
             setStatus("ready", port);
             vscode.window.showInformationMessage("✅ Ashborn Agent is ready!");
         }
-        else if (attempts > 30) {
+        else if (attempts > 120) {
             clearInterval(poll);
             setStatus("error", port);
-            vscode.window.showErrorMessage("❌ Ashborn server failed to start. Check the Output panel.");
+            vscode.window.showErrorMessage("❌ Ashborn server failed to start (timed out after 120s). Check the Output panel.");
         }
     }, 1000);
 }
