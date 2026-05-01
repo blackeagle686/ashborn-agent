@@ -15,7 +15,7 @@ echo "🔨 Compiling TypeScript..."
 npm run compile
 
 echo "📦 Packaging extension..."
-npx @vscode/vsce@2.15.0 package --no-dependencies
+npx vsce@1.103.1 package
 
 VSIX_FILE=$(ls *.vsix | tail -n 1)
 
