@@ -60,10 +60,14 @@ export async function activate(ctx: vscode.ExtensionContext) {
     })
   );
 
-  // Focus the sidebar automatically if launched via the `ashborn` CLI
-  if (process.env.ASHBORN_FOCUS_GUI) {
-    vscode.commands.executeCommand("ashborn.chatView.focus");
-  }
+  // Handle vscode://ashborn.ashborn-agent/focus to open the sidebar
+  vscode.window.registerUriHandler({
+    handleUri(uri: vscode.Uri) {
+      if (uri.path === '/focus') {
+        vscode.commands.executeCommand("ashborn.chatView.focus");
+      }
+    }
+  });
 
   // Auto-start server
   if (autoStart) {
