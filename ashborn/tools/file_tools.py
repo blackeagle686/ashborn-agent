@@ -192,9 +192,9 @@ def file_update_multi_tool(file_path: str, edits: list) -> str:
     )
 )
 def file_write_tool(file_path: str, content: str) -> str:
-    \"\"\"
+    """
     Creates or overwrites a file. Ensures parent directories exist.
-    \"\"\"
+    """
     try:
         # Create parent directories if needed
         dir_path = os.path.dirname(file_path)

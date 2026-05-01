@@ -22,10 +22,11 @@ async def get_ashborn_agent(on_startup_progress=None):
     
     from .tools.project_generator import project_generator_tool, terminal_tool
     from .tools.vscode_tools import vscode_search_tool
-    from phoenix.framework.agent.tools import FileReadTool, FileWriteTool, FileEditTool
+    from .tools.file_tools import file_read_lines_tool, file_update_multi_tool, file_write_tool
+    from phoenix.framework.agent.tools import FileReadTool, FileEditTool
     
     agent.register_tool(FileReadTool())
-    agent.register_tool(FileWriteTool())
+    agent.register_tool(file_write_tool) # Using our reliable custom tool
     agent.register_tool(FileEditTool())
     agent.register_tool(project_generator_tool)
     agent.register_tool(terminal_tool)
