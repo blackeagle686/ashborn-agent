@@ -107,6 +107,7 @@ class AshbornViewProvider {
         const htmlPath = path.join(this._extensionUri.fsPath, "media", "ui.html");
         let html = fs.readFileSync(htmlPath, "utf-8");
         html = html
+            .replace(/\{\{CSP_SOURCE\}\}/g, webview.cspSource)
             .replace(/\{\{CSS_URI\}\}/g, cssUri.toString())
             .replace(/\{\{JS_URI\}\}/g, jsUri.toString());
         return html;
