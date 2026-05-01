@@ -177,7 +177,6 @@
     const task = input.value.trim();
     if (!task || isStreaming) return;
     input.value = "";
-    addUserMessage(task);
     setInputEnabled(false);
     setStatus("thinking", "Thinking…");
     vscode.postMessage({ type: "send", task, mode: modeEl.value });
@@ -190,7 +189,6 @@
     const task = input.value.trim();
     if (!task || isStreaming) return;
     input.value = "";
-    addUserMessage(task);
     setInputEnabled(false);
     setStatus("thinking", "Thinking…");
     vscode.postMessage({ type: "send", task, mode: "plan" });
