@@ -176,6 +176,7 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
           targetTheme,
           vscode.ConfigurationTarget.Global
         );
+        vscode.window.showInformationMessage(`Ashborn: Applied theme → "${targetTheme}"`);
         break;
     }
   }
