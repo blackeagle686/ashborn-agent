@@ -334,7 +334,8 @@
 
   if (btnTheme) {
     btnTheme.addEventListener("click", () => {
-      if (document.body.classList.contains("vscode-light")) {
+      const isLight = document.body.classList.contains("vscode-light");
+      if (isLight) {
         document.body.classList.remove("vscode-light");
         document.body.classList.add("vscode-dark");
       } else {

@@ -121,7 +121,7 @@ html, body {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--surface-border);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 24px var(--shadow-main);
   flex-shrink: 0;
   z-index: 10;
   overflow: hidden;
@@ -392,7 +392,7 @@ html, body {
 .welcome-title {
   font-size: 24px;
   font-weight: 800;
-  background: linear-gradient(135deg, #fff, var(--text-dim));
+  background: linear-gradient(135deg, var(--text-main), var(--title-gradient-end));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.5px;
@@ -615,7 +615,7 @@ html, body {
 
 .input-container-wrapper:focus-within {
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px var(--primary-glow), 0 10px 30px rgba(0,0,0,0.5);
+  box-shadow: 0 0 0 4px var(--primary-glow), 0 10px 30px var(--shadow-heavy);
   background: var(--bg-dark-40);
 }
 
@@ -625,7 +625,7 @@ html, body {
   justify-content: space-between;
   padding: 8px 12px;
   border-bottom: 1px solid var(--border-subtle);
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--bg-overlay);
 }
 
 .mode-pills {
@@ -1109,7 +1109,7 @@ html, body {
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 4px;
-  background: linear-gradient(135deg, #fff, var(--flame-top));
+  background: linear-gradient(135deg, var(--text-main), var(--flame-top));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.2px;
