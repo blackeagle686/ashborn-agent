@@ -107,10 +107,10 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
         } catch (_err) {
           // silently ignore — file might not exist yet
         }
-        break;
       case "theme":
-        // Use the built-in VS Code command to toggle between the user's preferred light and dark themes
-        await vscode.commands.executeCommand("workbench.action.toggleLightDarkThemes");
+        const workbenchConfig = vscode.workspace.getConfiguration("workbench");
+        const theme = msg.isLight ? "Default Light Modern" : "Default Dark Modern";
+        await workbenchConfig.update("colorTheme", theme, vscode.ConfigurationTarget.Global);
         break;
     }
   }
