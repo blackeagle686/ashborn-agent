@@ -157,7 +157,7 @@ class AshbornViewProvider {
         const htmlPath = path.join(this._extensionUri.fsPath, "media", "ui.html");
         let html = fs.readFileSync(htmlPath, "utf-8");
         html = html
-            .replace(/<meta http-equiv="Content-Security-Policy" [^>]*>/i, `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} data:;">`)
+            .replace(/<meta http-equiv="Content-Security-Policy" [^>]*>/i, `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} data:; media-src * data: blob:; connect-src *;">`)
             .replace(/\{\{CSS_URI\}\}/g, cssUri.toString())
             .replace(/\{\{JS_URI\}\}/g, jsUri.toString())
             .replace(/\{\{ASHBORN_ICON_URI\}\}/g, mediaUri("ashborn.png").toString())
