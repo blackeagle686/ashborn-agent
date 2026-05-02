@@ -21,6 +21,7 @@
   const settingsPanel = document.getElementById("settings-panel");
   const btnSettings   = document.getElementById("btn-settings");
   const btnTheme      = document.getElementById("btn-theme");
+  const btnCloseSettings = document.getElementById("btn-close-settings");
   const btnSaveSettings  = document.getElementById("btn-save-settings");
   const settingsStatus   = document.getElementById("settings-status");
   
