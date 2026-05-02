@@ -537,71 +537,61 @@
     }
   });
 
-  // ── Speech-to-Text (Web Speech API) ────────────────────────────────────────
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  // ── Speech-to-Text (Backend Implementation) ────────────────────────────────
+  let isRecording = false;
 
-  function startListening() {
-    if (!SpeechRecognition) {
-      listeningTranscript.textContent = "❌ Speech recognition is blocked by VS Code's security sandbox.";
-      listeningTranscript.style.color = "#ff4444";
-      listeningOverlay.style.display = "flex";
-      btnStopMic.textContent = "Close";
-      return;
-    }
-
-    recognition = new SpeechRecognition();
-    recognition.lang = "en-US";
-    recognition.continuous = false;
-    recognition.interimResults = true;
-
-    listeningTranscript.textContent = "Say something…";
+  async function startListening() {
+    listeningTranscript.textContent = "Recording... (Speak now)";
+    listeningTranscript.style.color = "";
     listeningOverlay.style.display = "flex";
-
-    recognition.onresult = (e) => {
-      let interim = "", final = "";
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        const t = e.results[i][0].transcript;
-        if (e.results[i].isFinal) final += t;
-        else interim += t;
-      }
-      listeningTranscript.textContent = final || interim || "Listening…";
-      if (final) {
-        input.value = final;
-        input.dispatchEvent(new Event("input"));
-        stopListening();
-        sendMessage();
-      }
-    };
-
-    let hasError = false;
-
-    recognition.onerror = (e) => {
-      hasError = true;
-      listeningTranscript.textContent = "❌ Error: " + (e.error || "Unknown");
-      listeningTranscript.style.color = "#ff4444";
-      btnStopMic.textContent = "Close";
-    };
-
-    recognition.onend = () => {
-      if (!hasError) {
-        stopListening();
-      }
-    };
+    btnStopMic.textContent = "Done / Stop";
+    isRecording = true;
 
     try {
-      recognition.start();
+      const res = await fetch("http://127.0.0.1:8765/stt/start", { method: "POST" });
+      const data = await res.json();
+      if (data.status !== "ok") {
+        throw new Error(data.message || "Failed to start recording");
+      }
     } catch (e) {
-      listeningTranscript.textContent = "❌ Error: " + (e.message || "Unknown error starting microphone");
+      listeningTranscript.textContent = "❌ Error: " + e.message;
       listeningTranscript.style.color = "#ff4444";
       btnStopMic.textContent = "Close";
+      isRecording = false;
     }
   }
 
-  function stopListening() {
-    if (recognition) { try { recognition.stop(); } catch(_){} recognition = null; }
-    listeningOverlay.style.display = "none";
-    listeningTranscript.style.color = "";
-    btnStopMic.textContent = "✕ Cancel";
+  async function stopListening() {
+    if (!isRecording) {
+      listeningOverlay.style.display = "none";
+      return;
+    }
+    isRecording = false;
+    
+    listeningTranscript.textContent = "Processing audio... ⏳";
+    btnStopMic.textContent = "Please wait...";
+    btnStopMic.disabled = true;
+
+    try {
+      const res = await fetch("http://127.0.0.1:8765/stt/stop", { method: "POST" });
+      const data = await res.json();
+      
+      btnStopMic.disabled = false;
+      
+      if (data.status === "ok" && data.text) {
+        input.value = data.text;
+        input.dispatchEvent(new Event("input"));
+        listeningOverlay.style.display = "none";
+        sendMessage();
+      } else {
+        throw new Error(data.message || "Could not transcribe audio");
+      }
+    } catch (e) {
+      btnStopMic.disabled = false;
+      listeningTranscript.textContent = "❌ Error: " + e.message;
+      listeningTranscript.style.color = "#ff4444";
+      btnStopMic.textContent = "Close";
+    }
   }
 
   btnMic.addEventListener("click", startListening);
