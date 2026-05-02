@@ -155,7 +155,8 @@ class AshbornViewProvider {
             .replace(/<meta http-equiv="Content-Security-Policy" [^>]*>/i, `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} data:;">`)
             .replace(/\{\{CSS_URI\}\}/g, cssUri.toString())
             .replace(/\{\{JS_URI\}\}/g, jsUri.toString())
-            .replace(/\{\{ASHBORN_ICON_URI\}\}/g, mediaUri("ashborn.png").toString());
+            .replace(/\{\{ASHBORN_ICON_URI\}\}/g, mediaUri("ashborn.png").toString())
+            .replace(/\{\{PHOENIX_AI_ICON_URI\}\}/g, mediaUri("phx-nobg.png").toString());
         return html;
     }
 }
