@@ -87,6 +87,19 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
           this._post({ type: "error", content: "Failed to save config: " + err });
         }
         break;
+      case "openFile":
+        try {
+          const uri = vscode.Uri.file(msg.path);
+          const doc = await vscode.workspace.openTextDocument(uri);
+          await vscode.window.showTextDocument(doc, {
+            preview: false,
+            preserveFocus: true,
+            viewColumn: vscode.ViewColumn.One,
+          });
+        } catch (err) {
+          // silently ignore — file might not exist yet
+        }
+        break;
     }
   }
 

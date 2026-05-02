@@ -52,11 +52,22 @@
     [/\n/g, "<br/>"]
   ];
 
+  // File-path regex: matches paths like ashborn/server.py or ./tools/file.ts
+  const FILE_PATH_RE = /(?<![`"'])([\w./][\w./\-]*\.(?:py|js|ts|tsx|jsx|json|yaml|yml|toml|md|sh|env|txt|css|html|go|rs|java|c|cpp|h|sql|cfg|ini))(?![`"'])/g;
+
+  function linkifyFilePaths(html) {
+    // Don't linkify inside <pre> or <code> blocks — preserve those as-is
+    return html.replace(FILE_PATH_RE, (match) => {
+      return `<span class="file-link" data-path="${match}" title="Click to open ${match}">${match}</span>`;
+    });
+  }
+
   function renderMarkdown(text) {
     let html = text;
     for (const [reg, repl] of mdRegexes) {
       html = html.replace(reg, repl);
     }
+    html = linkifyFilePaths(html);
     return html;
   }
 
@@ -130,6 +141,22 @@
     if (currentBubble) {
       currentBubble.classList.remove("streaming");
       currentBubble.innerHTML = renderMarkdown(currentText);
+      
+      // Add reply button
+      const msgEl = currentBubble.parentElement;
+      const replyBtn = document.createElement("button");
+      replyBtn.className = "btn-reply";
+      replyBtn.textContent = "↩ Reply";
+      const capturedText = currentText;
+      replyBtn.addEventListener("click", () => {
+        // Truncate quoted text to first 120 chars
+        const quoted = capturedText.replace(/\n/g, " ").substring(0, 120);
+        input.value = `> ${quoted}\n`;
+        input.focus();
+        input.dispatchEvent(new Event("input"));
+      });
+      msgEl.appendChild(replyBtn);
+
       currentBubble = null;
       currentText   = "";
     }
@@ -183,6 +210,18 @@
     setStatus("thinking", "Thinking…");
     vscode.postMessage({ type: "send", task, mode: modeEl.value });
   }
+
+  // ── File-link click handler (delegated) ──────────────────────────────────────
+  chat.addEventListener("click", (e) => {
+    const link = e.target.closest(".file-link");
+    if (link) {
+      const p = link.dataset.path;
+      // Try absolute first, then workspace-relative
+      const workspaceRoot = typeof WORKSPACE_ROOT !== "undefined" ? WORKSPACE_ROOT : "";
+      const fullPath = p.startsWith("/") ? p : (workspaceRoot ? workspaceRoot + "/" + p : p);
+      vscode.postMessage({ type: "openFile", path: fullPath });
+    }
+  });
 
   // ── Button handlers ───────────────────────────────────────────────────────────
   btnSend.addEventListener("click", sendMessage);
