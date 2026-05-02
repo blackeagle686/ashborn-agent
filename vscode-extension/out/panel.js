@@ -128,8 +128,60 @@ class AshbornViewProvider {
                 break;
             case "theme":
                 const workbenchConfig = vscode.workspace.getConfiguration("workbench");
-                const theme = msg.isLight ? "Default Light Modern" : "Default Dark Modern";
-                await workbenchConfig.update("colorTheme", theme, vscode.ConfigurationTarget.Global);
+                // Collect every theme contributed by installed extensions
+                const allThemes = [];
+                for (const ext of vscode.extensions.all) {
+                    const contributes = ext.packageJSON?.contributes;
+                    if (contributes?.themes) {
+                        for (const t of contributes.themes) {
+                            if (t.label) {
+                                allThemes.push({ label: t.label, uiTheme: t.uiTheme || "" });
+                            }
+                        }
+                    }
+                }
+                // Priority lists: preferred theme names to try first
+                const lightPriority = [
+                    "Default Light Modern",
+                    "Default Light+",
+                    "Quiet Light",
+                    "Solarized Light",
+                    "Abyss", // fallback
+                ];
+                const darkPriority = [
+                    "Default Dark Modern",
+                    "Default Dark+",
+                    "One Dark Pro",
+                    "Monokai",
+                    "Dracula",
+                ];
+                let targetTheme;
+                if (msg.isLight) {
+                    // Try priority list first
+                    targetTheme = lightPriority.find(name => allThemes.some(t => t.label === name));
+                    // Fall back to any theme with uiTheme "vs" (light) or label containing "light"
+                    if (!targetTheme) {
+                        const found = allThemes.find(t => t.uiTheme === "vs" || t.label.toLowerCase().includes("light"));
+                        targetTheme = found?.label;
+                    }
+                    // Last resort
+                    if (!targetTheme) {
+                        targetTheme = "Default Light Modern";
+                    }
+                }
+                else {
+                    // Try priority dark list
+                    targetTheme = darkPriority.find(name => allThemes.some(t => t.label === name));
+                    // Fall back to any uiTheme "vs-dark"
+                    if (!targetTheme) {
+                        const found = allThemes.find(t => t.uiTheme === "vs-dark" || t.label.toLowerCase().includes("dark"));
+                        targetTheme = found?.label;
+                    }
+                    if (!targetTheme) {
+                        targetTheme = "Default Dark Modern";
+                    }
+                }
+                await workbenchConfig.update("colorTheme", targetTheme, vscode.ConfigurationTarget.Global);
                 break;
         }
     }
