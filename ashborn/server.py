@@ -15,6 +15,10 @@ from typing import Optional
 # Allows tools to access the VS Code IPC bridge for the current request
 vscode_ipc_context: ContextVar[Optional[callable]] = ContextVar("vscode_ipc", default=None)
 
+# Thread-safe queue for file-open requests emitted by sync tools
+from collections import deque
+_pending_file_opens: deque = deque()
+
 logging.basicConfig(
     level=logging.WARNING,
     format="%(asctime)s  %(levelname)s  %(name)s — %(message)s"
@@ -128,6 +132,11 @@ async def chat_stream(req: ChatRequest):
         yield f"data: {json.dumps({'type':'session','session_id':session_id})}\n\n"
         
         while True:
+            # Flush any pending file-open events from sync tools
+            while _pending_file_opens:
+                file_path = _pending_file_opens.popleft()
+                yield f"data: {json.dumps({'type':'vscode_tool','call_id':'noop','tool':'open_file','arguments':{'path': file_path}})}\n\n"
+
             event = await queue.get()
             yield f"data: {json.dumps(event)}\n\n"
             if event.get("type") == "done":
