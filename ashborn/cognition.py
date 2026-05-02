@@ -487,7 +487,20 @@ class AshbornLoop(AgentLoop):
         await memory.add_interaction(session_id, "assistant", final_answer)
         return final_answer
 
-    async def run_stream(self, prompt: str, memory, session_id: str, max_iterations: int = 5):
+    async def run_stream(self, prompt: str, memory, session_id: str, mode: str = "auto"):
+        # FAST ANSWER MODE: Bypass the heavy task loop for quick queries
+        if mode == "fast_ans":
+            yield {"type": "status", "content": "⚡ Fast Answer mode active..."}
+            context = await memory.get_full_context(session_id, query=prompt)
+            system_prompt = "You are ASHBORN. Give a concise, direct answer to the user's question."
+            full_prompt = f"{system_prompt}\n\nContext:\n{context}\n\nUser: {prompt}"
+            
+            async for chunk in self.planner.llm.generate_stream(full_prompt, session_id=session_id):
+                yield {"type": "chunk", "content": chunk}
+            
+            await memory.add_interaction(session_id, "assistant", "Fast answer generated.")
+            return
+
         # Step 1: Think
         yield {"type": "status", "content": "🧠 Decomposing your request into tasks..."}
         objective_meta = await self.thinker.analyze(prompt, memory, session_id)
