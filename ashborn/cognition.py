@@ -339,16 +339,30 @@ class AshbornReflector(Reflector):
         "Respond ONLY with JSON: {\"is_complete\": bool, \"reflection\": \"<one sentence>\"}"
     )
 
+    # Success patterns (no LLM needed)
+    _SUCCESS_RE = re.compile(
+        r'(?:successfully|created|updated|applied|done|complete|opened|installed|ran|executed)',
+        re.IGNORECASE
+    )
+    _ERROR_RE = re.compile(r'(?:^ERROR|Traceback|exception|failed|not found)', re.IGNORECASE)
+
     async def reflect(self, objective: str, action: dict, result: str) -> dict:
-        prompt = f"""{self.SYSTEM_INSTRUCTION}
+        result_str = str(result)
 
-Task Description: {objective}
-Action Taken    : {json.dumps(action)}
-Tool Result     : {result}
+        # Fast path: deterministic success detection
+        if self._SUCCESS_RE.search(result_str) and not self._ERROR_RE.search(result_str):
+            return {"is_complete": True, "reflection": "Tool reported success."}
 
-JSON Response:
-"""
-        response = await self.llm.generate(prompt, session_id=None)
+        # Fast path: clear error
+        if self._ERROR_RE.search(result_str):
+            return {"is_complete": False, "reflection": result_str[:200]}
+
+        # Slow path: LLM judge only for ambiguous results
+        prompt = (
+            f"{self.SYSTEM_INSTRUCTION}\n\n"
+            f"Task: {objective}\nResult: {result_str[:500]}\nJSON Response:"
+        )
+        response = await self.llm.generate(prompt, session_id=None, max_tokens=80)
         try:
             clean = response.strip()
             if "```" in clean:
@@ -500,25 +514,23 @@ class AshbornLoop(AgentLoop):
             await memory.add_interaction(session_id, "assistant", "Fast answer generated.")
             return
 
-        # Step 1: Think
+        # Step 1+2: Think AND analyze workspace concurrently
         yield {"type": "status", "content": "🧠 Decomposing your request into tasks..."}
+        analyze_task = asyncio.create_task(
+            self.analyzer.analyze_workspace(prompt)
+        )
         objective_meta = await self.thinker.analyze(prompt, memory, session_id)
         memory.session.set("current_objective", objective_meta)
-
-        # Extract task count from meta string for display
-        task_count_str = ""
-        if "(" in objective_meta:
-            task_count_str = objective_meta.split("(")[1].split(")")[0]
-
-        yield {"type": "status", "content": f"📋 Task file created — {task_count_str}"}
-
-        # Analyze workspace best-effort
         try:
-            analysis = await self.analyzer.analyze_workspace(prompt)
+            analysis = await asyncio.wait_for(analyze_task, timeout=5.0)
             memory.session.set("project_analysis", analysis)
         except Exception:
             pass
 
+        task_count_str = ""
+        if "(" in objective_meta:
+            task_count_str = objective_meta.split("(")[1].split(")")[0]
+        yield {"type": "status", "content": f"📋 {task_count_str}"}
         await memory.add_interaction(session_id, "system", f"Task breakdown: {objective_meta}")
 
         accumulated_results = ""
@@ -535,22 +547,14 @@ class AshbornLoop(AgentLoop):
             task = pending[0]
             task_number += 1
 
-            # Count total for display
             try:
                 all_tasks_count = len(_load_tasks().get("tasks", []))
             except Exception:
                 all_tasks_count = "?"
 
-            yield {
-                "type": "status",
-                "content": f"⚙ Task {task_number}/{all_tasks_count} [P{task['priority']}]: {task['title']}"
-            }
-
-            # Stream planner thinking for this task
-            yield {"type": "chunk", "content": f"\n**[P{task['priority']}] {task['title']}**\n"}
-            async for thought in self.planner.stream_thinking(task["description"], accumulated_results):
-                yield {"type": "chunk", "content": thought}
-            yield {"type": "chunk", "content": "\n"}
+            status_line = self.planner.task_status_line(task)
+            yield {"type": "status", "content": f"⚙ Task {task_number}/{all_tasks_count}: {task['title']}"}
+            yield {"type": "chunk", "content": f"\n**[P{task['priority']}] {task['title']}**\n_{status_line}_\n"}
 
             for attempt in range(self.MAX_RETRIES_PER_TASK):
                 plan = await self.planner.plan_task(task, accumulated_results)
