@@ -284,6 +284,16 @@ html, body {
   max-width: 280px;
 }
 
+.welcome-footer {
+  margin-top: 10px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  opacity: 0.6;
+  font-weight: 600;
+}
+
 /* ── Message Bubbles ─────────────────────────────────────────────────────── */
 .msg {
   display: flex;
