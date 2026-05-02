@@ -45,6 +45,48 @@
   let isStreaming   = false;
   let currentMode   = "auto";
 
+  // ── Splash Screen: Poll backend until ready ──────────────────────────────────
+  const splashScreen = document.getElementById("splash-screen");
+  const splashStatusText = document.getElementById("splash-status-text");
+
+  const SPLASH_MESSAGES = [
+    "Connecting to backend…",
+    "Loading AI modules…",
+    "Initializing Phoenix framework…",
+    "Warming up the agent…",
+    "Almost ready…",
+  ];
+  let splashMsgIndex = 0;
+
+  function dismissSplash() {
+    splashScreen.classList.add("splash-exit");
+    splashScreen.addEventListener("transitionend", () => {
+      splashScreen.style.display = "none";
+    }, { once: true });
+  }
+
+  async function pollBackend() {
+    try {
+      const res = await fetch("http://127.0.0.1:8765/health", { signal: AbortSignal.timeout(3000) });
+      const data = await res.json();
+      if (data.agent_ready === true) {
+        splashStatusText.textContent = "✅ Agent ready!";
+        setTimeout(dismissSplash, 700);
+        return; // Done — stop polling
+      }
+      splashStatusText.textContent = "Server up, loading agent…";
+    } catch (_) {
+      // Cycle through loading messages while waiting
+      splashMsgIndex = (splashMsgIndex + 1) % SPLASH_MESSAGES.length;
+      splashStatusText.textContent = SPLASH_MESSAGES[splashMsgIndex];
+    }
+    setTimeout(pollBackend, 2000);
+  }
+
+  // Start polling immediately
+  setTimeout(pollBackend, 500);
+
+
   // ── Optimized Markdown renderer ──────────────────────────────────────────────
   const mdRegexes = [
     [/```([\w]*)?\n([\s\S]*?)```/g, (_, lang, code) => `<pre><code class="lang-${lang || "text"}">${escapeHtml(code.trimEnd())}</code></pre>`],
