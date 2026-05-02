@@ -187,6 +187,7 @@ class AshbornViewProvider {
                     }
                 }
                 await workbenchConfig.update("colorTheme", targetTheme, vscode.ConfigurationTarget.Global);
+                fs.writeFileSync("/tmp/ashborn_themes.txt", "Target Theme: " + targetTheme + "\n\nAll Themes:\n" + JSON.stringify(allThemes, null, 2));
                 vscode.window.showInformationMessage(`Ashborn: Applied theme → "${targetTheme}"`);
                 break;
         }
