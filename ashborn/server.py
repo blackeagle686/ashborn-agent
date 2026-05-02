@@ -222,6 +222,34 @@ async def update_config(update: ConfigUpdate):
     return {"status": "ok", "message": "Configuration updated and agent re-initialized."}
 
 
+# ── Text-to-Speech ────────────────────────────────────────────────────────────
+class TTSRequest(BaseModel):
+    text: str
+    lang: str = "en"
+
+@app.post("/tts")
+async def text_to_speech(req: TTSRequest):
+    """Generate speech from text using gTTS and return base64-encoded MP3."""
+    import io
+    import base64
+    try:
+        from gtts import gTTS
+    except ImportError:
+        return {"status": "error", "message": "gTTS not installed. Run: pip install gtts"}
+
+    try:
+        # Truncate to avoid huge audio files
+        text = req.text[:1000].strip()
+        tts = gTTS(text=text, lang=req.lang, slow=False)
+        buf = io.BytesIO()
+        tts.write_to_fp(buf)
+        buf.seek(0)
+        audio_b64 = base64.b64encode(buf.read()).decode("utf-8")
+        return {"status": "ok", "audio": audio_b64}
+    except Exception as exc:
+        return {"status": "error", "message": str(exc)}
+
+
 # ── CLI entry ─────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     import uvicorn
