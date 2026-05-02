@@ -35,35 +35,29 @@
   let cursorEl      = null;   // blinking cursor span
   let isStreaming   = false;
 
-  // ── Simple Markdown renderer (no external deps) ──────────────────────────────
+  // ── Optimized Markdown renderer ──────────────────────────────────────────────
+  const mdRegexes = [
+    [/```([\w]*)?\n([\s\S]*?)```/g, (_, lang, code) => `<pre><code class="lang-${lang || "text"}">${escapeHtml(code.trimEnd())}</code></pre>`],
+    [/`([^`]+)`/g, (_, c) => `<code>${escapeHtml(c)}</code>`],
+    [/\*\*(.+?)\*\*/g, "<strong>$1</strong>"],
+    [/\*(.+?)\*/g, "<em>$1</em>"],
+    [/^### (.+)$/gm, "<h3>$1</h3>"],
+    [/^## (.+)$/gm,  "<h2>$1</h2>"],
+    [/^# (.+)$/gm,   "<h1>$1</h1>"],
+    [/^---+$/gm, "<hr/>"],
+    [/^[•\-\*] (.+)$/gm, "<li>$1</li>"],
+    [/^\d+\. (.+)$/gm, "<li>$1</li>"],
+    [/✓ (.+)/g, '<span style="color:#4caf82">✓ $1</span>'],
+    [/✗ (.+)/g, '<span style="color:#e05560">✗ $1</span>'],
+    [/\n/g, "<br/>"]
+  ];
+
   function renderMarkdown(text) {
-    // Code blocks
-    text = text.replace(/```([\w]*)?\n([\s\S]*?)```/g, (_, lang, code) => {
-      const escaped = escapeHtml(code.trimEnd());
-      return `<pre><code class="lang-${lang || "text"}">${escaped}</code></pre>`;
-    });
-    // Inline code
-    text = text.replace(/`([^`]+)`/g, (_, c) => `<code>${escapeHtml(c)}</code>`);
-    // Bold
-    text = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-    // Italic
-    text = text.replace(/\*(.+?)\*/g, "<em>$1</em>");
-    // Headers
-    text = text.replace(/^### (.+)$/gm, "<h3>$1</h3>");
-    text = text.replace(/^## (.+)$/gm,  "<h2>$1</h2>");
-    text = text.replace(/^# (.+)$/gm,   "<h1>$1</h1>");
-    // Horizontal rule
-    text = text.replace(/^---+$/gm, "<hr/>");
-    // Unordered list items
-    text = text.replace(/^[•\-\*] (.+)$/gm, "<li>$1</li>");
-    // Numbered list
-    text = text.replace(/^\d+\. (.+)$/gm, "<li>$1</li>");
-    // Checkboxes
-    text = text.replace(/✓ (.+)/g, '<span style="color:#4caf82">✓ $1</span>');
-    text = text.replace(/✗ (.+)/g, '<span style="color:#e05560">✗ $1</span>');
-    // Line breaks for non-HTML lines
-    text = text.replace(/\n/g, "<br/>");
-    return text;
+    let html = text;
+    for (const [reg, repl] of mdRegexes) {
+      html = html.replace(reg, repl);
+    }
+    return html;
   }
 
   function escapeHtml(s) {
@@ -106,12 +100,7 @@
     const msg = document.createElement("div");
     msg.className = "msg msg-agent";
     const bubble = document.createElement("div");
-    bubble.className = "msg-bubble";
-
-    // Blinking cursor
-    cursorEl = document.createElement("span");
-    cursorEl.className = "cursor";
-    bubble.appendChild(cursorEl);
+    bubble.className = "msg-bubble streaming";
 
     msg.innerHTML = `<div class="msg-label">🔥 Ashborn</div>`;
     msg.appendChild(bubble);
@@ -125,22 +114,24 @@
   function appendChunk(text) {
     if (!currentBubble) startAgentMessage();
     currentText += text;
-    if (cursorEl) cursorEl.remove();
+    
+    // Efficiently update HTML
     currentBubble.innerHTML = renderMarkdown(currentText);
-    // Re-append cursor
-    cursorEl = document.createElement("span");
-    cursorEl.className = "cursor";
-    currentBubble.appendChild(cursorEl);
-    scrollBottom();
+    
+    // Only scroll if we are near bottom
+    const threshold = 100;
+    const isNearBottom = (chat.scrollHeight - chat.scrollTop - chat.clientHeight) < threshold;
+    if (isNearBottom) {
+      scrollBottom();
+    }
   }
 
   function finalizeMessage() {
     if (currentBubble) {
-      if (cursorEl) cursorEl.remove();
+      currentBubble.classList.remove("streaming");
       currentBubble.innerHTML = renderMarkdown(currentText);
       currentBubble = null;
       currentText   = "";
-      cursorEl      = null;
     }
     scrollBottom();
   }
