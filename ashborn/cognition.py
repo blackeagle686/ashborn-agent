@@ -109,7 +109,7 @@ Respond ONLY with a valid JSON object in this exact format:
             context=context or "No prior context."
         )
 
-        raw = await self.llm.generate(full_prompt, session_id=None, max_tokens=1500)
+        raw = await self.llm.generate(full_prompt, session_id=None, max_tokens=800)
         clean = _clean_json(raw)
 
         # Parse the task list
@@ -196,9 +196,15 @@ class AshbornPlanner(Planner):
         except Exception as ex:
             return f"Could not read {file_path}: {ex}"
 
+    @property
+    def _tool_info_cached(self) -> str:
+        if not hasattr(self, "_tool_info_str"):
+            self._tool_info_str = json.dumps(self.tools.get_all_tools_info(), indent=2)
+        return self._tool_info_str
+
     def _build_task_prompt(self, task: dict, previous_results: str = "",
                            file_contents: dict = None) -> str:
-        tool_info = json.dumps(self.tools.get_all_tools_info(), indent=2)
+        tool_info = self._tool_info_cached
         task_type = task.get("type", "")
 
         # Build file context section
@@ -255,27 +261,11 @@ For task completion with no tool needed:
 Respond ONLY with valid JSON.
 """
 
-    async def stream_thinking(self, objective: str, previous_results: str = ""):
-        """Show which task we are currently executing."""
-        # objective here is a task title injected by AshbornLoop
-        thinking_prompt = (
-            f"You are ASHBORN. In 1-2 sentences, describe what you are about to do for this task:\n"
-            f"Task: {objective}\n"
-            f"Focus on WHAT tool you will use and WHY."
-        )
-        try:
-            stream_fn = getattr(self.llm, "generate_stream", None)
-            if callable(stream_fn):
-                stream = stream_fn(thinking_prompt, session_id=None, max_tokens=120)
-                if hasattr(stream, "__aiter__"):
-                    async for chunk in stream:
-                        yield chunk
-                    return
-            text = await self.llm.generate(thinking_prompt, session_id=None, max_tokens=120)
-            for word in (text or "").split():
-                yield word + " "
-        except Exception:
-            yield f"Executing: {objective}"
+    def task_status_line(self, task: dict) -> str:
+        """Return a deterministic status line from the task dict — no LLM call needed."""
+        type_icon = {"new_file": "📄", "modify_file": "✏️", "command": "⚡", "read": "🔍"}
+        icon = type_icon.get(task.get("type", ""), "⚙")
+        return f"{icon} {task.get('description', task.get('title', ''))[:120]}"
 
     async def plan(self, objective: str, previous_results: str = "") -> dict:
         """
