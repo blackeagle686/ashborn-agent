@@ -542,9 +542,10 @@
 
   function startListening() {
     if (!SpeechRecognition) {
-      listeningTranscript.textContent = "Speech recognition not supported in this environment.";
+      listeningTranscript.textContent = "❌ Speech recognition is blocked by VS Code's security sandbox.";
+      listeningTranscript.style.color = "#ff4444";
       listeningOverlay.style.display = "flex";
-      setTimeout(() => { listeningOverlay.style.display = "none"; }, 3000);
+      btnStopMic.textContent = "Close";
       return;
     }
 
