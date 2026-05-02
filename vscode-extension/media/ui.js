@@ -573,14 +573,19 @@
       }
     };
 
+    let hasError = false;
+
     recognition.onerror = (e) => {
+      hasError = true;
       listeningTranscript.textContent = "❌ Error: " + (e.error || "Unknown");
       listeningTranscript.style.color = "#ff4444";
       btnStopMic.textContent = "Close";
     };
 
     recognition.onend = () => {
-      stopListening();
+      if (!hasError) {
+        stopListening();
+      }
     };
 
     try {
