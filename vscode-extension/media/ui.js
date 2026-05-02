@@ -14,7 +14,7 @@
   const btnRun   = document.getElementById("btn-run");
   const btnStop  = document.getElementById("btn-stop");
   const btnReset = document.getElementById("btn-reset");
-  const modeEl   = document.getElementById("mode-select");
+  const modePills = document.querySelectorAll(".mode-pill");
   const dotEl    = document.getElementById("status-dot");
   const txtEl    = document.getElementById("status-text");
   
@@ -43,6 +43,7 @@
   let currentText   = "";     // raw text accumulated
   let cursorEl      = null;   // blinking cursor span
   let isStreaming   = false;
+  let currentMode   = "auto";
 
   // ── Optimized Markdown renderer ──────────────────────────────────────────────
   const mdRegexes = [
@@ -252,7 +253,7 @@
     input.disabled    = !enabled;
     btnSend.disabled  = !enabled;
     btnRun.disabled   = !enabled;
-    modeEl.disabled   = !enabled;
+    modePills.forEach(p => p.disabled = !enabled);
     btnStop.disabled  = enabled;
   }
 
@@ -263,7 +264,7 @@
     input.value = "";
     setInputEnabled(false);
     setStatus("thinking", "Thinking…");
-    vscode.postMessage({ type: "send", task, mode: modeEl.value });
+    vscode.postMessage({ type: "send", task, mode: currentMode });
   }
 
   // ── File-link click handler (delegated) ──────────────────────────────────────
@@ -280,6 +281,16 @@
 
   // ── Button handlers ───────────────────────────────────────────────────────────
   btnSend.addEventListener("click", sendMessage);
+
+  // Mode Pill Handlers
+  modePills.forEach(pill => {
+    pill.addEventListener("click", () => {
+      if (isStreaming) return;
+      modePills.forEach(p => p.classList.remove("active"));
+      pill.classList.add("active");
+      currentMode = pill.dataset.mode;
+    });
+  });
 
   btnRun.addEventListener("click", () => {
     const task = input.value.trim();
