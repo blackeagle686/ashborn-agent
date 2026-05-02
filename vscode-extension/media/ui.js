@@ -212,6 +212,12 @@
     removeStatusMsgs();
   });
 
+  btnReset.addEventListener("click", () => {
+    vscode.postMessage({ type: "reset" });
+    setStatus("idle", "Idle");
+    setInputEnabled(true);
+    finalizeMessage();
+    removeStatusMsgs();
     chat.innerHTML = `
       <div class="welcome">
         <div class="welcome-icon">🔥</div>
