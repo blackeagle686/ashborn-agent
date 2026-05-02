@@ -142,18 +142,23 @@ class AshbornViewProvider {
                 }
                 // Priority lists: preferred theme names to try first
                 const lightPriority = [
+                    "Light Modern",
                     "Default Light Modern",
+                    "Light+",
                     "Default Light+",
+                    "Light (Visual Studio)",
                     "Quiet Light",
-                    "Solarized Light",
-                    "Abyss", // fallback
+                    "Solarized Light"
                 ];
                 const darkPriority = [
+                    "Dark Modern",
                     "Default Dark Modern",
+                    "Dark+",
                     "Default Dark+",
+                    "Dark (Visual Studio)",
                     "One Dark Pro",
                     "Monokai",
-                    "Dracula",
+                    "Dracula"
                 ];
                 let targetTheme;
                 if (msg.isLight) {
@@ -166,7 +171,7 @@ class AshbornViewProvider {
                     }
                     // Last resort
                     if (!targetTheme) {
-                        targetTheme = "Default Light Modern";
+                        targetTheme = "Light Modern";
                     }
                 }
                 else {
@@ -178,7 +183,7 @@ class AshbornViewProvider {
                         targetTheme = found?.label;
                     }
                     if (!targetTheme) {
-                        targetTheme = "Default Dark Modern";
+                        targetTheme = "Dark Modern";
                     }
                 }
                 await workbenchConfig.update("colorTheme", targetTheme, vscode.ConfigurationTarget.Global);
