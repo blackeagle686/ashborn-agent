@@ -22,6 +22,24 @@
   --text-main: #ffffff;
   --text-dim: #a0a0b8;
   --text-muted: #6b6b80;
+
+  /* Additional Backgrounds & Colors */
+  --bg-dark-30: rgba(0, 0, 0, 0.3);
+  --bg-dark-40: rgba(0, 0, 0, 0.4);
+  --bg-dark-50: rgba(0, 0, 0, 0.5);
+  --bg-input-gradient: linear-gradient(0deg, rgba(8,8,12,0.9) 0%, rgba(8,8,12,0.6) 100%);
+  --bg-panel: rgba(15, 15, 25, 0.95);
+  --bg-code: #09090e;
+  --color-code: #cdd6f4;
+  --color-code-inline: #e0b0ff;
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --shadow-main: rgba(0, 0, 0, 0.4);
+  --shadow-light: rgba(0, 0, 0, 0.15);
+  --btn-text: #ffffff;
+  --btn-ghost-bg-hover: rgba(255, 255, 255, 0.1);
+  --input-placeholder: rgba(255, 255, 255, 0.3);
+  --scrollbar-bg: rgba(255, 255, 255, 0.1);
+  --scrollbar-hover: rgba(255, 255, 255, 0.2);
   
   /* Structural */
   --radius-xl: 16px;
@@ -34,6 +52,39 @@
   
   --transition-smooth: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   --transition-bounce: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+body.vscode-light {
+  --bg-gradient: radial-gradient(circle at 50% 0%, #f7f7fa 0%, #e2e2e8 100%);
+  --surface-glass: rgba(255, 255, 255, 0.7);
+  --surface-glass-hover: rgba(255, 255, 255, 0.9);
+  --surface-border: rgba(0, 0, 0, 0.1);
+  
+  --primary: #8522a8;
+  --primary-glow: rgba(133, 34, 168, 0.3);
+  --accent: #d41744;
+  --accent-glow: rgba(212, 23, 68, 0.3);
+
+  --text-main: #1a1a1a;
+  --text-dim: #4d4d66;
+  --text-muted: #6b6b80;
+  
+  --bg-dark-30: rgba(255, 255, 255, 0.6);
+  --bg-dark-40: rgba(255, 255, 255, 0.8);
+  --bg-dark-50: rgba(255, 255, 255, 1);
+  --bg-input-gradient: linear-gradient(0deg, rgba(255,255,255,0.95) 0%, rgba(245,245,250,0.85) 100%);
+  --bg-panel: rgba(250, 250, 250, 0.95);
+  --bg-code: #f0f0f4;
+  --color-code: #333344;
+  --color-code-inline: #6b21a8;
+  --border-subtle: rgba(0, 0, 0, 0.05);
+  --shadow-main: rgba(0, 0, 0, 0.1);
+  --shadow-light: rgba(0, 0, 0, 0.05);
+  --btn-text: #ffffff;
+  --btn-ghost-bg-hover: rgba(0, 0, 0, 0.05);
+  --input-placeholder: rgba(0, 0, 0, 0.4);
+  --scrollbar-bg: rgba(0, 0, 0, 0.1);
+  --scrollbar-hover: rgba(0, 0, 0, 0.2);
 }
 
 * {
@@ -171,8 +222,8 @@ html, body {
 }
 
 .btn-ghost:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
+  color: var(--btn-text);
+  background: var(--btn-ghost-bg-hover);
 }
 
 /* ── Status Bar ──────────────────────────────────────────────────────────── */
@@ -181,7 +232,7 @@ html, body {
   align-items: center;
   gap: 8px;
   padding: 6px 16px;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--bg-dark-30);
   border-bottom: 1px solid var(--surface-border);
   font-size: 11px;
   font-weight: 500;
@@ -384,7 +435,7 @@ html, body {
   align-items: center;
   gap: 10px;
   padding: 8px 16px;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--bg-dark-40);
   border: 1px solid var(--surface-border);
   border-radius: 30px; /* Pill shape */
   font-size: 11px;
@@ -412,21 +463,21 @@ html, body {
 .msg-bubble p { margin-bottom: 10px; }
 .msg-bubble p:last-child { margin-bottom: 0; }
 
-.msg-bubble strong { color: #fff; font-weight: 700; }
+.msg-bubble strong { color: var(--text-main); font-weight: 700; }
 .msg-bubble em { color: var(--text-dim); font-style: italic; }
 
 .msg-bubble code {
   font-family: var(--font-mono);
   font-size: 12px;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--bg-dark-40);
   padding: 2px 6px;
   border-radius: var(--radius-sm);
-  color: #e0b0ff;
-  border: 1px solid rgba(255,255,255,0.05);
+  color: var(--color-code-inline);
+  border: 1px solid var(--border-subtle);
 }
 
 .msg-bubble pre {
-  background: #09090e;
+  background: var(--bg-code);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-lg);
   padding: 14px;
@@ -449,7 +500,7 @@ html, body {
   background: none;
   padding: 0;
   border: none;
-  color: #cdd6f4;
+  color: var(--color-code);
   font-size: 12.5px;
   line-height: 1.5;
 }
@@ -473,7 +524,7 @@ html, body {
 /* ── Ultra-Sleek Input Area ──────────────────────────────────────────────── */
 .input-area {
   padding: 16px;
-  background: linear-gradient(0deg, rgba(8,8,12,0.9) 0%, rgba(8,8,12,0.6) 100%);
+  background: var(--bg-input-gradient);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid rgba(255,255,255,0.05);
@@ -499,7 +550,8 @@ html, body {
 }
 
 .mode-select {
-  background: rgba(0,0,0,0.3);
+  background: var(--bg-dark-30);
+  border-bottom: 1px solid transparent; /* Ensure border is removed correctly or left to existing */
   border: 1px solid var(--surface-border);
   color: var(--text-dim);
   border-radius: 20px; /* pill shape */
@@ -514,33 +566,33 @@ html, body {
 }
 
 .mode-select:hover, .mode-select:focus {
-  background: rgba(255,255,255,0.05);
+  background: var(--btn-ghost-bg-hover);
   border-color: var(--primary);
-  color: #fff;
-  box-shadow: 0 0 12px rgba(157, 56, 198, 0.2);
+  color: var(--text-main);
+  box-shadow: 0 0 12px var(--primary-glow);
 }
 
 .input-row {
   position: relative;
   display: flex;
   align-items: flex-end;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--bg-dark-30);
+  border: 1px solid var(--surface-border);
   border-radius: var(--radius-xl);
   padding: 4px;
   transition: var(--transition-smooth);
 }
 
 .input-row:focus-within {
-  border-color: rgba(255, 42, 95, 0.5);
-  box-shadow: 0 0 0 3px rgba(255, 42, 95, 0.1), 0 8px 24px rgba(0,0,0,0.3);
-  background: rgba(0,0,0,0.5);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow), 0 8px 24px var(--shadow-main);
+  background: var(--bg-dark-50);
 }
 
 .input-box {
   flex: 1;
   background: transparent;
-  color: #fff;
+  color: var(--text-main);
   font-family: var(--font-sans);
   font-size: 14px;
   padding: 12px 90px 12px 14px; /* Right padding for the two absolute buttons */
@@ -553,7 +605,7 @@ html, body {
 }
 
 .input-box::placeholder {
-  color: rgba(255,255,255,0.3);
+  color: var(--input-placeholder);
   font-weight: 400;
 }
 
@@ -602,7 +654,7 @@ html, body {
   bottom: 100%;
   left: 0;
   right: 0;
-  background: rgba(15, 15, 25, 0.95);
+  background: var(--bg-panel);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border: 1px solid var(--surface-border);
@@ -630,8 +682,8 @@ html, body {
 .mention-item:last-child { border-bottom: none; }
 
 .mention-item:hover, .mention-item.selected {
-  background: rgba(157, 56, 198, 0.2);
-  color: #fff;
+  background: var(--primary-glow);
+  color: var(--text-main);
 }
 
 .mention-icon {
@@ -652,7 +704,7 @@ html, body {
   transform: translate(-50%, -50%);
   width: 90%;
   max-width: 320px;
-  background: rgba(15, 15, 25, 0.98);
+  background: var(--bg-panel);
   backdrop-filter: blur(20px);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-xl);
@@ -713,11 +765,11 @@ html, body {
 }
 
 .setting-item input, .setting-item select {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-dark-30);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-md);
   padding: 8px 12px;
-  color: #fff;
+  color: var(--text-main);
   font-family: var(--font-sans);
   outline: none;
 }
