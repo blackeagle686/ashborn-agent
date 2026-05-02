@@ -61,8 +61,24 @@
         rows="3"
       ></textarea>
       <button id="btn-send" class="btn btn-send" title="Send (Enter)">➤</button>
+      <button id="btn-mic" class="btn btn-mic" title="Voice Input (hold to speak)">🎙</button>
     </div>
   </div>
+
+  <!-- ── Listening Overlay ─────────────────────────────────────────── -->
+  <div class="listening-overlay" id="listening-overlay" style="display:none;">
+    <div class="listening-content">
+      <div class="mic-ring">
+        <div class="mic-icon">🎙</div>
+      </div>
+      <div class="listening-label">Listening…</div>
+      <div class="listening-transcript" id="listening-transcript">Say something…</div>
+      <button id="btn-stop-mic" class="btn btn-danger">✕ Cancel</button>
+    </div>
+  </div>
+
+  <!-- Hidden audio element for TTS -->
+  <audio id="tts-player" style="display:none;"></audio>
 
   <!-- ── Settings Panel (Hidden by default) ─────────────────────── -->
   <div class="settings-panel" id="settings-panel" style="display: none;">
