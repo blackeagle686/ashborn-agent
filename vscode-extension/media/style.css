@@ -358,11 +358,12 @@ html, body {
   width: 100%;
 }
 
-/* ── Streaming Cursor ────────────────────────────────────────────────────── */
-.cursor {
+/* ── Streaming Cursor (Optimized via CSS) ────────────────────────────────── */
+.msg-bubble.streaming::after {
+  content: '';
   display: inline-block;
   width: 6px;
-  height: 16px;
+  height: 15px;
   background: var(--flame-mid);
   border-radius: 2px;
   margin-left: 4px;
