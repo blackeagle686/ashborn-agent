@@ -126,18 +126,23 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
 
         // Priority lists: preferred theme names to try first
         const lightPriority = [
+          "Light Modern",
           "Default Light Modern",
+          "Light+",
           "Default Light+",
+          "Light (Visual Studio)",
           "Quiet Light",
-          "Solarized Light",
-          "Abyss",   // fallback
+          "Solarized Light"
         ];
         const darkPriority = [
+          "Dark Modern",
           "Default Dark Modern",
+          "Dark+",
           "Default Dark+",
+          "Dark (Visual Studio)",
           "One Dark Pro",
           "Monokai",
-          "Dracula",
+          "Dracula"
         ];
 
         let targetTheme: string | undefined;
@@ -155,7 +160,7 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
             targetTheme = found?.label;
           }
           // Last resort
-          if (!targetTheme) { targetTheme = "Default Light Modern"; }
+          if (!targetTheme) { targetTheme = "Light Modern"; }
         } else {
           // Try priority dark list
           targetTheme = darkPriority.find(name =>
@@ -168,7 +173,7 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
             );
             targetTheme = found?.label;
           }
-          if (!targetTheme) { targetTheme = "Default Dark Modern"; }
+          if (!targetTheme) { targetTheme = "Dark Modern"; }
         }
 
         await workbenchConfig.update(
