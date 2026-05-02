@@ -51,6 +51,21 @@ For those who live in the terminal, Ashborn provides a full-screen TUI (Terminal
 
 ---
 
+## 📸 Visualizing the Future
+
+<table width="100%">
+  <tr>
+    <td width="50%"><img src="ashborn-media/image1.png" alt="Ashborn Preview 1"><br><i>Ultra-Premium IDE Interface</i></td>
+    <td width="50%"><img src="ashborn-media/image2.png" alt="Ashborn Preview 2"><br><i>Cinematic Terminal Experience</i></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="ashborn-media/image3.png" alt="Ashborn Preview 3"><br><i>Phoenix AI Core Logic</i></td>
+    <td width="50%"><img src="ashborn-media/image4.png" alt="Ashborn Preview 4"><br><i>Autonomous Workflow Cycle</i></td>
+  </tr>
+</table>
+
+---
+
 ## 🚀 Standalone Installation
 
 Ashborn is now easier than ever to install on Linux.
