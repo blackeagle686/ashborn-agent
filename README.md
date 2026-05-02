@@ -1,7 +1,7 @@
 <h1 align="center">🐦‍🔥 Ashborn Agent</h1>
 
 <p align="center">
-  <img src="ashborn/ashborn-bg.png" width="800" alt="Ashborn Agent Logo">
+  <img src="ashborn/ashborn-nobg.png" width="400" alt="Ashborn Agent Logo">
 </p>
 
 <p align="center">
