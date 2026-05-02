@@ -573,8 +573,9 @@
     };
 
     recognition.onerror = (e) => {
-      listeningTranscript.textContent = "❌ " + (e.error || "Error");
-      setTimeout(stopListening, 1500);
+      listeningTranscript.textContent = "❌ Error: " + (e.error || "Unknown");
+      listeningTranscript.style.color = "#ff4444";
+      btnStopMic.textContent = "Close";
     };
 
     recognition.onend = () => {
