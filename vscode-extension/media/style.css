@@ -735,3 +735,46 @@ html, body {
 
 .settings-status.success { color: #4caf50; }
 .settings-status.error { color: var(--accent); }
+
+/* ── Clickable File Links ─────────────────────────────────────────────────── */
+.file-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 7px;
+  background: rgba(255, 123, 0, 0.12);
+  border: 1px solid rgba(255, 123, 0, 0.3);
+  border-radius: 4px;
+  color: var(--primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.file-link::before { content: "📄"; font-size: 10px; }
+
+.file-link:hover {
+  background: rgba(255, 123, 0, 0.25);
+  border-color: var(--primary);
+}
+
+/* ── Reply Button ─────────────────────────────────────────────────────────── */
+.btn-reply {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 10px;
+  background: transparent;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.btn-reply:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
