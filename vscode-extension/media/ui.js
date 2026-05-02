@@ -334,16 +334,10 @@
 
   if (btnTheme) {
     btnTheme.addEventListener("click", () => {
+      // Let the extension host toggle the global theme. 
+      // VS Code will automatically update document.body.classList.
       const isLight = document.body.classList.contains("vscode-light");
-      if (isLight) {
-        document.body.classList.remove("vscode-light");
-        document.body.classList.add("vscode-dark");
-        vscode.postMessage({ type: "theme", isLight: false });
-      } else {
-        document.body.classList.remove("vscode-dark");
-        document.body.classList.add("vscode-light");
-        vscode.postMessage({ type: "theme", isLight: true });
-      }
+      vscode.postMessage({ type: "theme", isLight: !isLight });
     });
   }
 
