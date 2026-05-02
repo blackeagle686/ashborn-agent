@@ -168,10 +168,12 @@
         input.dispatchEvent(new Event("input"));
       });
 
+      const ICON_PLAY = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-.708.707A7.48 7.48 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/><path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.48 5.48 0 0 1 11.025 8a5.48 5.48 0 0 1-1.61 3.89l.706.706z"/><path d="M10.025 8a4.49 4.49 0 0 1-1.318 3.182L8 10.475A3.5 3.5 0 0 0 9.025 8c0-.966-.392-1.841-1.025-2.475l.707-.707A4.49 4.49 0 0 1 10.025 8M7 4a.5.5 0 0 0-.812-.39L3.825 5.5H1.5A.5.5 0 0 0 1 6v4a.5.5 0 0 0 .5.5h2.325l2.363 1.89A.5.5 0 0 0 7 12V4z"/></svg>`;
+
       const playBtn = document.createElement("button");
       playBtn.className = "btn-tts";
       playBtn.title = "Read aloud";
-      playBtn.textContent = "🔊";
+      playBtn.innerHTML = ICON_PLAY;
       playBtn.addEventListener("click", () => playTTS(capturedText, playBtn));
 
       actionsRow.appendChild(replyBtn);
@@ -194,9 +196,13 @@
       .replace(/<[^>]+>/g, "")
       .trim();
 
+    const ICON_PLAY = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-.708.707A7.48 7.48 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/><path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.48 5.48 0 0 1 11.025 8a5.48 5.48 0 0 1-1.61 3.89l.706.706z"/><path d="M10.025 8a4.49 4.49 0 0 1-1.318 3.182L8 10.475A3.5 3.5 0 0 0 9.025 8c0-.966-.392-1.841-1.025-2.475l.707-.707A4.49 4.49 0 0 1 10.025 8M7 4a.5.5 0 0 0-.812-.39L3.825 5.5H1.5A.5.5 0 0 0 1 6v4a.5.5 0 0 0 .5.5h2.325l2.363 1.89A.5.5 0 0 0 7 12V4z"/></svg>`;
+    const ICON_LOAD = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M2 1.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1h-11a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 3V2h-1a.5.5 0 0 1-.5-.5zm2.5.5v1a3.5 3.5 0 0 0 1.989 3.158c.533.256 1.011.791 1.011 1.491v.702c0 .7-.478 1.235-1.011 1.491A3.5 3.5 0 0 0 4.5 13v1h7v-1a3.5 3.5 0 0 0-1.989-3.158C8.978 9.586 8.5 9.052 8.5 8.351v-.702c0-.7.478-1.235 1.011-1.491A3.5 3.5 0 0 0 11.5 3V2h-7z"/></svg>`;
+    const ICON_STOP = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11V5A1.5 1.5 0 0 1 5 3.5z"/></svg>`;
+
     if (!clean) return;
-    const prevText = btn ? btn.textContent : "";
-    if (btn) { btn.textContent = "⏳"; btn.disabled = true; }
+    const prevHTML = btn ? btn.innerHTML : "";
+    if (btn) { btn.innerHTML = ICON_LOAD; btn.disabled = true; }
 
     try {
       const res = await fetch("http://127.0.0.1:8765/tts", {
@@ -209,13 +215,13 @@
         const audioSrc = "data:audio/mp3;base64," + data.audio;
         ttsPlayer.src = audioSrc;
         ttsPlayer.play();
-        if (btn) { btn.textContent = "■"; btn.disabled = false; }
-        ttsPlayer.onended = () => { if (btn) { btn.textContent = "🔊"; } };
+        if (btn) { btn.innerHTML = ICON_STOP; btn.disabled = false; }
+        ttsPlayer.onended = () => { if (btn) { btn.innerHTML = ICON_PLAY; } };
         // Clicking again stops
-        if (btn) btn.onclick = () => { ttsPlayer.pause(); ttsPlayer.currentTime = 0; btn.textContent = "🔊"; btn.onclick = () => playTTS(text, btn); };
+        if (btn) btn.onclick = () => { ttsPlayer.pause(); ttsPlayer.currentTime = 0; btn.innerHTML = ICON_PLAY; btn.onclick = () => playTTS(text, btn); };
       }
     } catch (e) {
-      if (btn) { btn.textContent = prevText; btn.disabled = false; }
+      if (btn) { btn.innerHTML = prevHTML; btn.disabled = false; }
     }
   }
 
