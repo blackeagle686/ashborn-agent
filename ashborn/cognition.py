@@ -414,7 +414,16 @@ class AshbornLoop(AgentLoop):
     def _has_task_file(self) -> bool:
         return os.path.exists(TASK_FILE)
 
-    async def run(self, prompt: str, memory, session_id: str, max_iterations: int = 5) -> str:
+    async def run(self, prompt: str, memory, session_id: str, mode: str = "auto") -> str:
+        # FAST ANSWER MODE
+        if mode == "fast_ans":
+            context = await memory.get_full_context(session_id, query=prompt)
+            system_prompt = "You are ASHBORN. Give a concise, direct answer to the user's question."
+            full_prompt = f"{system_prompt}\n\nContext:\n{context}\n\nUser: {prompt}"
+            ans = await self.planner.llm.generate(full_prompt, session_id=session_id)
+            await memory.add_interaction(session_id, "assistant", ans)
+            return ans
+
         # Step 1: Think — generates .ashborn_tasks.json
         objective_meta = await self.thinker.analyze(prompt, memory, session_id)
         memory.session.set("current_objective", objective_meta)
