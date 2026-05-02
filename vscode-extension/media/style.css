@@ -778,3 +778,113 @@ html, body {
   border-color: var(--primary);
   color: var(--primary);
 }
+
+/* ── Mic Button ───────────────────────────────────────────────────────────── */
+.btn-mic {
+  background: rgba(255, 123, 0, 0.1);
+  border: 1px solid rgba(255, 123, 0, 0.3);
+  border-radius: var(--radius-sm);
+  color: var(--primary);
+  font-size: 16px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  flex-shrink: 0;
+}
+
+.btn-mic:hover { background: rgba(255, 123, 0, 0.25); }
+.btn-mic:active { transform: scale(0.92); }
+
+/* ── TTS Play Button ──────────────────────────────────────────────────────── */
+.btn-tts {
+  background: transparent;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.btn-tts:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* ── Message Actions Row ─────────────────────────────────────────────────── */
+.msg-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+/* ── Listening Overlay ────────────────────────────────────────────────────── */
+.listening-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 5, 20, 0.92);
+  backdrop-filter: blur(12px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.listening-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+  padding: 40px;
+}
+
+.mic-ring {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255, 123, 0, 0.08);
+  border: 2px solid rgba(255, 123, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: micPulse 1.5s ease-in-out infinite;
+  position: relative;
+}
+
+.mic-ring::before {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 123, 0, 0.15);
+  animation: micPulse 1.5s ease-in-out infinite 0.3s;
+}
+
+@keyframes micPulse {
+  0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(255, 123, 0, 0.4); }
+  50% { transform: scale(1.05); opacity: 0.9; box-shadow: 0 0 0 18px rgba(255, 123, 0, 0); }
+}
+
+.mic-icon {
+  font-size: 52px;
+  filter: drop-shadow(0 0 12px rgba(255, 123, 0, 0.8));
+}
+
+.listening-label {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+.listening-transcript {
+  font-size: 14px;
+  color: var(--text-dim);
+  max-width: 260px;
+  min-height: 42px;
+  line-height: 1.5;
+  font-style: italic;
+}
