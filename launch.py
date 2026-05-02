@@ -30,12 +30,17 @@ HEALTH_URL   = "http://127.0.0.1:8765/health"
 ICON_PATH    = os.path.join(SCRIPT_DIR, "vscode-extension", "media", "ashborn.png")
 POLL_INTERVAL = 1.5  # seconds
 
-# The exact binary and flags used by the original .desktop launcher
+# Target directory to open
+TARGET_DIR = sys.argv[1] if len(sys.argv) > 1 else SCRIPT_DIR
+
+# The exact binary and flags used by the original launcher
 VSCODE_CMD = [
     "/home/tlk/.ashborn/bin/ashborn-ide-bin",
     "--user-data-dir", "/home/tlk/.ashborn/ide-data",
     "--extensions-dir", "/home/tlk/.ashborn/ide-extensions",
-    SCRIPT_DIR,   # open the project folder
+    "--disable-extension", "github.copilot",
+    "--disable-extension", "github.copilot-chat",
+    TARGET_DIR,   # open the requested folder
 ]
 
 MESSAGES = [
