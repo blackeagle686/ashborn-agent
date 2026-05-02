@@ -540,11 +540,10 @@ html, body {
 .input-box {
   flex: 1;
   background: transparent;
-  border: none;
   color: #fff;
   font-family: var(--font-sans);
   font-size: 14px;
-  padding: 12px 14px;
+  padding: 12px 90px 12px 14px; /* Right padding for the two absolute buttons */
   resize: none;
   outline: none;
   line-height: 1.5;
@@ -781,15 +780,22 @@ html, body {
 
 /* ── Mic Button ───────────────────────────────────────────────────────────── */
 .btn-mic {
+  position: absolute;
+  right: 48px;
+  bottom: 6px;
   background: rgba(255, 123, 0, 0.1);
   border: 1px solid rgba(255, 123, 0, 0.3);
-  border-radius: var(--radius-sm);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
   color: var(--primary);
-  font-size: 16px;
-  padding: 4px 8px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
-  flex-shrink: 0;
 }
 
 .btn-mic:hover { background: rgba(255, 123, 0, 0.25); }
