@@ -356,8 +356,8 @@ def poll_until_ready(splash: SplashWindow):
                 splash.set_status("✅ Agent ready! Opening Ashborn IDE…")
                 time.sleep(0.8)
                 splash.finish(success=True)
-                # Open VS Codium / VS Code pointing at the workspace
-                subprocess.Popen([VSCODE_BIN, SCRIPT_DIR])
+                # Open the Ashborn IDE (detached — won't block)
+                subprocess.Popen(VSCODE_CMD, start_new_session=True)
                 return
             else:
                 splash.set_status("Server up — loading AI agent…")
