@@ -182,6 +182,7 @@ class AshbornViewProvider {
                     }
                 }
                 await workbenchConfig.update("colorTheme", targetTheme, vscode.ConfigurationTarget.Global);
+                vscode.window.showInformationMessage(`Ashborn: Applied theme → "${targetTheme}"`);
                 break;
         }
     }
