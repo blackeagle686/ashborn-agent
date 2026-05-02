@@ -162,6 +162,7 @@ async def get_config():
     
     return {
         "OPENAI_API_KEY": os.getenv("OPENAI_API_KEY", ""),
+        "OPENAI_BASE_URL": os.getenv("OPENAI_BASE_URL", ""),
         "OPENAI_LLM_MODEL": os.getenv("OPENAI_LLM_MODEL", "gpt-4o"),
         "ASHBORN_LOG_LEVEL": os.getenv("LOG_LEVEL", "WARNING"),
     }
