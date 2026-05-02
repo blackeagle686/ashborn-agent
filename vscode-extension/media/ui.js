@@ -338,9 +338,11 @@
       if (isLight) {
         document.body.classList.remove("vscode-light");
         document.body.classList.add("vscode-dark");
+        vscode.postMessage({ type: "theme", isLight: false });
       } else {
         document.body.classList.remove("vscode-dark");
         document.body.classList.add("vscode-light");
+        vscode.postMessage({ type: "theme", isLight: true });
       }
     });
   }
