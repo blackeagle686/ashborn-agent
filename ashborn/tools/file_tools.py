@@ -19,13 +19,10 @@ from phoenix.framework.agent import tool
 
 
 def _try_open_in_vscode(file_path: str) -> None:
-    """Best-effort: notify the VS Code extension to open this file in the editor."""
+    """Best-effort: queue this file to be opened by the VS Code extension."""
     try:
-        from ashborn.server import vscode_ipc_context
-        vscode_call = vscode_ipc_context.get()
-        if vscode_call:
-            import asyncio
-            asyncio.create_task(vscode_call("open_file", {"path": os.path.abspath(file_path)}))
+        from ashborn.server import _pending_file_opens
+        _pending_file_opens.append(os.path.abspath(file_path))
     except Exception:
         pass
 

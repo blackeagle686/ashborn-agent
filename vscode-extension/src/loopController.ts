@@ -69,7 +69,10 @@ export class LoopController {
             newSessionId = evt.session_id;
           } else if (evt.type === "vscode_tool") {
             const result = await this._handleVscodeTool(evt.tool, evt.arguments);
-            await this._client.sendToolResult(evt.call_id, result);
+            // noop = fire-and-forget, no result needed
+            if (evt.call_id !== "noop") {
+              await this._client.sendToolResult(evt.call_id, result);
+            }
           } else if (evt.type === "status") {
             this._stepCount++;
             onEvent({
