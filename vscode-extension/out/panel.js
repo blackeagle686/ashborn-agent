@@ -127,9 +127,8 @@ class AshbornViewProvider {
                 }
                 break;
             case "theme":
-                const workbenchConfig = vscode.workspace.getConfiguration("workbench");
-                const theme = msg.isLight ? "Default Light+" : "Default Dark+";
-                await workbenchConfig.update("colorTheme", theme, vscode.ConfigurationTarget.Global);
+                // Use the built-in VS Code command to toggle between the user's preferred light and dark themes
+                await vscode.commands.executeCommand("workbench.action.toggleLightDarkThemes");
                 break;
         }
     }
