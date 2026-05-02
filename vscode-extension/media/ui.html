@@ -59,24 +59,30 @@
 
   <!-- ── Input Area ─────────────────────────────────────────────── -->
   <div class="input-area">
-    <div class="mode-row">
-      <label class="mode-label">Mode:</label>
-      <select id="mode-select" class="mode-select">
-        <option value="auto">Auto</option>
-        <option value="plan">Plan (full loop)</option>
-        <option value="fast_ans">Fast Answer</option>
-      </select>
-    </div>
-    <div class="input-row">
-      <div id="mention-list" class="mention-list" style="display: none;"></div>
-      <textarea
-        id="input"
-        class="input-box"
-        placeholder="Describe your task… (Shift+Enter for newline)"
-        rows="3"
-      ></textarea>
-      <button id="btn-send" class="btn btn-send" title="Send (Enter)">➤</button>
-      <button id="btn-mic" class="btn btn-mic" title="Voice Input (hold to speak)">🎙</button>
+    <div class="input-container-wrapper">
+      <div class="input-header">
+        <div class="mode-pills" id="mode-pills">
+          <button class="mode-pill active" data-mode="auto" title="Auto-detect best path">Auto</button>
+          <button class="mode-pill" data-mode="plan" title="Create a detailed plan first">Plan</button>
+          <button class="mode-pill" data-mode="fast_ans" title="Quick response without tools">Quick</button>
+        </div>
+        <div class="input-header-status" id="input-status"></div>
+      </div>
+      
+      <div class="input-main">
+        <div id="mention-list" class="mention-list" style="display: none;"></div>
+        <textarea
+          id="input"
+          class="input-box"
+          placeholder="What's the plan, boss?"
+          rows="1"
+        ></textarea>
+        
+        <div class="input-actions">
+          <button id="btn-mic" class="btn-action btn-mic" title="Voice Input (Hold)">🎙</button>
+          <button id="btn-send" class="btn-action btn-send" title="Send Task (Enter)">➤</button>
+        </div>
+      </div>
     </div>
   </div>
 
