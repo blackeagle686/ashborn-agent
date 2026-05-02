@@ -29,6 +29,14 @@
   const cfgModel    = document.getElementById("cfg-model");
   const cfgLogLevel = document.getElementById("cfg-log-level");
 
+  // ── Voice / TTS refs ──────────────────────────────────────────────────────────
+  const btnMic          = document.getElementById("btn-mic");
+  const listeningOverlay = document.getElementById("listening-overlay");
+  const listeningTranscript = document.getElementById("listening-transcript");
+  const btnStopMic      = document.getElementById("btn-stop-mic");
+  const ttsPlayer       = document.getElementById("tts-player");
+  let recognition = null;
+
   // ── State ───────────────────────────────────────────────────────────────────
   let currentBubble = null;   // <div> being streamed into
   let currentText   = "";     // raw text accumulated
@@ -142,25 +150,71 @@
       currentBubble.classList.remove("streaming");
       currentBubble.innerHTML = renderMarkdown(currentText);
       
-      // Add reply button
+      // Add reply + play buttons
       const msgEl = currentBubble.parentElement;
+      const actionsRow = document.createElement("div");
+      actionsRow.className = "msg-actions";
+
       const replyBtn = document.createElement("button");
       replyBtn.className = "btn-reply";
       replyBtn.textContent = "↩ Reply";
       const capturedText = currentText;
       replyBtn.addEventListener("click", () => {
-        // Truncate quoted text to first 120 chars
         const quoted = capturedText.replace(/\n/g, " ").substring(0, 120);
         input.value = `> ${quoted}\n`;
         input.focus();
         input.dispatchEvent(new Event("input"));
       });
-      msgEl.appendChild(replyBtn);
+
+      const playBtn = document.createElement("button");
+      playBtn.className = "btn-tts";
+      playBtn.title = "Read aloud";
+      playBtn.textContent = "🔊";
+      playBtn.addEventListener("click", () => playTTS(capturedText, playBtn));
+
+      actionsRow.appendChild(replyBtn);
+      actionsRow.appendChild(playBtn);
+      msgEl.appendChild(actionsRow);
 
       currentBubble = null;
       currentText   = "";
     }
     scrollBottom();
+  }
+
+  // ── Text-to-Speech ─────────────────────────────────────────────────────────
+  async function playTTS(text, btn) {
+    // Strip markdown formatting for clean speech
+    const clean = text
+      .replace(/```[\s\S]*?```/g, "code block.")
+      .replace(/`[^`]+`/g, "")
+      .replace(/[*_#>]/g, "")
+      .replace(/<[^>]+>/g, "")
+      .trim();
+
+    if (!clean) return;
+    const prevText = btn ? btn.textContent : "";
+    if (btn) { btn.textContent = "⏳"; btn.disabled = true; }
+
+    try {
+      const res = await fetch("http://127.0.0.1:8765/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: clean })
+      });
+      const data = await res.json();
+      if (data.status === "ok") {
+        const audioSrc = "data:audio/mp3;base64," + data.audio;
+        ttsPlayer.src = audioSrc;
+        ttsPlayer.play();
+        if (btn) { btn.textContent = "■"; btn.disabled = false; }
+        ttsPlayer.onended = () => { if (btn) { btn.textContent = "🔊"; } };
+        // Clicking again stops
+        if (btn) btn.onclick = () => { ttsPlayer.pause(); ttsPlayer.currentTime = 0; btn.textContent = "🔊"; btn.onclick = () => playTTS(text, btn); };
+      }
+    } catch (e) {
+      if (btn) { btn.textContent = prevText; btn.disabled = false; }
+    }
   }
 
   function addStatusMsg(content) {
@@ -452,6 +506,61 @@
         break;
     }
   });
+
+  // ── Speech-to-Text (Web Speech API) ────────────────────────────────────────
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  function startListening() {
+    if (!SpeechRecognition) {
+      listeningTranscript.textContent = "Speech recognition not supported in this environment.";
+      listeningOverlay.style.display = "flex";
+      setTimeout(() => { listeningOverlay.style.display = "none"; }, 3000);
+      return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    listeningTranscript.textContent = "Say something…";
+    listeningOverlay.style.display = "flex";
+
+    recognition.onresult = (e) => {
+      let interim = "", final = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) final += t;
+        else interim += t;
+      }
+      listeningTranscript.textContent = final || interim || "Listening…";
+      if (final) {
+        input.value = final;
+        input.dispatchEvent(new Event("input"));
+        stopListening();
+        sendMessage();
+      }
+    };
+
+    recognition.onerror = (e) => {
+      listeningTranscript.textContent = "❌ " + (e.error || "Error");
+      setTimeout(stopListening, 1500);
+    };
+
+    recognition.onend = () => {
+      stopListening();
+    };
+
+    recognition.start();
+  }
+
+  function stopListening() {
+    if (recognition) { try { recognition.stop(); } catch(_){} recognition = null; }
+    listeningOverlay.style.display = "none";
+  }
+
+  btnMic.addEventListener("click", startListening);
+  btnStopMic.addEventListener("click", stopListening);
 
   // Initial state
   setInputEnabled(true);
