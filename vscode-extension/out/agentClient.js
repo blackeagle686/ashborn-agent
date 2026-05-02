@@ -147,6 +147,44 @@ class AgentClient {
             req.end();
         });
     }
+    async getConfig() {
+        return new Promise((resolve, reject) => {
+            const req = http.request({
+                hostname: "127.0.0.1",
+                port: this._port,
+                path: "/config",
+                method: "GET",
+            }, (res) => {
+                let data = "";
+                res.on("data", (c) => (data += c));
+                res.on("end", () => resolve(JSON.parse(data)));
+            });
+            req.on("error", reject);
+            req.end();
+        });
+    }
+    async updateConfig(settings) {
+        return new Promise((resolve, reject) => {
+            const body = JSON.stringify({ settings });
+            const req = http.request({
+                hostname: "127.0.0.1",
+                port: this._port,
+                path: "/config",
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Content-Length": Buffer.byteLength(body),
+                },
+            }, (res) => {
+                let data = "";
+                res.on("data", (c) => (data += c));
+                res.on("end", () => resolve(JSON.parse(data)));
+            });
+            req.on("error", reject);
+            req.write(body);
+            req.end();
+        });
+    }
 }
 exports.AgentClient = AgentClient;
 //# sourceMappingURL=agentClient.js.map
