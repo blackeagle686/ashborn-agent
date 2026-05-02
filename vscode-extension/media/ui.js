@@ -20,7 +20,7 @@
   
   const settingsPanel = document.getElementById("settings-panel");
   const btnSettings   = document.getElementById("btn-settings");
-  const btnCloseSettings = document.getElementById("btn-close-settings");
+  const btnTheme      = document.getElementById("btn-theme");
   const btnSaveSettings  = document.getElementById("btn-save-settings");
   const settingsStatus   = document.getElementById("settings-status");
   
@@ -310,6 +310,18 @@
         <div class="welcome-sub">Session reset. Ready for a new task.</div>
       </div>`;
   });
+
+  if (btnTheme) {
+    btnTheme.addEventListener("click", () => {
+      if (document.body.classList.contains("vscode-light")) {
+        document.body.classList.remove("vscode-light");
+        document.body.classList.add("vscode-dark");
+      } else {
+        document.body.classList.remove("vscode-dark");
+        document.body.classList.add("vscode-light");
+      }
+    });
+  }
 
   btnSettings.addEventListener("click", () => {
     settingsPanel.style.display = "flex";
