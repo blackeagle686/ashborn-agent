@@ -29,7 +29,14 @@ SERVER_CMD   = [VENV_PYTHON, "-m", "uvicorn", "ashborn.server:app",
 HEALTH_URL   = "http://127.0.0.1:8765/health"
 ICON_PATH    = os.path.join(SCRIPT_DIR, "vscode-extension", "media", "ashborn.png")
 POLL_INTERVAL = 1.5  # seconds
-VSCODE_BIN   = "code"  # or "codium"
+
+# The exact binary and flags used by the original .desktop launcher
+VSCODE_CMD = [
+    "/home/tlk/.ashborn/bin/ashborn-ide-bin",
+    "--user-data-dir", "/home/tlk/.ashborn/ide-data",
+    "--extensions-dir", "/home/tlk/.ashborn/ide-extensions",
+    SCRIPT_DIR,   # open the project folder
+]
 
 MESSAGES = [
     "Starting Ashborn server…",
