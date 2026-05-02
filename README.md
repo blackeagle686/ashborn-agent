@@ -32,12 +32,18 @@
 ## 🏗️ The Ashborn Ecosystem
 
 ### 💎 Standalone GUI IDE (VSCodium Powered)
+<p align="left">
+  <img src="ashborn-media/ashborn.png" width="60" align="right" alt="Ashborn Icon">
+</p>
 Ashborn is now a fully standalone IDE experience. It bundles its own isolated instance of **VSCodium**, pre-configured with the Ashborn Agent extension and a premium "Golden Aura" theme.
 - **Isolated Environment**: No interference with your existing VS Code setup.
 - **Integrated Agent**: Real-time side-by-side chat and autonomous code execution.
 - **Premium Aesthetics**: Custom icons, cinematic dashboards, and a specialized UI.
 
 ### 📟 Cinematic CLI (The Golden Aura)
+<p align="left">
+  <img src="ashborn-media/icon.png" width="50" align="right" alt="Ashborn CLI Icon">
+</p>
 For those who live in the terminal, Ashborn provides a full-screen TUI (Terminal User Interface) experience:
 - **Parallel Awareness**: Real-time feedback on thinking, planning, and execution.
 - **Animated Thinking Spinner**: A custom Braille-based spinner with a golden "aura".
