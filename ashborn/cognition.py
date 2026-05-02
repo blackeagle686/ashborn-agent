@@ -418,7 +418,7 @@ class AshbornLoop(AgentLoop):
     def _has_task_file(self) -> bool:
         return os.path.exists(TASK_FILE)
 
-    async def run(self, prompt: str, memory, session_id: str, mode: str = "auto") -> str:
+    async def run(self, prompt: str, memory, session_id: str, mode: str = "auto", **kwargs) -> str:
         # FAST ANSWER MODE
         if mode == "fast_ans":
             context = await memory.get_full_context(session_id, query=prompt)
@@ -500,7 +500,7 @@ class AshbornLoop(AgentLoop):
         await memory.add_interaction(session_id, "assistant", final_answer)
         return final_answer
 
-    async def run_stream(self, prompt: str, memory, session_id: str, mode: str = "auto"):
+    async def run_stream(self, prompt: str, memory, session_id: str, mode: str = "auto", **kwargs):
         # FAST ANSWER MODE: Bypass the heavy task loop for quick queries
         if mode == "fast_ans":
             yield {"type": "status", "content": "⚡ Fast Answer mode active..."}
