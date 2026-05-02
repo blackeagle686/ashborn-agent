@@ -184,6 +184,7 @@ def file_update_multi_tool(file_path: str, edits: list) -> str:
     try:
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
+        _try_open_in_vscode(file_path)
     except Exception as ex:
         return f"ERROR writing {file_path}: {ex}"
 

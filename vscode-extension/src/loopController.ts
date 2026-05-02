@@ -102,7 +102,25 @@ export class LoopController {
     if (tool === "search") {
       return await this._searchWorkspace(args.query, args.is_regex, args.include, args.exclude);
     }
+    if (tool === "open_file") {
+      return await this._openFileInEditor(args.path);
+    }
     return `ERROR: Unknown VS Code tool: ${tool}`;
+  }
+
+  private async _openFileInEditor(filePath: string): Promise<string> {
+    try {
+      const uri = vscode.Uri.file(filePath);
+      const doc = await vscode.workspace.openTextDocument(uri);
+      await vscode.window.showTextDocument(doc, {
+        preview: false,          // pin the tab, don't replace other open files
+        preserveFocus: true,     // keep focus on the sidebar chat
+        viewColumn: vscode.ViewColumn.One,
+      });
+      return `opened: ${filePath}`;
+    } catch (err: any) {
+      return `ERROR opening file: ${err.message}`;
+    }
   }
 
   private async _searchWorkspace(query: string, isRegex: boolean, include?: string, exclude?: string): Promise<string> {
