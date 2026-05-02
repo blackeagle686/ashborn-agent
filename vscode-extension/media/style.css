@@ -1001,7 +1001,7 @@ html, body {
 .listening-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(10, 5, 20, 0.92);
+  background: rgba(10, 2, 16, 0.93);
   backdrop-filter: blur(12px);
   z-index: 2000;
   display: flex;
@@ -1022,8 +1022,8 @@ html, body {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: rgba(255, 123, 0, 0.08);
-  border: 2px solid rgba(255, 123, 0, 0.3);
+  background: var(--accent-glow);
+  border: 2px solid var(--accent2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1036,24 +1036,26 @@ html, body {
   position: absolute;
   inset: -12px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 123, 0, 0.15);
+  border: 2px solid var(--primary-glow);
   animation: micPulse 1.5s ease-in-out infinite 0.3s;
 }
 
 @keyframes micPulse {
-  0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(255, 123, 0, 0.4); }
-  50% { transform: scale(1.05); opacity: 0.9; box-shadow: 0 0 0 18px rgba(255, 123, 0, 0); }
+  0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 var(--accent-glow); }
+  50% { transform: scale(1.05); opacity: 0.9; box-shadow: 0 0 0 20px rgba(0,0,0,0); }
 }
 
 .mic-icon {
   font-size: 52px;
-  filter: drop-shadow(0 0 12px rgba(255, 123, 0, 0.8));
+  filter: drop-shadow(0 0 14px var(--accent2));
 }
 
 .listening-label {
   font-size: 18px;
   font-weight: 700;
-  color: var(--primary);
+  background: linear-gradient(90deg, var(--accent2), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   text-transform: uppercase;
   letter-spacing: 3px;
 }
