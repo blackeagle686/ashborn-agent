@@ -1,96 +1,124 @@
 /* ── Ashborn Agent — Ultra-Premium UI Theme ─────────────────────────────── */
 
 :root {
-  /* Dynamic, deep cosmic dark theme */
-  --bg-gradient: radial-gradient(circle at 50% 0%, #1a0f2e 0%, #08080c 100%);
-  --surface-glass: rgba(20, 20, 30, 0.6);
-  --surface-glass-hover: rgba(30, 30, 45, 0.8);
-  --surface-border: rgba(255, 255, 255, 0.08);
-  
-  /* The Ashborn Flame Palette */
-  --flame-base: #ff2a5f;
-  --flame-mid: #ff6b35;
-  --flame-top: #ffc107;
-  
-  /* Primary accents */
-  --primary: #9d38c6;
-  --primary-glow: rgba(157, 56, 198, 0.4);
-  --accent: #ff2a5f;
-  --accent-glow: rgba(255, 42, 95, 0.4);
+  /* ── Dark Theme: Deep Cosmic Purple + Lava Red-Orange ── */
+
+  /* Multi-stop background: deep plum → near-black with warm ember undertone */
+  --bg-gradient: radial-gradient(
+    ellipse at 60% 0%,
+    #2a0a3c 0%,
+    #1a0820 35%,
+    #0d0509 70%,
+    #100208 100%
+  );
+
+  --surface-glass: rgba(28, 8, 40, 0.65);
+  --surface-glass-hover: rgba(44, 12, 58, 0.85);
+  --surface-border: rgba(255, 80, 40, 0.12);
+
+  /* Flame Palette: lava red → amber orange → electric purple */
+  --flame-base: #ff3318;   /* deep lava red */
+  --flame-mid:  #ff6b20;   /* molten orange */
+  --flame-top:  #ffa040;   /* amber glow */
+
+  /* Primary: vivid purple with warm red undertone */
+  --primary:      #b830ff;
+  --primary-glow: rgba(184, 48, 255, 0.35);
+  --accent:       #ff4020;
+  --accent-glow:  rgba(255, 64, 32, 0.4);
+
+  /* Secondary accent for gradients */
+  --accent2:      #ff8230;
+  --accent2-glow: rgba(255, 130, 48, 0.3);
 
   /* Typography */
-  --text-main: #ffffff;
-  --text-dim: #a0a0b8;
-  --text-muted: #6b6b80;
-  --title-gradient-end: #a0a0b8;
+  --text-main:  #f5eeff;
+  --text-dim:   #b89acc;
+  --text-muted: #7a5e8a;
+  --title-gradient-end: #ff8230;
 
-  /* Additional Backgrounds & Colors */
-  --bg-dark-30: rgba(0, 0, 0, 0.3);
-  --bg-dark-40: rgba(0, 0, 0, 0.4);
-  --bg-dark-50: rgba(0, 0, 0, 0.5);
-  --bg-input-gradient: linear-gradient(0deg, rgba(8,8,12,0.9) 0%, rgba(8,8,12,0.6) 100%);
-  --bg-panel: rgba(15, 15, 25, 0.95);
-  --bg-overlay: rgba(0, 0, 0, 0.1);
-  --bg-code: #09090e;
-  --color-code: #cdd6f4;
-  --color-code-inline: #e0b0ff;
-  --border-subtle: rgba(255, 255, 255, 0.05);
-  --shadow-main: rgba(0, 0, 0, 0.4);
-  --shadow-heavy: rgba(0, 0, 0, 0.6);
-  --shadow-light: rgba(0, 0, 0, 0.15);
+  /* Backgrounds */
+  --bg-dark-30: rgba(15, 4, 22, 0.4);
+  --bg-dark-40: rgba(15, 4, 22, 0.6);
+  --bg-dark-50: rgba(15, 4, 22, 0.8);
+  --bg-input-gradient: linear-gradient(0deg, rgba(12,4,18,0.92) 0%, rgba(18,6,26,0.7) 100%);
+  --bg-panel: rgba(18, 5, 28, 0.97);
+  --bg-overlay: rgba(255, 60, 20, 0.03);
+  --bg-code: #0c0415;
+  --color-code: #f0d8ff;
+  --color-code-inline: #ff9060;
+  --border-subtle: rgba(255, 80, 40, 0.08);
+  --shadow-main:  rgba(0, 0, 0, 0.5);
+  --shadow-heavy: rgba(0, 0, 0, 0.7);
+  --shadow-light: rgba(0, 0, 0, 0.2);
   --btn-text: #ffffff;
-  --btn-ghost-bg-hover: rgba(255, 255, 255, 0.1);
-  --input-placeholder: rgba(255, 255, 255, 0.3);
-  --scrollbar-bg: rgba(255, 255, 255, 0.1);
-  --scrollbar-hover: rgba(255, 255, 255, 0.2);
-  
+  --btn-ghost-bg-hover: rgba(184, 48, 255, 0.12);
+  --input-placeholder: rgba(220, 180, 255, 0.3);
+  --scrollbar-bg: rgba(184, 48, 255, 0.15);
+  --scrollbar-hover: rgba(255, 100, 40, 0.3);
+
   /* Structural */
   --radius-xl: 16px;
   --radius-lg: 12px;
   --radius-md: 8px;
   --radius-sm: 4px;
-  
+
   --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
-  
+
   --transition-smooth: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   --transition-bounce: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 body.vscode-light {
-  --bg-gradient: radial-gradient(circle at 50% 0%, #f7f7fa 0%, #e2e2e8 100%);
-  --surface-glass: rgba(255, 255, 255, 0.7);
-  --surface-glass-hover: rgba(255, 255, 255, 0.9);
-  --surface-border: rgba(0, 0, 0, 0.1);
-  
-  --primary: #8522a8;
-  --primary-glow: rgba(133, 34, 168, 0.2);
-  --accent: #d41744;
-  --accent-glow: rgba(212, 23, 68, 0.2);
+  /* ── Light Theme: Warm Ivory + Soft Violet + Ember accents ── */
 
-  --text-main: #1a1a1a;
-  --text-dim: #4d4d66;
-  --text-muted: #888899;
-  --title-gradient-end: #4d4d66;
-  
-  --bg-dark-30: rgba(255, 255, 255, 0.6);
-  --bg-dark-40: rgba(255, 255, 255, 0.8);
+  --bg-gradient: linear-gradient(
+    160deg,
+    #fdf6ff 0%,
+    #f5eef8 40%,
+    #fef3ee 80%,
+    #fff8f5 100%
+  );
+
+  --surface-glass: rgba(255, 252, 255, 0.78);
+  --surface-glass-hover: rgba(255, 255, 255, 0.95);
+  --surface-border: rgba(160, 60, 200, 0.12);
+
+  --flame-base: #d62a00;
+  --flame-mid:  #e85d10;
+  --flame-top:  #f5930a;
+
+  --primary:      #7b20c8;
+  --primary-glow: rgba(123, 32, 200, 0.18);
+  --accent:       #c8280a;
+  --accent-glow:  rgba(200, 40, 10, 0.18);
+  --accent2:      #e06010;
+  --accent2-glow: rgba(224, 96, 16, 0.2);
+
+  --text-main:  #18060a;
+  --text-dim:   #5c3070;
+  --text-muted: #9a70aa;
+  --title-gradient-end: #e06010;
+
+  --bg-dark-30: rgba(245, 235, 255, 0.7);
+  --bg-dark-40: rgba(240, 228, 255, 0.85);
   --bg-dark-50: rgba(255, 255, 255, 1);
-  --bg-input-gradient: linear-gradient(0deg, rgba(255,255,255,0.95) 0%, rgba(245,245,250,0.85) 100%);
-  --bg-panel: rgba(250, 250, 250, 0.98);
-  --bg-overlay: rgba(0, 0, 0, 0.03);
-  --bg-code: #f0f0f4;
-  --color-code: #333344;
-  --color-code-inline: #6b21a8;
-  --border-subtle: rgba(0, 0, 0, 0.08);
-  --shadow-main: rgba(0, 0, 0, 0.08);
-  --shadow-heavy: rgba(0, 0, 0, 0.15);
-  --shadow-light: rgba(0, 0, 0, 0.05);
-  --btn-text: #1a1a1a;
-  --btn-ghost-bg-hover: rgba(0, 0, 0, 0.05);
-  --input-placeholder: rgba(0, 0, 0, 0.4);
-  --scrollbar-bg: rgba(0, 0, 0, 0.1);
-  --scrollbar-hover: rgba(0, 0, 0, 0.2);
+  --bg-input-gradient: linear-gradient(0deg, rgba(255,252,255,0.97) 0%, rgba(248,242,255,0.88) 100%);
+  --bg-panel: rgba(252, 248, 255, 0.99);
+  --bg-overlay: rgba(120, 40, 180, 0.03);
+  --bg-code: #f2eafa;
+  --color-code: #2a0840;
+  --color-code-inline: #7b20c8;
+  --border-subtle: rgba(120, 40, 180, 0.07);
+  --shadow-main:  rgba(80, 20, 120, 0.08);
+  --shadow-heavy: rgba(80, 20, 120, 0.16);
+  --shadow-light: rgba(80, 20, 120, 0.04);
+  --btn-text: #18060a;
+  --btn-ghost-bg-hover: rgba(123, 32, 200, 0.07);
+  --input-placeholder: rgba(80, 30, 100, 0.35);
+  --scrollbar-bg: rgba(123, 32, 200, 0.1);
+  --scrollbar-hover: rgba(200, 80, 10, 0.2);
 }
 
 * {
