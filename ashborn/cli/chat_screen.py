@@ -322,7 +322,7 @@ class SidebarWidget(Vertical):
     model_name: reactive[str]    = reactive("")
 
     def compose(self) -> ComposeResult:
-        yield Static("🐦‍🔥  ASHBORN", classes="sb-title")
+        yield Static("[bold #D4AF37]🔥 ASHBORN AGENT[/]", classes="sb-title")
         yield Static("─" * 22, classes="sb-div")
 
         yield Static("Model", classes="sb-label")
@@ -538,7 +538,7 @@ class ChatScreen(Screen):
     def compose(self) -> ComposeResult:
         # Header
         with Horizontal(id="chat-header"):
-            yield Static("🐦‍🔥  ASHBORN", id="header-logo")
+            yield Static("[bold #FF7B00]🔥 ASHBORN[/]", id="header-logo")
             yield Static("● Initializing", id="header-status")
 
         # Body

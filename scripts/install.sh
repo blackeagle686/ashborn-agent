@@ -15,6 +15,9 @@ DATA_DIR="$ASHBORN_DIR/ide-data"
 
 mkdir -p "$ASHBORN_DIR" "$BIN_DIR" "$BACKEND_DIR" "$EXT_DIR" "$DATA_DIR"
 
+# Get the directory where install.sh is located
+INSTALL_SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # 1. Download Standalone IDE (VSCodium)
 echo "📥 Downloading standalone IDE (VSCodium)..."
 # Get latest version tag from GitHub
@@ -42,9 +45,6 @@ pip install -r requirements.txt
 pip install -e .
 deactivate
 
-# Get the directory where install.sh is located
-INSTALL_SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 # 3. Install VS Code Extension
 echo "🧩 Installing Ashborn VS Code Extension..."
 mkdir -p "$EXT_DIR/ashborn-agent"
@@ -71,9 +71,13 @@ DESKTOP_FILE="$HOME/.local/share/applications/ashborn.desktop"
 mkdir -p "$(dirname "$DESKTOP_FILE")"
 
 # Icon installation
-if [ -f "ashborn.svg" ]; then
+if [ -f "$INSTALL_SRC_DIR/ashborn.png" ]; then
     mkdir -p "$HOME/.local/share/icons"
-    cp ashborn.svg "$HOME/.local/share/icons/ashborn.svg"
+    cp "$INSTALL_SRC_DIR/ashborn.png" "$HOME/.local/share/icons/ashborn.png"
+    ICON_PATH="$HOME/.local/share/icons/ashborn.png"
+elif [ -f "$INSTALL_SRC_DIR/ashborn.svg" ]; then
+    mkdir -p "$HOME/.local/share/icons"
+    cp "$INSTALL_SRC_DIR/ashborn.svg" "$HOME/.local/share/icons/ashborn.svg"
     ICON_PATH="$HOME/.local/share/icons/ashborn.svg"
 else
     ICON_PATH="code" # Fallback

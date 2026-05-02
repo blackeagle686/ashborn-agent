@@ -11,10 +11,30 @@ venv.bak/
 __pycache__/
 *.py[cod]
 *$py.class
+ashborn_agent.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+
+# Node / VS Code Extension
+node_modules/
+vscode-extension/out/
+vscode-extension/node_modules/
+*.vsix
+.vscode-test/
+
+# Ashborn IDE Specific
+build_temp/
+.ashborn/
+ide-data/
+ide-extensions/
+ide-bin/
 
 # IDE
 .vscode/
 .idea/
 
-# DB
+# DB & Logs
 chroma_db/
+*.log

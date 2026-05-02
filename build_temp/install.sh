@@ -15,6 +15,9 @@ DATA_DIR="$ASHBORN_DIR/ide-data"
 
 mkdir -p "$ASHBORN_DIR" "$BIN_DIR" "$BACKEND_DIR" "$EXT_DIR" "$DATA_DIR"
 
+# Get the directory where install.sh is located
+INSTALL_SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # 1. Download Standalone IDE (VSCodium)
 echo "📥 Downloading standalone IDE (VSCodium)..."
 # Get latest version tag from GitHub
@@ -41,9 +44,6 @@ pip install --upgrade pip
 pip install -r requirements.txt
 pip install -e .
 deactivate
-
-# Get the directory where install.sh is located
-INSTALL_SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # 3. Install VS Code Extension
 echo "🧩 Installing Ashborn VS Code Extension..."

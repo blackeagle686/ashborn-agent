@@ -123,7 +123,7 @@ async function activate(ctx) {
 }
 function showDashboard(ctx) {
     const panel = vscode.window.createWebviewPanel("ashborn.dashboard", "Ashborn", vscode.ViewColumn.One, { enableScripts: true, localResourceRoots: [vscode.Uri.joinPath(ctx.extensionUri, "media")] });
-    const iconUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(ctx.extensionUri, "media", "icon.svg"));
+    const iconUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(ctx.extensionUri, "media", "ashborn.png"));
     panel.webview.html = `
     <!DOCTYPE html>
     <html>

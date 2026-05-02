@@ -45,11 +45,10 @@ echo "📦 Preparing Installer..."
 cp "$PROJECT_ROOT/scripts/install.sh" "$BUILD_DIR/install.sh"
 chmod +x "$BUILD_DIR/install.sh"
 
-# Find icon (assuming it's in a standard place or we have one)
-# For now, let's look for the one mentioned in the .desktop file
-ICON_PATH="/home/tlk/.local/share/icons/ashborn.svg"
+# Find icon
+ICON_PATH="$PROJECT_ROOT/vscode-extension/media/ashborn.png"
 if [ -f "$ICON_PATH" ]; then
-    cp "$ICON_PATH" "$BUILD_DIR/ashborn.svg"
+    cp "$ICON_PATH" "$BUILD_DIR/ashborn.png"
 fi
 
 # 5. Create Final Distribution Archive
