@@ -110,9 +110,7 @@ html, body {
 /* ── Top Navigation Bar ─────────────────────────────────────────────────── */
 .topbar {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
+  flex-direction: column;
   background: var(--surface-glass);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -120,6 +118,21 @@ html, body {
   box-shadow: 0 4px 24px rgba(0,0,0,0.4);
   flex-shrink: 0;
   z-index: 10;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.topbar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.topbar-header:hover {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .topbar-title {
@@ -130,6 +143,53 @@ html, body {
   font-size: 15px;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  user-select: none;
+}
+
+.topbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 16px 12px;
+  width: 100%;
+  transition: all 0.3s ease;
+  opacity: 1;
+  max-height: 100px;
+}
+
+/* Collapsed State */
+.topbar.collapsed {
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.topbar.collapsed .topbar-controls {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.btn-toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.btn-toggle:hover {
+  color: var(--text-main);
+  background: var(--btn-ghost-bg-hover);
+}
+
+.topbar.collapsed #btn-toggle-topbar {
+  transform: rotate(-90deg);
 }
 
 /* Animated Flame Text Gradient */
@@ -148,7 +208,7 @@ html, body {
 }
 
 .topbar-logo {
-  height: 24px;
+  height: 20px;
   width: auto;
   filter: drop-shadow(0 0 8px var(--flame-base));
   animation: flicker 3s infinite alternate;
