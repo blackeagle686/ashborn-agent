@@ -71,6 +71,22 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
         const relPaths = files.map(f => vscode.workspace.asRelativePath(f));
         this._post({ type: "files", files: relPaths });
         break;
+      case "getConfig":
+        try {
+          const config = await this._client.getConfig();
+          this._post({ type: "config", config });
+        } catch (err) {
+          this._post({ type: "error", content: "Failed to fetch config: " + err });
+        }
+        break;
+      case "saveConfig":
+        try {
+          const res = await this._client.updateConfig(msg.settings);
+          this._post({ type: "configSaved", success: res.status === "ok", message: res.message });
+        } catch (err) {
+          this._post({ type: "error", content: "Failed to save config: " + err });
+        }
+        break;
     }
   }
 

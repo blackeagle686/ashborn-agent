@@ -17,6 +17,16 @@
   const modeEl   = document.getElementById("mode-select");
   const dotEl    = document.getElementById("status-dot");
   const txtEl    = document.getElementById("status-text");
+  
+  const settingsPanel = document.getElementById("settings-panel");
+  const btnSettings   = document.getElementById("btn-settings");
+  const btnCloseSettings = document.getElementById("btn-close-settings");
+  const btnSaveSettings  = document.getElementById("btn-save-settings");
+  const settingsStatus   = document.getElementById("settings-status");
+  
+  const cfgApiKey   = document.getElementById("cfg-api-key");
+  const cfgModel    = document.getElementById("cfg-model");
+  const cfgLogLevel = document.getElementById("cfg-log-level");
 
   // ── State ───────────────────────────────────────────────────────────────────
   let currentBubble = null;   // <div> being streamed into
@@ -202,18 +212,34 @@
     removeStatusMsgs();
   });
 
-  btnReset.addEventListener("click", () => {
-    vscode.postMessage({ type: "reset" });
-    setStatus("idle", "Idle");
-    setInputEnabled(true);
-    finalizeMessage();
-    removeStatusMsgs();
     chat.innerHTML = `
       <div class="welcome">
         <div class="welcome-icon">🔥</div>
         <div class="welcome-title">Ashborn Agent</div>
         <div class="welcome-sub">Session reset. Ready for a new task.</div>
       </div>`;
+  });
+
+  btnSettings.addEventListener("click", () => {
+    settingsPanel.style.display = "flex";
+    settingsStatus.textContent = "Loading configuration...";
+    settingsStatus.className = "settings-status";
+    vscode.postMessage({ type: "getConfig" });
+  });
+
+  btnCloseSettings.addEventListener("click", () => {
+    settingsPanel.style.display = "none";
+  });
+
+  btnSaveSettings.addEventListener("click", () => {
+    const settings = {
+      OPENAI_API_KEY: cfgApiKey.value,
+      OPENAI_LLM_MODEL: cfgModel.value,
+      LOG_LEVEL: cfgLogLevel.value
+    };
+    settingsStatus.textContent = "Saving...";
+    settingsStatus.className = "settings-status";
+    vscode.postMessage({ type: "saveConfig", settings });
   });
 
   // ── Mention List logic ──────────────────────────────────────────────────────
@@ -366,6 +392,24 @@
 
       case "reset":
         // handled by button
+        break;
+
+      case "config":
+        cfgApiKey.value = msg.config.OPENAI_API_KEY || "";
+        cfgModel.value = msg.config.OPENAI_LLM_MODEL || "gpt-4o";
+        cfgLogLevel.value = msg.config.ASHBORN_LOG_LEVEL || "WARNING";
+        settingsStatus.textContent = "";
+        break;
+
+      case "configSaved":
+        if (msg.success) {
+          settingsStatus.textContent = "✓ Saved and Agent reloaded!";
+          settingsStatus.className = "settings-status success";
+          setTimeout(() => { settingsPanel.style.display = "none"; }, 1500);
+        } else {
+          settingsStatus.textContent = "✗ Failed: " + msg.message;
+          settingsStatus.className = "settings-status error";
+        }
         break;
     }
   });
