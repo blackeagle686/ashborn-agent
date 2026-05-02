@@ -126,11 +126,17 @@ class LoopController {
     }
     async _openFileInEditor(filePath) {
         try {
+            // Resolve relative paths against the workspace root
+            if (!require("path").isAbsolute(filePath)) {
+                const wsRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+                if (wsRoot)
+                    filePath = require("path").join(wsRoot, filePath);
+            }
             const uri = vscode.Uri.file(filePath);
             const doc = await vscode.workspace.openTextDocument(uri);
             await vscode.window.showTextDocument(doc, {
-                preview: false, // pin the tab, don't replace other open files
-                preserveFocus: true, // keep focus on the sidebar chat
+                preview: false,
+                preserveFocus: true,
                 viewColumn: vscode.ViewColumn.One,
             });
             return `opened: ${filePath}`;
