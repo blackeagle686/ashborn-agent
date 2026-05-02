@@ -581,8 +581,18 @@
       if (data.status === "ok" && data.text) {
         input.value = data.text;
         input.dispatchEvent(new Event("input"));
-        listeningOverlay.style.display = "none";
-        sendMessage();
+        
+        // Display the text for visual confirmation
+        listeningTranscript.textContent = "✅ " + data.text;
+        listeningTranscript.style.color = "#4caf82";
+        btnStopMic.textContent = "Sending...";
+        
+        setTimeout(() => {
+          listeningOverlay.style.display = "none";
+          listeningTranscript.style.color = "";
+          btnStopMic.textContent = "✕ Cancel";
+          sendMessage();
+        }, 2000);
       } else {
         throw new Error(data.message || "Could not transcribe audio");
       }
