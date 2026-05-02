@@ -589,6 +589,8 @@
   function stopListening() {
     if (recognition) { try { recognition.stop(); } catch(_){} recognition = null; }
     listeningOverlay.style.display = "none";
+    listeningTranscript.style.color = "";
+    btnStopMic.textContent = "✕ Cancel";
   }
 
   btnMic.addEventListener("click", startListening);
