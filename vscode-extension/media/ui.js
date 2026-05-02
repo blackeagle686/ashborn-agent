@@ -25,6 +25,7 @@
   const settingsStatus   = document.getElementById("settings-status");
   
   const cfgApiKey   = document.getElementById("cfg-api-key");
+  const cfgBaseUrl  = document.getElementById("cfg-base-url");
   const cfgModel    = document.getElementById("cfg-model");
   const cfgLogLevel = document.getElementById("cfg-log-level");
 
@@ -240,6 +241,7 @@
   btnSaveSettings.addEventListener("click", () => {
     const settings = {
       OPENAI_API_KEY: cfgApiKey.value,
+      OPENAI_BASE_URL: cfgBaseUrl.value,
       OPENAI_LLM_MODEL: cfgModel.value,
       LOG_LEVEL: cfgLogLevel.value
     };
@@ -402,6 +404,7 @@
 
       case "config":
         cfgApiKey.value = msg.config.OPENAI_API_KEY || "";
+        cfgBaseUrl.value = msg.config.OPENAI_BASE_URL || "";
         cfgModel.value = msg.config.OPENAI_LLM_MODEL || "gpt-4o";
         cfgLogLevel.value = msg.config.ASHBORN_LOG_LEVEL || "WARNING";
         settingsStatus.textContent = "";
