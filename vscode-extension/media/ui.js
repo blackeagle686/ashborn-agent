@@ -583,7 +583,13 @@
       stopListening();
     };
 
-    recognition.start();
+    try {
+      recognition.start();
+    } catch (e) {
+      listeningTranscript.textContent = "❌ Error: " + (e.message || "Unknown error starting microphone");
+      listeningTranscript.style.color = "#ff4444";
+      btnStopMic.textContent = "Close";
+    }
   }
 
   function stopListening() {
