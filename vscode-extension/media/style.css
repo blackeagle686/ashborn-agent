@@ -522,86 +522,93 @@ html, body {
 }
 
 /* ── Ultra-Sleek Input Area ──────────────────────────────────────────────── */
+/* ── Ultra-Sleek Input Area ──────────────────────────────────────────────── */
 .input-area {
-  padding: 16px;
+  padding: 16px 20px 24px;
   background: var(--bg-input-gradient);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255,255,255,0.05);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid var(--surface-border);
   flex-shrink: 0;
   z-index: 10;
 }
 
-.mode-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.mode-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.mode-select {
-  background: var(--bg-dark-30);
-  border-bottom: 1px solid transparent; /* Ensure border is removed correctly or left to existing */
-  border: 1px solid var(--surface-border);
-  color: var(--text-dim);
-  border-radius: 20px; /* pill shape */
-  padding: 4px 12px;
-  font-size: 11px;
-  font-weight: 600;
-  outline: none;
-  cursor: pointer;
-  transition: var(--transition-smooth);
-  appearance: none;
-  text-align: center;
-}
-
-.mode-select:hover, .mode-select:focus {
-  background: var(--btn-ghost-bg-hover);
-  border-color: var(--primary);
-  color: var(--text-main);
-  box-shadow: 0 0 12px var(--primary-glow);
-}
-
-.input-row {
-  position: relative;
-  display: flex;
-  align-items: flex-end;
+.input-container-wrapper {
   background: var(--bg-dark-30);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-xl);
-  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition-bounce);
+  overflow: hidden;
+}
+
+.input-container-wrapper:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-glow), 0 10px 30px rgba(0,0,0,0.5);
+  background: var(--bg-dark-40);
+}
+
+.input-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.mode-pills {
+  display: flex;
+  gap: 6px;
+}
+
+.mode-pill {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  cursor: pointer;
   transition: var(--transition-smooth);
 }
 
-.input-row:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow), 0 8px 24px var(--shadow-main);
-  background: var(--bg-dark-50);
+.mode-pill:hover {
+  color: var(--text-dim);
+  background: var(--bg-dark-40);
+}
+
+.mode-pill.active {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  box-shadow: 0 2px 8px var(--primary-glow);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.input-main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
 }
 
 .input-box {
-  flex: 1;
-  background: transparent;
-  color: var(--text-main);
+  background: transparent !important;
+  border: none !important;
+  color: var(--text-main) !important;
   font-family: var(--font-sans);
-  font-size: 14px;
-  padding: 12px 90px 12px 14px; /* Right padding for the two absolute buttons */
+  font-size: 14.5px;
+  padding: 12px 14px;
   resize: none;
   outline: none;
   line-height: 1.5;
   min-height: 48px;
   max-height: 200px;
-  overflow-y: auto;
+  width: 100%;
 }
 
 .input-box::placeholder {
@@ -609,40 +616,51 @@ html, body {
   font-weight: 400;
 }
 
-.input-box::-webkit-scrollbar { width: 4px; }
-.input-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+.input-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 4px 10px 10px;
+}
 
-/* The Floating Send Button */
-.btn-send {
-  position: absolute;
-  right: 6px;
-  bottom: 6px;
-  background: linear-gradient(135deg, var(--flame-mid), var(--flame-base));
-  color: #fff;
+.btn-action {
   width: 36px;
   height: 36px;
-  padding: 0;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  border-radius: 50%;
-  box-shadow: 0 4px 12px rgba(255, 42, 95, 0.3);
+  cursor: pointer;
+  border: 1px solid var(--surface-border);
   transition: var(--transition-bounce);
+  font-size: 16px;
+  background: var(--bg-dark-30);
+  color: var(--text-dim);
 }
 
-.btn-send:hover {
-  transform: translateY(-2px) scale(1.05);
+.btn-action:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  color: var(--text-main);
+  background: var(--surface-glass-hover);
+}
+
+.btn-action.btn-send {
+  background: linear-gradient(135deg, var(--flame-mid), var(--flame-base));
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(255, 42, 95, 0.3);
+}
+
+.btn-action.btn-send:hover {
   box-shadow: 0 6px 16px rgba(255, 42, 95, 0.5);
+  transform: translateY(-2px) scale(1.05);
 }
 
-.btn-send:active {
-  transform: scale(0.9);
-}
-
-.btn-send:disabled {
-  background: rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.3);
+.btn-action.btn-send:disabled {
+  background: var(--bg-dark-50);
+  color: var(--text-muted);
   box-shadow: none;
   cursor: not-allowed;
   transform: none;
