@@ -19,9 +19,10 @@
       <span>Ashborn</span>
     </div>
     <div class="topbar-controls">
-      <button id="btn-run"   class="btn btn-primary" title="Run Agent (Plan mode)">✦ Run</button>
-      <button id="btn-stop"  class="btn btn-danger"  title="Stop execution">✕</button>
-      <button id="btn-reset" class="btn btn-ghost"   title="Reset session">↻</button>
+      <button id="btn-run"     class="btn btn-primary" title="Run Agent (Plan mode)">✦ Run</button>
+      <button id="btn-stop"    class="btn btn-danger"  title="Stop execution">✕</button>
+      <button id="btn-reset"   class="btn btn-ghost"   title="Reset session">↻</button>
+      <button id="btn-settings" class="btn btn-ghost"   title="Settings">⚙</button>
     </div>
   </div>
 
@@ -60,6 +61,40 @@
         rows="3"
       ></textarea>
       <button id="btn-send" class="btn btn-send" title="Send (Enter)">➤</button>
+    </div>
+  </div>
+
+  <!-- ── Settings Panel (Hidden by default) ─────────────────────── -->
+  <div class="settings-panel" id="settings-panel" style="display: none;">
+    <div class="settings-header">
+      <h3>Settings</h3>
+      <button id="btn-close-settings" class="btn-close">✕</button>
+    </div>
+    <div class="settings-content">
+      <div class="setting-item">
+        <label>OpenAI API Key</label>
+        <input type="password" id="cfg-api-key" placeholder="sk-...">
+      </div>
+      <div class="setting-item">
+        <label>LLM Model</label>
+        <select id="cfg-model">
+          <option value="gpt-4o">gpt-4o</option>
+          <option value="gpt-4o-mini">gpt-4o-mini</option>
+          <option value="o1-preview">o1-preview</option>
+          <option value="o1-mini">o1-mini</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label>Log Level</label>
+        <select id="cfg-log-level">
+          <option value="DEBUG">DEBUG</option>
+          <option value="INFO">INFO</option>
+          <option value="WARNING">WARNING</option>
+          <option value="ERROR">ERROR</option>
+        </select>
+      </div>
+      <button id="btn-save-settings" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Save Configuration</button>
+      <div id="settings-status" class="settings-status"></div>
     </div>
   </div>
 
