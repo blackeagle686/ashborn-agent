@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as cp from "child_process";
+import * as http from "http";
 import { AgentClient } from "./agentClient";
 import { AshbornViewProvider } from "./panel";
 import { ContextCollector } from "./contextCollector";
@@ -214,11 +215,28 @@ async function startServer(ctx: vscode.ExtensionContext, port: number) {
   let attempts = 0;
   const poll = setInterval(async () => {
     attempts++;
-    const ok = await client.healthCheck();
-    if (ok) {
-      clearInterval(poll);
-      setStatus("ready", port);
-      vscode.window.showInformationMessage("✅ Ashborn Agent is ready!");
+    
+    // Check health
+    const status: any = await new Promise(resolve => {
+        const req = http.get(`http://127.0.0.1:${port}/health`, (res) => {
+            let data = "";
+            res.on("data", (c) => (data += c));
+            res.on("end", () => {
+                try { resolve(JSON.parse(data)); } catch { resolve(null); }
+            });
+        });
+        req.on("error", () => resolve(null));
+    });
+
+    if (status && status.status === "ok") {
+      if (status.agent_ready) {
+        clearInterval(poll);
+        setStatus("ready", port);
+        vscode.window.showInformationMessage("✅ Ashborn Agent is ready!");
+      } else {
+        setStatus("starting", port);
+        _statusBar.text = `$(loading~spin) Ashborn: Loading AI…`;
+      }
     } else if (attempts > 120) {
       clearInterval(poll);
       setStatus("error", port);
