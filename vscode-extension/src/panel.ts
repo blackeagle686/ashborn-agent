@@ -89,14 +89,22 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
         break;
       case "openFile":
         try {
-          const uri = vscode.Uri.file(msg.path);
-          const doc = await vscode.workspace.openTextDocument(uri);
-          await vscode.window.showTextDocument(doc, {
+          let filePath: string = msg.path;
+          // Resolve relative paths against the workspace root
+          if (!path.isAbsolute(filePath)) {
+            const wsRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+            if (wsRoot) {
+              filePath = path.join(wsRoot, filePath);
+            }
+          }
+          const fileUri = vscode.Uri.file(filePath);
+          const fileDoc = await vscode.workspace.openTextDocument(fileUri);
+          await vscode.window.showTextDocument(fileDoc, {
             preview: false,
             preserveFocus: true,
             viewColumn: vscode.ViewColumn.One,
           });
-        } catch (err) {
+        } catch (_err) {
           // silently ignore — file might not exist yet
         }
         break;
