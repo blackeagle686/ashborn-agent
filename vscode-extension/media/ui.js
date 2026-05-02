@@ -282,6 +282,15 @@
   // ── Button handlers ───────────────────────────────────────────────────────────
   btnSend.addEventListener("click", sendMessage);
 
+  // Topbar Toggle
+  const topbar = document.getElementById("topbar");
+  const topbarHeader = document.getElementById("topbar-header");
+  topbarHeader.addEventListener("click", () => {
+    topbar.classList.toggle("collapsed");
+    const isCollapsed = topbar.classList.contains("collapsed");
+    document.getElementById("btn-toggle-topbar").title = isCollapsed ? "Expand Controls" : "Collapse Controls";
+  });
+
   // Mode Pill Handlers
   modePills.forEach(pill => {
     pill.addEventListener("click", () => {
