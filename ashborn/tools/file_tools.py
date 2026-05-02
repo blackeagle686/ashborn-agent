@@ -18,6 +18,18 @@ import re
 from phoenix.framework.agent import tool
 
 
+def _try_open_in_vscode(file_path: str) -> None:
+    """Best-effort: notify the VS Code extension to open this file in the editor."""
+    try:
+        from ashborn.server import vscode_ipc_context
+        vscode_call = vscode_ipc_context.get()
+        if vscode_call:
+            import asyncio
+            asyncio.create_task(vscode_call("open_file", {"path": os.path.abspath(file_path)}))
+    except Exception:
+        pass
+
+
 # ── Tool 1: Read with line numbers ────────────────────────────────────────────
 
 @tool(
@@ -53,6 +65,8 @@ def file_read_lines_tool(file_path: str, start_line: int = None, end_line: int =
         return header + "\n" + "\n".join(numbered)
     except Exception as ex:
         return f"ERROR reading {file_path}: {ex}"
+    finally:
+        _try_open_in_vscode(file_path)
 
 
 # ── Tool 2: Multi-block precision editor ──────────────────────────────────────
@@ -203,6 +217,7 @@ def file_write_tool(file_path: str, content: str) -> str:
             
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
+        _try_open_in_vscode(file_path)
         return f"Successfully created file: {file_path}"
     except Exception as ex:
         return f"ERROR creating file {file_path}: {ex}"
