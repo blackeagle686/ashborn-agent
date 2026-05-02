@@ -110,7 +110,7 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
         break;
       case "theme":
         const workbenchConfig = vscode.workspace.getConfiguration("workbench");
-        const theme = msg.isLight ? "Default Light Modern" : "Default Dark Modern";
+        const theme = msg.isLight ? "Default Light+" : "Default Dark+";
         await workbenchConfig.update("colorTheme", theme, vscode.ConfigurationTarget.Global);
         break;
     }
