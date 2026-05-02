@@ -130,8 +130,12 @@ function showDashboard(ctx) {
     <html>
     <head>
       <style>
+        :root {
+          --bg-dark: radial-gradient(circle at 50% 50%, #1a0f2e 0%, #08080c 100%);
+          --bg-light: radial-gradient(circle at 50% 50%, #f7f7fa 0%, #e2e2e8 100%);
+        }
         body {
-          background: radial-gradient(circle at 50% 50%, #1a0f2e 0%, #08080c 100%);
+          background: var(--bg-dark);
           color: white;
           height: 100vh;
           display: flex;
@@ -141,12 +145,25 @@ function showDashboard(ctx) {
           font-family: sans-serif;
           margin: 0;
           overflow: hidden;
+          transition: all 0.5s ease;
         }
-        .logo { width: 200px; height: 200px; animation: pulse 4s infinite ease-in-out; }
+        body.vscode-light {
+          background: var(--bg-light);
+          color: #1a1a1a;
+        }
+        .logo { 
+          width: 200px; 
+          height: 200px; 
+          animation: pulse 4s infinite ease-in-out; 
+          filter: drop-shadow(0 0 30px rgba(157, 56, 198, 0.4));
+        }
+        body.vscode-light .logo {
+          filter: drop-shadow(0 0 30px rgba(157, 56, 198, 0.2));
+        }
         @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
         h1 { margin-top: 20px; font-weight: 200; letter-spacing: 4px; color: #9d38c6; }
         .hint { margin-top: 40px; color: #6b6b80; font-size: 0.9em; }
-        kbd { background: #333; padding: 2px 6px; border-radius: 4px; color: #fff; }
+        kbd { background: rgba(128,128,128,0.2); padding: 2px 6px; border-radius: 4px; color: inherit; border: 1px solid rgba(128,128,128,0.3); }
       </style>
     </head>
     <body>

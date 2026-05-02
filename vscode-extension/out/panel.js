@@ -126,6 +126,11 @@ class AshbornViewProvider {
                     // silently ignore — file might not exist yet
                 }
                 break;
+            case "theme":
+                const workbenchConfig = vscode.workspace.getConfiguration("workbench");
+                const theme = msg.isLight ? "Default Light Modern" : "Default Dark Modern";
+                await workbenchConfig.update("colorTheme", theme, vscode.ConfigurationTarget.Global);
+                break;
         }
     }
     // ── Send a task to the agent loop ─────────────────────────────────────────
