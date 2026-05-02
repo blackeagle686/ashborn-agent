@@ -28,16 +28,21 @@ _ipc_responses = {}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global _agent
-    log.warning(f"🔥 Initializing Ashborn Agent in {os.getcwd()} …")
-    try:
-        from ashborn.agent import get_ashborn_agent
-        _agent = await get_ashborn_agent()
-        log.warning("✅ Ashborn Agent ready.")
-    except Exception as exc:
-        log.error(f"❌ Failed to initialize agent: {exc}", exc_info=True)
+    log.warning(f"🔥 Ashborn Server starting in {os.getcwd()} …")
+    # Start agent initialization in the background
+    asyncio.create_task(_initialize_agent())
     yield
     log.warning("🛑 Ashborn Agent server shut down.")
+
+async def _initialize_agent():
+    global _agent
+    try:
+        from ashborn.agent import get_ashborn_agent
+        log.warning("🧠 Loading AI modules & Phoenix framework…")
+        _agent = await get_ashborn_agent()
+        log.warning("✅ Ashborn Agent is now READY.")
+    except Exception as exc:
+        log.error(f"❌ Failed to initialize agent: {exc}", exc_info=True)
 
 # ── App ───────────────────────────────────────────────────────────────────────
 app = FastAPI(title="Ashborn Agent API", version="1.0.0", lifespan=lifespan)
