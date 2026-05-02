@@ -226,9 +226,9 @@ html, body {
   transform: rotate(-90deg);
 }
 
-/* Animated Flame Text Gradient */
+/* Animated Flame-to-Purple Text Gradient */
 .topbar-title span:last-child {
-  background: linear-gradient(135deg, var(--flame-top), var(--flame-mid), var(--flame-base));
+  background: linear-gradient(135deg, var(--accent2), var(--flame-mid), var(--primary));
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -236,8 +236,8 @@ html, body {
 }
 
 @keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
@@ -290,7 +290,9 @@ html, body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, var(--primary), var(--accent), var(--accent2));
+  background-size: 200% 200%;
+  animation: gradientShift 6s ease infinite;
   color: #fff;
   box-shadow: 0 4px 12px var(--primary-glow);
   border: 1px solid rgba(255,255,255,0.1);
@@ -378,15 +380,14 @@ html, body {
   position: relative;
 }
 
-/* Elegant Scrollbar */
 .chat-container::-webkit-scrollbar { width: 6px; }
 .chat-container::-webkit-scrollbar-track { background: transparent; }
 .chat-container::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--scrollbar-bg);
   border-radius: 10px;
 }
 .chat-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--scrollbar-hover);
 }
 
 /* ── Welcome Screen ──────────────────────────────────────────────────────── */
@@ -490,10 +491,10 @@ html, body {
 
 /* User Message Design */
 .msg-user .msg-bubble {
-  background: linear-gradient(135deg, rgba(157, 56, 198, 0.15), rgba(255, 42, 95, 0.15));
-  border: 1px solid rgba(255, 42, 95, 0.2);
-  border-bottom-right-radius: 4px; /* distinct tail */
-  color: #fff;
+  background: linear-gradient(135deg, rgba(184, 48, 255, 0.18), rgba(255, 64, 32, 0.16));
+  border: 1px solid rgba(255, 130, 48, 0.22);
+  border-bottom-right-radius: 4px;
+  color: var(--text-main);
   max-width: 90%;
 }
 
@@ -745,15 +746,18 @@ html, body {
 }
 
 .btn-action.btn-send {
-  background: linear-gradient(135deg, var(--flame-mid), var(--flame-base));
+  background: linear-gradient(135deg, var(--primary), var(--accent), var(--accent2));
+  background-size: 200% 200%;
+  animation: gradientShift 6s ease infinite;
   color: #fff;
   border: none;
-  box-shadow: 0 4px 12px rgba(255, 42, 95, 0.3);
+  box-shadow: 0 4px 12px var(--accent-glow);
 }
 
 .btn-action.btn-send:hover {
-  box-shadow: 0 6px 16px rgba(255, 42, 95, 0.5);
+  box-shadow: 0 6px 20px var(--accent-glow);
   transform: translateY(-2px) scale(1.05);
+  filter: brightness(1.15);
 }
 
 .btn-action.btn-send:disabled {
