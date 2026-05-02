@@ -249,6 +249,67 @@ async def text_to_speech(req: TTSRequest):
     except Exception as exc:
         return {"status": "error", "message": str(exc)}
 
+# ── Speech-to-Text ────────────────────────────────────────────────────────────
+import subprocess
+
+_recording_process = None
+_recording_file = "/tmp/ashborn_recording.wav"
+
+@app.post("/stt/start")
+async def start_recording():
+    """Start recording audio using arecord."""
+    global _recording_process
+    
+    if _recording_process is not None:
+        try:
+            _recording_process.terminate()
+            _recording_process.wait(timeout=2)
+        except:
+            pass
+        _recording_process = None
+        
+    try:
+        _recording_process = subprocess.Popen(
+            ["arecord", "-f", "S16_LE", "-r", "16000", "-c", "1", "-q", _recording_file],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        return {"status": "ok", "message": "Recording started"}
+    except Exception as exc:
+        return {"status": "error", "message": f"Failed to start arecord: {exc}"}
+
+@app.post("/stt/stop")
+async def stop_recording():
+    """Stop recording and transcribe using SpeechRecognition (Google API)."""
+    global _recording_process
+    
+    if _recording_process is not None:
+        try:
+            _recording_process.terminate()
+            _recording_process.wait(timeout=2)
+        except:
+            pass
+        _recording_process = None
+        
+    if not os.path.exists(_recording_file):
+        return {"status": "error", "message": "No recording file found"}
+        
+    try:
+        import speech_recognition as sr
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(_recording_file) as source:
+            audio = recognizer.record(source)
+            
+        text = recognizer.recognize_google(audio)
+        return {"status": "ok", "text": text}
+    except ImportError:
+        return {"status": "error", "message": "SpeechRecognition not installed. Run: pip install SpeechRecognition"}
+    except sr.UnknownValueError:
+        return {"status": "error", "message": "Could not understand audio. Please try again."}
+    except sr.RequestError as e:
+        return {"status": "error", "message": f"Could not request results; {e}"}
+    except Exception as exc:
+        return {"status": "error", "message": str(exc)}
 
 # ── CLI entry ─────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
