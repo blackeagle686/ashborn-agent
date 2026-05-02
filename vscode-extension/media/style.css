@@ -946,3 +946,90 @@ html, body {
   line-height: 1.5;
   font-style: italic;
 }
+
+/* ── Phoenix AI Advertisement Card ───────────────────────────────────────── */
+.phx-ad-card {
+  margin-top: 24px;
+  background: var(--surface-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-xl);
+  padding: 16px;
+  max-width: 340px;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition-bounce);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  animation: slideUpFade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s backwards;
+}
+
+.phx-ad-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--flame-top), var(--flame-mid), var(--flame-base));
+  opacity: 0.8;
+}
+
+.phx-ad-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  background: var(--surface-glass-hover);
+  border-color: var(--primary);
+  box-shadow: 0 12px 40px rgba(157, 56, 198, 0.2);
+}
+
+.phx-ad-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+.phx-ad-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.phx-ad-logo {
+  width: 60px;
+  height: auto;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+  transition: var(--transition-smooth);
+}
+
+.phx-ad-card:hover .phx-ad-logo {
+  filter: drop-shadow(0 0 15px var(--flame-mid));
+  transform: rotate(5deg) scale(1.1);
+}
+
+.phx-ad-content {
+  flex: 1;
+}
+
+.phx-ad-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  background: linear-gradient(135deg, #fff, var(--flame-top));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.2px;
+}
+
+.phx-ad-desc {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-dim);
+  opacity: 0.9;
+}
