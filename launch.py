@@ -39,7 +39,7 @@ USER_CWD = os.environ.get("ASHBORN_WORKSPACE_ROOT", os.getcwd())
 if len(sys.argv) > 1:
     arg_dir = sys.argv[1]
     # Resolve '.' or relative paths against the USER_CWD
-    if not os.path.isAbsolute(arg_dir):
+    if not os.path.isabs(arg_dir):
         TARGET_DIR = os.path.abspath(os.path.join(USER_CWD, arg_dir))
     else:
         TARGET_DIR = arg_dir
