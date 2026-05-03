@@ -242,20 +242,8 @@ export async function activate(ctx: vscode.ExtensionContext) {
   }
 
   // Open the Ashborn Dashboard if no editors are open
-  if (vscode.window.visibleTextEditors.length === 0) {
-    showDashboard(ctx);
-  }
-}
-
-function showDashboard(ctx: vscode.ExtensionContext) {
-  const panel = vscode.window.createWebviewPanel(
-    "ashborn.dashboard",
-    "Ashborn",
-    vscode.ViewColumn.One,
-    { enableScripts: true, localResourceRoots: [vscode.Uri.joinPath(ctx.extensionUri, "media")] }
-  );
-
-  const iconUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(ctx.extensionUri, "media", "ashborn.png"));
+  if (vsco  const iconUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(ctx.extensionUri, "media", "ashborn.png"));
+  const phxIconUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(ctx.extensionUri, "media", "phx-nobg.png"));
 
   panel.webview.html = `
     <!DOCTYPE html>
@@ -265,6 +253,10 @@ function showDashboard(ctx: vscode.ExtensionContext) {
         :root {
           --bg-dark: radial-gradient(circle at 50% 50%, #1a0f2e 0%, #08080c 100%);
           --bg-light: radial-gradient(circle at 50% 50%, #f7f7fa 0%, #e2e2e8 100%);
+          --primary: #b830ff;
+          --accent: #ff4020;
+          --surface-glass: rgba(28, 8, 40, 0.45);
+          --surface-border: rgba(255, 80, 40, 0.12);
         }
         body {
           background: var(--bg-dark);
@@ -274,7 +266,7 @@ function showDashboard(ctx: vscode.ExtensionContext) {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          font-family: sans-serif;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           margin: 0;
           overflow: hidden;
           transition: all 0.5s ease;
@@ -282,20 +274,80 @@ function showDashboard(ctx: vscode.ExtensionContext) {
         body.vscode-light {
           background: var(--bg-light);
           color: #1a1a1a;
+          --surface-glass: rgba(255, 252, 255, 0.6);
         }
         .logo { 
-          width: 200px; 
-          height: 200px; 
+          width: 180px; 
+          height: 180px; 
           animation: pulse 4s infinite ease-in-out; 
           filter: drop-shadow(0 0 30px rgba(157, 56, 198, 0.4));
         }
         body.vscode-light .logo {
           filter: drop-shadow(0 0 30px rgba(157, 56, 198, 0.2));
         }
-        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
-        h1 { margin-top: 20px; font-weight: 200; letter-spacing: 4px; color: #9d38c6; }
-        .hint { margin-top: 40px; color: #6b6b80; font-size: 0.9em; }
-        kbd { background: rgba(128,128,128,0.2); padding: 2px 6px; border-radius: 4px; color: inherit; border: 1px solid rgba(128,128,128,0.3); }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
+        h1 { margin-top: 20px; font-weight: 800; letter-spacing: 6px; color: #b830ff; font-size: 2.5em; text-shadow: 0 0 20px rgba(184, 48, 255, 0.3); }
+        .hint { margin-top: 30px; color: #6b6b80; font-size: 0.95em; letter-spacing: 1px; }
+        kbd { background: rgba(128,128,128,0.15); padding: 3px 8px; border-radius: 6px; color: inherit; border: 1px solid rgba(128,128,128,0.2); font-family: monospace; }
+        
+        /* Advertisement Card */
+        .phx-ad-card {
+          margin-top: 50px;
+          background: var(--surface-glass);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid var(--surface-border);
+          border-radius: 16px;
+          padding: 20px;
+          max-width: 400px;
+          text-align: left;
+          position: relative;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+          animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .phx-ad-badge {
+          display: inline-block;
+          font-size: 9px;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 1.5px;
+          color: #fff;
+          background: linear-gradient(135deg, var(--primary), var(--accent));
+          padding: 2px 10px;
+          border-radius: 20px;
+          margin-bottom: 15px;
+        }
+        .phx-ad-main { display: flex; align-items: center; gap: 20px; }
+        .phx-ad-logo { width: 64px; height: auto; filter: drop-shadow(0 0 10px var(--primary)); }
+        .phx-ad-title { font-size: 18px; font-weight: 700; color: #f5eeff; margin-bottom: 6px; letter-spacing: -0.2px; }
+        .phx-ad-desc { font-size: 13px; line-height: 1.6; color: #b89acc; }
+        body.vscode-light .phx-ad-title { color: #1a0f2e; }
+        body.vscode-light .phx-ad-desc { color: #5c3070; }
+      </style>
+    </head>
+    <body class="${vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Light ? 'vscode-light' : ''}">
+      <img src="${iconUri}" class="logo">
+      <h1>ASHBORN</h1>
+      <div class="hint">Press <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>I</kbd> to open Chat</div>
+
+      <!-- Phoenix AI Advertisement -->
+      <div class="phx-ad-card">
+        <div class="phx-ad-badge">Powered By</div>
+        <div class="phx-ad-main">
+          <img src="${phxIconUri}" class="phx-ad-logo" />
+          <div class="phx-ad-content">
+            <div class="phx-ad-title">Phoenix AI Framework</div>
+            <div class="phx-ad-desc">
+              🔥 A production-ready, modular backend infrastructure SDK designed for AI-powered Python backend services.
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+d: rgba(128,128,128,0.2); padding: 2px 6px; border-radius: 4px; color: inherit; border: 1px solid rgba(128,128,128,0.3); }
       </style>
     </head>
     <body>
