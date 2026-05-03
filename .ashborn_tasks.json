@@ -1,0 +1,37 @@
+{
+  "original_prompt": "create a wallet fornt end page",
+  "tasks": [
+    {
+      "id": 1,
+      "priority": 1,
+      "type": "new_file",
+      "title": "Create project directory structure",
+      "description": "Create a 'wallet-frontend' folder inside the .ashborn-focus directory to serve as the root of the frontend application.",
+      "status": "pending"
+    },
+    {
+      "id": 2,
+      "priority": 2,
+      "type": "command",
+      "title": "Initialize Next.js project",
+      "description": "Navigate into the 'wallet-frontend' directory and run 'npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --no-git' to scaffold a Next.js TypeScript app with Tailwind CSS, ESLint, and an src directory.",
+      "status": "pending"
+    },
+    {
+      "id": 3,
+      "priority": 3,
+      "type": "modify_file",
+      "title": "Update global CSS configuration",
+      "description": "Open and modify 'src/app/globals.css' to include custom Tailwind directives and ensure proper styling setup for the wallet interface.",
+      "status": "pending"
+    },
+    {
+      "id": 4,
+      "priority": 4,
+      "type": "new_file",
+      "title": "Create main wallet landing page",
+      "description": "Create a new file at 'src/app/page.tsx' containing a simple wallet landing page with header, balance display area, transaction history section, and action buttons (send/receive).",
+      "status": "pending"
+    }
+  ]
+}
