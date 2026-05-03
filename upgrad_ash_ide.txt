@@ -49,6 +49,9 @@ Git changes (diff)
 Errors and diagnostics
 The system shall update context in real time.
 The agent shall use this context in all reasoning tasks.
+
+-------------------------------------
+
 4. File System Manipulation
 
 Description:
@@ -63,6 +66,9 @@ File deletion
 The system shall apply edits using workspace APIs.
 The system shall support multi-file operations.
 The system shall validate file paths before execution.
+
+-------------------------------------
+
 5. Command Palette Integration
 
 Description:
@@ -74,6 +80,9 @@ The system shall register custom commands.
 The user shall be able to trigger tasks via commands.
 Commands shall support parameters (e.g., task input).
 Commands shall trigger agent execution loops.
+
+-------------------------------------
+
 6. Terminal Execution Integration
 
 Description:
