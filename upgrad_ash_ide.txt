@@ -97,6 +97,9 @@ Running scripts
 Installing dependencies
 Starting servers
 The system shall capture terminal output when needed.
+
+-------------------------------------
+
 7. Multi-Agent Visualization Interface
 
 Description:
@@ -131,6 +134,9 @@ Reflect
 The UI shall display step progression.
 Each step shall include logs and outputs.
 The system shall support real-time updates.
+
+-------------------------------------
+
 9. Sidebar Tools & Navigation
 
 Description:
@@ -144,7 +150,10 @@ File explorer (enhanced)
 Prompt templates
 The user shall be able to reuse previous tasks.
 The system shall allow quick navigation between tasks.
-10. Security & Content Policy Enforcement
+
+-------------------------------------
+
+10. Security & Content Policy Enforcement 
 
 Description:
 The system shall enforce secure content loading and execution.
@@ -155,7 +164,10 @@ The system shall restrict webview content sources.
 The system shall avoid unsafe CSP configurations.
 The system shall validate all external inputs.
 The system shall prevent unauthorized file/system access.
-11. Autonomous Execution Loop (Self-Healing)
+
+-------------------------------------
+
+11. Autonomous Execution Loop (Self-Healing) 
 
 Description:
 The system shall support iterative autonomous execution with error correction.
