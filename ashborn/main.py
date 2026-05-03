@@ -85,13 +85,17 @@ def main() -> None:
 
     # Handle directory argument (e.g. 'ashborn .')
     if len(sys.argv) > 1:
-        target_dir = Path(sys.argv[1])
+        target_arg = sys.argv[1]
+        target_dir = Path(target_arg).resolve() # Use resolve() to get absolute path
         if target_dir.is_dir():
-            print(f"[*] Switching to directory: {target_dir.absolute()}")
+            print(f"[*] Switching to directory: {target_dir}")
             os.chdir(target_dir)
         else:
-            print(f"[!] Error: {target_dir} is not a valid directory.")
+            print(f"[!] Error: {target_arg} is not a valid directory.")
             sys.exit(1)
+    else:
+        # If no arg, ensure we work in current shell CWD
+        print(f"[*] Working in directory: {os.getcwd()}")
 
     app = AshbornApp()
     app.run()
