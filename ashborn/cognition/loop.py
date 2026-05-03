@@ -4,7 +4,9 @@ import os
 import asyncio
 
 from .helpers.tasks import TASK_FILE, _load_tasks, _mark_task
-from .helpers.plan import _get_pending_plan_steps, _mark_plan_step, PLAN_FILE
+from .helpers.plan import _get_pending_plan_steps, _get_executable_plan_steps, _mark_plan_step, PLAN_FILE
+
+# ... (omitting top part since I need to use multi_replace to be precise)
 from .helpers.generation import GENERATION_FILE
 from .helpers.observability import log_agent_action, clear_logs
 from .generator import AshbornGenerator
