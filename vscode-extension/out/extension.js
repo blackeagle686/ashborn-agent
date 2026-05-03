@@ -64,7 +64,7 @@ async function activate(ctx) {
     const debounceRefresh = () => {
         contextManager.refresh();
     };
-    ctx.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(debounceRefresh), vscode.window.onDidChangeVisibleTextEditors(debounceRefresh), vscode.workspace.onDidChangeTextDocument(debounceRefresh), vscode.languages.onDidChangeDiagnostics(debounceRefresh));
+    ctx.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(debounceRefresh), vscode.window.onDidChangeVisibleTextEditors(debounceRefresh), vscode.window.onDidChangeTextEditorSelection(debounceRefresh), vscode.workspace.onDidChangeTextDocument(debounceRefresh), vscode.languages.onDidChangeDiagnostics(debounceRefresh));
     // Register sidebar WebView
     ctx.subscriptions.push(vscode.window.registerWebviewViewProvider(panel_1.AshbornViewProvider.viewType, _provider, { webviewOptions: { retainContextWhenHidden: true } }));
     // Register Inline Completion Provider
