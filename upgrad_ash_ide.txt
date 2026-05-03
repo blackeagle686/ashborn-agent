@@ -1,5 +1,5 @@
 🧩 Ashborn VS Code Extension — Functional Requirements
-1. Inline AI Code Completion
+1. Inline AI Code Completion ()
 
 Description:
 The system shall provide real-time AI-generated code suggestions while the user types.
