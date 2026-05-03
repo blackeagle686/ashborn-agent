@@ -345,3 +345,24 @@ The agent shall use Git context in reasoning.
 🎯 System-Level Requirement (Very Important)
 
 Ashborn shall function as an autonomous development agent within the VS Code environment, capable of understanding, modifying, executing, and improving software projects with minimal user intervention.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
