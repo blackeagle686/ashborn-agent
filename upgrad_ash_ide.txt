@@ -14,7 +14,7 @@ Project context
 The user shall be able to accept or reject suggestions.
 Suggestions shall update dynamically as the user types.
 
-
+-------------------------------------
 
 2. AI Code Actions (Context Menu Integration)
 
@@ -31,6 +31,7 @@ Optimize performance
 Fix bugs
 The system shall send selected code + context to the agent.
 The system shall apply returned modifications to the editor.
+
 3. Context Awareness Engine
 
 Description:
