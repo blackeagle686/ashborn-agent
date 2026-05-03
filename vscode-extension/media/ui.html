@@ -213,6 +213,23 @@
       <div id="settings-status" class="settings-status"></div>
     </div>
   </div>
+  
+  <!-- ── Context Panel (Debug) ─────────────────────────────────── -->
+  <div class="settings-panel context-panel" id="context-panel" style="display: none;">
+    <div class="settings-header">
+      <h3>Agent Context</h3>
+      <button id="btn-close-context" class="btn-close" title="Close Panel">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+        </svg>
+      </button>
+    </div>
+    <div class="settings-content">
+      <div class="context-info">Real-time workspace state collected for the agent:</div>
+      <pre id="context-data" class="context-data">Waiting for update...</pre>
+    </div>
+  </div>
+
 
   <script src="{{JS_URI}}"></script>
 </body>
