@@ -80,6 +80,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
       title: `Ashborn: Executing ${actionStr}...`,
       cancellable: false
     }, async (progress) => {
+      try {
         if (actionStr === "explain") {
           // Ensure sidebar is visible
           await vscode.commands.executeCommand('workbench.view.extension.ashborn-sidebar');
