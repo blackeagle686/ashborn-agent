@@ -85,6 +85,16 @@ Type: {type}
 Approach: {approach}
 Algorithm: {algorithm}
 
+=== IMPORTANT: JSON ESCAPING ===
+You MUST escape all double quotes (") as \\\" and all newlines as \\n inside JSON string values.
+Failure to do so will break the execution.
+
+Plan Step Details:
+Step ID: {step_id}
+Type: {type}
+Approach: {approach}
+Algorithm: {algorithm}
+
 Existing File Context:
 {file_context}
 
@@ -119,10 +129,18 @@ Respond ONLY with valid JSON.
         
         try:
             gen_data = json.loads(clean)
-        except Exception:
+        except Exception as e:
+            # Try to find JSON block via regex if direct loads fails
             m = re.search(r'\{.*\}', clean, re.DOTALL)
             if m:
-                gen_data = json.loads(m.group(0))
+                try:
+                    gen_data = json.loads(m.group(0))
+                except Exception:
+                    # If it still fails, it might be an escaping issue. 
+                    # We'll return an empty block and log the error.
+                    print(f"[ERROR] Generator failed to parse JSON: {e}")
+                    print(f"[DEBUG] Raw response was: {response[:500]}...")
+                    gen_data = {"generation_blocks": []}
             else:
                 gen_data = {"generation_blocks": []}
                 
