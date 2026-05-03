@@ -83,6 +83,22 @@
       "metadata": {
         "model": "ashborn-generator"
       }
+    },
+    {
+      "generate_block_id": 0,
+      "plan_step_id": 6,
+      "artifacts": [
+        {
+          "type": "file_write",
+          "path": "math_utils/calc.py",
+          "language": "python",
+          "code": "def factorial(n):\n    \"\"\"Calculate the factorial of a non-negative integer.\n\n    Args:\n        n (int): A non-negative integer.\n\n    Returns:\n        int: The factorial of n.\n\n    Raises:\n        TypeError: If n is not an integer.\n        ValueError: If n is negative.\n    \"\"\"\n    if not isinstance(n, int):\n        raise TypeError(\"Input must be an integer.\")\n    if n < 0:\n        raise ValueError(\"Factorial is not defined for negative numbers.\")\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result"
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
     }
   ]
 }
