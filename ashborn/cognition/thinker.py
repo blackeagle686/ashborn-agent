@@ -15,17 +15,12 @@ class AshbornThinker(Thinker):
 You are ASHBORN — The Great Architect. Your job is to decompose a user request \
 into a precise, prioritized list of implementation tasks.
 
-Rules:
-- Each task must be ATOMIC: one clear action (create a file, edit a file, run a command).
-- Priority 1 = must happen first (e.g. create folder structure, install deps).
-- Higher numbers = later tasks that depend on earlier ones.
-- Write descriptions that tell the executor EXACTLY what to build/do.
-- No fluff. No meta-commentary. Only tasks.
-- For the "type" field use EXACTLY one of: new_file | modify_file | command | read
-  • new_file   — creating a file that does NOT yet exist
-  • modify_file — editing/patching a file that already exists
-  • command    — a shell/terminal command
-  • read       — reading or inspecting only
+=== STRICT DIRECTIVES ===
+1. Respond ONLY with valid JSON.
+2. No conversational filler, preambles, or post-commentary.
+3. Each task must be ATOMIC (one clear action).
+4. For the "type" field, use EXACTLY one of: new_file | modify_file | command | read.
+5. "priority" starts at 1 (earliest).
 
 User Request:
 {prompt}
@@ -33,14 +28,14 @@ User Request:
 Context:
 {context}
 
-Respond ONLY with a valid JSON object in this exact format:
+=== RESPONSE SCHEMA ===
 {{
     "original_prompt": "<user request>",
     "tasks": [
         {{
             "id": 1,
             "priority": 1,
-            "type": "<new_file|modify_file|command|read>",
+            "type": "new_file | modify_file | command | read",
             "title": "<short title>",
             "description": "<detailed implementation instruction>",
             "dependencies": [],
@@ -51,6 +46,7 @@ Respond ONLY with a valid JSON object in this exact format:
 """
 
     async def analyze(self, prompt: str, memory, session_id: str) -> str:
+        from .helpers.schemas import validate_schema, TASK_SCHEMA
         context = await memory.get_full_context(session_id, query=prompt)
 
         full_prompt = self.TASK_GENERATION_PROMPT.format(
@@ -65,19 +61,26 @@ Respond ONLY with a valid JSON object in this exact format:
         try:
             task_data = json.loads(clean)
         except Exception:
-            # Aggressive fallback: grab the first {...} block
+            # Fallback block detection
             m = re.search(r'\{.*\}', clean, re.DOTALL)
             if m:
-                task_data = json.loads(m.group(0))
+                try: task_data = json.loads(m.group(0))
+                except: task_data = None
             else:
-                # Last resort: single-task fallback
-                task_data = {
-                    "original_prompt": prompt,
-                    "tasks": [
-                        {"id": 1, "priority": 1, "title": "Execute user request",
-                         "description": prompt, "status": "pending"}
-                    ]
-                }
+                task_data = None
+        
+        if not task_data:
+            # Final fallback
+            task_data = {
+                "original_prompt": prompt,
+                "tasks": [{"id": 1, "priority": 1, "title": "Execute user request", "description": prompt, "status": "pending", "type": "command"}]
+            }
+
+        # Schema Validation
+        errors = validate_schema(task_data, TASK_SCHEMA)
+        if errors:
+            print(f"[THINKER WARNING] Schema validation failed: {errors}")
+            # We could try to fix it, but for now we just log it.
 
         # Write task file
         _save_tasks(task_data)
