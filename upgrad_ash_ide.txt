@@ -113,7 +113,10 @@ Reflector
 Each agent shall output messages independently.
 The system shall display execution flow (timeline or steps).
 The user shall be able to track agent decisions.
-8. Task Execution Workflow Visualization
+
+-------------------------------------
+
+8. Task Execution Workflow Visualization 
 
 Description:
 The system shall represent agent execution as structured steps.
