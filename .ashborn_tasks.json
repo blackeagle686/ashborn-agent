@@ -1,0 +1,13 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "priority": 1,
+      "type": "command",
+      "title": "Failed Task",
+      "description": "This task failed previously",
+      "dependencies": [],
+      "status": "failed"
+    }
+  ]
+}

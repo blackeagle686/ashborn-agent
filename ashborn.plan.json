@@ -1,0 +1,15 @@
+{
+  "plan_steps": [
+    {
+      "plan_step_id": 101,
+      "task_id": 1,
+      "step_index": 1,
+      "type": "command",
+      "status": "failed",
+      "dependencies": [],
+      "solution": {
+        "approach": "echo 'fail'"
+      }
+    }
+  ]
+}
