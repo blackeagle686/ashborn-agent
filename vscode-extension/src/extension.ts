@@ -145,15 +145,54 @@ export async function activate(ctx: vscode.ExtensionContext) {
     vscode.commands.registerCommand("ashborn.resetSession", () =>
       _provider.reset()
     ),
-    vscode.commands.registerCommand("ashborn.runAgent", async () => {
-      const task = await vscode.window.showInputBox({
+    vscode.commands.registerCommand("ashborn.runAgent", async (task?: string) => {
+      const finalTask = task || await vscode.window.showInputBox({
         prompt: "Describe what you want Ashborn to do",
         placeHolder: "e.g. Add unit tests for the auth module",
       });
-      if (task) {
-        // Trigger via the panel's internal run
-        (_provider as any)._runAgent(task, "plan");
+      if (finalTask) {
+        _provider.runAgent(finalTask, "plan");
       }
+    }),
+
+    vscode.commands.registerCommand("ashborn.runTaskWithInput", async () => {
+      const task = await vscode.window.showInputBox({
+        prompt: "Enter a task for Ashborn",
+        placeHolder: "e.g. Refactor this class to use a factory pattern"
+      });
+      if (task) {
+        _provider.runAgent(task, "auto");
+      }
+    }),
+
+    vscode.commands.registerCommand("ashborn.action.fixError", async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) return;
+
+      const pos = editor.selection.active;
+      const diagnostics = vscode.languages.getDiagnostics(editor.document.uri);
+      const errorAtCursor = diagnostics.find(d => d.range.contains(pos));
+
+      if (errorAtCursor) {
+        const task = `Fix the following ${errorAtCursor.severity === vscode.DiagnosticSeverity.Error ? "error" : "warning"} in ${path.basename(editor.document.uri.fsPath)} at line ${errorAtCursor.range.start.line + 1}:\n"${errorAtCursor.message}"`;
+        _provider.runAgent(task, "auto");
+      } else {
+        vscode.window.showInformationMessage("No error or warning found at cursor.");
+      }
+    }),
+
+    vscode.commands.registerCommand("ashborn.action.generateTests", async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) return;
+      const task = `Generate comprehensive unit tests for the file: ${path.basename(editor.document.uri.fsPath)}`;
+      _provider.runAgent(task, "plan");
+    }),
+
+    vscode.commands.registerCommand("ashborn.action.secureCode", async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) return;
+      const task = `Perform a security audit on ${path.basename(editor.document.uri.fsPath)}, identify potential vulnerabilities, and suggest/apply fixes.`;
+      _provider.runAgent(task, "plan");
     })
   );
 
