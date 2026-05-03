@@ -356,4 +356,167 @@ Ashborn shall function as an autonomous development agent within the VS Code env
 
 
 NEXT steps: 
+🚀 Ashborn – Next Steps (Post-Architecture Stabilization)
+📌 Overview
 
+After successfully stabilizing the new agent flow:
+
+Thinker → Planner → Analyzer → Generator → Actor → Reflector
+
+The next phase focuses on making the system robust, traceable, and scalable.
+
+🧠 Phase 1: Observability & Tracing (HIGH PRIORITY)
+🎯 Goal
+
+Enable full visibility into agent decisions and outputs.
+
+✅ Tasks
+ Implement unified logging system
+ Track every agent execution step
+ Store inputs/outputs for each agent
+ Add timestamps for all operations
+🧩 Suggested Schema
+{
+  "log_id": "uuid",
+  "agent": "generator",
+  "action": "generate_code",
+  "input": {},
+  "output": {},
+  "status": "success | failed",
+  "timestamp": "ISO8601"
+}
+🔥 Outcome
+Easier debugging
+Full traceability
+Foundation for future optimization
+⚙️ Phase 2: Generator v2 (Structured Code Generation)
+🎯 Goal
+
+Upgrade Generator to produce production-ready artifacts
+
+✅ Tasks
+ Support multi-file generation
+ Add file metadata (path, language, type)
+ Enforce project structure consistency
+ Validate generated code (syntax/imports)
+🧩 Output Format
+{
+  "generation_blocks": [
+    {
+      "generate_block_id": "uuid",
+      "plan_step_id": "uuid",
+      "artifacts": [
+        {
+          "type": "file",
+          "path": "services/auth.py",
+          "language": "python",
+          "code": "..."
+        }
+      ],
+      "status": "success"
+    }
+  ]
+}
+🔥 Outcome
+Real project generation (not snippets)
+Cleaner integration with Actor
+Consistent architecture
+🧩 Phase 3: Dependency Graph System
+🎯 Goal
+
+Enable task and plan step dependencies
+
+✅ Tasks
+ Add dependencies field to tasks
+ Add dependencies field to plan_steps
+ Build execution ordering logic
+ Prevent execution of unresolved steps
+🧩 Example
+{
+  "plan_step_id": "step_2",
+  "depends_on": ["step_1"]
+}
+🔥 Outcome
+Correct execution order
+Enables parallelism later
+Prevents logical errors
+🔄 Phase 4: Resume & State Management
+🎯 Goal
+
+Allow system to pause and resume safely
+
+✅ Tasks
+ Persist execution state
+ Track completed vs pending steps
+ Implement resume mechanism
+ Handle partial failures
+🧩 Example
+{
+  "execution_state": {
+    "completed_steps": [],
+    "pending_steps": [],
+    "failed_steps": []
+  }
+}
+🔥 Outcome
+Long-running task support
+Crash recovery
+More reliable system
+🧠 Phase 5: Shared Context Backbone
+🎯 Goal
+
+Create a central memory layer shared by all agents
+
+✅ Tasks
+ Design global context schema
+ Store tasks, plans, and outputs centrally
+ Allow read/write access for all agents
+ Avoid duplicated reasoning
+🧩 Example
+{
+  "context_id": "uuid",
+  "tasks": [],
+  "plans": [],
+  "artifacts": [],
+  "memory": {}
+}
+🔥 Outcome
+Consistent agent communication
+Reduced redundancy
+Smarter decision-making
+⚡ Phase 6: Determinism & Constraints
+🎯 Goal
+
+Reduce randomness in outputs
+
+✅ Tasks
+ Add strict input schemas
+ Constrain Generator prompts
+ Normalize Planner outputs
+ Add validation layer before execution
+🔥 Outcome
+Predictable behavior
+Easier debugging
+Production readiness
+🧪 Phase 7: Validation Layer (Optional but Powerful)
+🎯 Goal
+
+Ensure quality before execution
+
+✅ Tasks
+ Add syntax validation for code
+ Check missing imports
+ Validate file placement
+ Add retry mechanism on failure
+🔥 Outcome
+Higher code quality
+Fewer runtime errors
+Safer automation
+🧭 Recommended Execution Order
+Observability & Logging
+Generator v2
+Dependency Graph
+State Management
+Context Backbone
+Determinism
+Validation Layer
