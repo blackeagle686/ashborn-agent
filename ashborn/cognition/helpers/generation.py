@@ -1,20 +1,24 @@
 import json
 import os
+import threading
 
 GENERATION_FILE = "ashborn.generation.json"
+_gen_lock = threading.Lock()
 
 def _load_generation() -> dict:
-    if not os.path.exists(GENERATION_FILE):
-        return {"generation_blocks": []}
-    try:
-        with open(GENERATION_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return {"generation_blocks": []}
+    with _gen_lock:
+        if not os.path.exists(GENERATION_FILE):
+            return {"generation_blocks": []}
+        try:
+            with open(GENERATION_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {"generation_blocks": []}
 
 def _save_generation(data: dict) -> None:
-    with open(GENERATION_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    with _gen_lock:
+        with open(GENERATION_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
 
 def _get_generation_blocks(plan_step_id: int) -> list:
     data = _load_generation()
