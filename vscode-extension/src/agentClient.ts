@@ -192,4 +192,50 @@ export class AgentClient {
       req.end();
     });
   }
+
+  async getCompletion(
+    filePath: string,
+    contentBefore: string,
+    contentAfter: string
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const body = JSON.stringify({
+        file_path: filePath,
+        content_before: contentBefore,
+        content_after: contentAfter,
+      });
+
+      const req = http.request(
+        {
+          hostname: "127.0.0.1",
+          port: this._port,
+          path: "/completion",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Content-Length": Buffer.byteLength(body),
+          },
+        },
+        (res) => {
+          let data = "";
+          res.on("data", (c) => (data += c));
+          res.on("end", () => {
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.status === "ok") {
+                resolve(parsed.completion || "");
+              } else {
+                resolve("");
+              }
+            } catch {
+              resolve("");
+            }
+          });
+        }
+      );
+      req.on("error", () => resolve(""));
+      req.write(body);
+      req.end();
+    });
+  }
 }
