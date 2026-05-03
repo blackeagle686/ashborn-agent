@@ -23,7 +23,7 @@
       "type": "modify_file",
       "title": "Fix missing assertion in test_http_5xx_error_response",
       "description": "The test_http_5xx_error_response method is missing its assertion block. Add the missing 'with self.assertRaises(...)' block to properly assert that HTTPError is raised.",
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 4,
