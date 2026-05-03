@@ -6,23 +6,23 @@
       "priority": 1,
       "type": "command",
       "title": "Create scratch_test directory",
-      "description": "Run 'mkdir -p scratch_test' to create the 'scratch_test' folder if it does not already exist.",
-      "status": "done"
+      "description": "Run command to create a new directory named 'scratch_test' in the current working directory.",
+      "status": "pending"
     },
     {
       "id": 2,
       "priority": 2,
       "type": "new_file",
-      "title": "Write calc.py with factorial function",
-      "description": "Create a file named 'calc.py' inside the 'scratch_test' directory containing a function that calculates the factorial of 5 and prints the result. The code should be: def factorial(n):\n    if n == 0 or n == 1:\n        return 1\n    else:\n        return n * factorial(n-1)\nprint(factorial(5))",
+      "title": "Create calc.py with factorial function",
+      "description": "Inside the 'scratch_test' folder, create a file named 'calc.py'. Write a Python function that computes the factorial of 5 and prints the result. The script should call this function when executed.",
       "status": "pending"
     },
     {
       "id": 3,
       "priority": 3,
       "type": "command",
-      "title": "Execute Python script",
-      "description": "Run 'python3 scratch_test/calc.py' from the current working directory to execute the Python script and print the factorial of 5.",
+      "title": "Execute calc.py script",
+      "description": "Change into the 'scratch_test' directory and run the Python script 'calc.py' using the command 'python calc.py' or 'python3 calc.py' depending on system availability.",
       "status": "pending"
     }
   ]
