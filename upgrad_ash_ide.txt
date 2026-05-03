@@ -13,6 +13,9 @@ File content
 Project context
 The user shall be able to accept or reject suggestions.
 Suggestions shall update dynamically as the user types.
+
+
+
 2. AI Code Actions (Context Menu Integration)
 
 Description:
