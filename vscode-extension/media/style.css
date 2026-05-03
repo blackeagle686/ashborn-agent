@@ -1395,3 +1395,122 @@ body.vscode-light .context-data {
   background: #f5f5f5;
   color: #333;
 }
+
+/* ── Multi-Agent HUD ────────────────────────────────────────────────── */
+.agent-hud {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 16px;
+  background: var(--bg-dark-30);
+  border-bottom: 1px solid var(--surface-border);
+  gap: 12px;
+  flex-shrink: 0;
+  z-index: 8;
+  backdrop-filter: blur(8px);
+}
+
+.agent-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.4;
+  transition: all 0.3s ease;
+  position: relative;
+  flex: 1;
+}
+
+.agent-unit.active {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.agent-avatar {
+  font-size: 18px;
+  filter: grayscale(1);
+  transition: all 0.3s ease;
+}
+
+.agent-unit.active .agent-avatar {
+  filter: grayscale(0);
+  text-shadow: 0 0 10px var(--primary-glow);
+}
+
+.agent-name {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+.agent-unit.active .agent-name {
+  color: var(--primary);
+}
+
+.agent-pulse {
+  position: absolute;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--primary);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.agent-unit.active .agent-pulse {
+  animation: agentPulse 2s infinite;
+}
+
+@keyframes agentPulse {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+/* ── Role-Specific Bubbles ─────────────────────────────────────────── */
+.msg-agent[data-role="thinker"] .msg-label { color: #b830ff; }
+.msg-agent[data-role="planner"] .msg-label { color: #ffa040; }
+.msg-agent[data-role="actor"] .msg-label   { color: #ff3318; }
+.msg-agent[data-role="reflector"] .msg-label { color: #4caf82; }
+
+.msg-agent[data-role="thinker"] .msg-bubble { border-left: 3px solid #b830ff; }
+.msg-agent[data-role="planner"] .msg-bubble { border-left: 3px solid #ffa040; }
+.msg-agent[data-role="actor"] .msg-bubble   { border-left: 3px solid #ff3318; }
+.msg-agent[data-role="reflector"] .msg-bubble { border-left: 3px solid #4caf82; }
+
+/* Timeline / Step Visualization */
+.timeline-step {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+  position: relative;
+}
+
+.timeline-step::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 24px;
+  bottom: -8px;
+  width: 2px;
+  background: var(--surface-border);
+}
+
+.timeline-step:last-child::before { display: none; }
+
+.step-icon {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--surface-border);
+  margin-top: 4px;
+  z-index: 2;
+}
+
+.step-content {
+  flex: 1;
+  font-size: 12px;
+  color: var(--text-dim);
+}
