@@ -24,10 +24,10 @@ def send_completion_request(url: str, payload: dict, headers: dict = None) -> di
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
-        print(f"Request failed: {e}")
+        # Log or use a generic error message instead of printing sensitive details
         raise
     except ValueError as e:
-        print(f"Invalid JSON response: {e}")
+        # Log or use a generic error message instead of printing sensitive details
         raise
 
 if __name__ == "__main__":

@@ -31,7 +31,7 @@
       "type": "modify_file",
       "title": "Improve error handling to avoid information leakage",
       "description": "Replace print() statements in exception handlers with logging or generic error messages to prevent leaking sensitive info. Ensure exceptions are re-raised appropriately.",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 5,
