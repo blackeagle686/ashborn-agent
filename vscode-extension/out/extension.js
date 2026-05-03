@@ -42,6 +42,7 @@ const http = __importStar(require("http"));
 const agentClient_1 = require("./agentClient");
 const panel_1 = require("./panel");
 const contextCollector_1 = require("./contextCollector");
+const completionProvider_1 = require("./completionProvider");
 let _serverProcess;
 let _statusBar;
 let _provider;
@@ -60,6 +61,10 @@ async function activate(ctx) {
     _provider = new panel_1.AshbornViewProvider(ctx.extensionUri, client, collector);
     // Register sidebar WebView
     ctx.subscriptions.push(vscode.window.registerWebviewViewProvider(panel_1.AshbornViewProvider.viewType, _provider, { webviewOptions: { retainContextWhenHidden: true } }));
+    // Register Inline Completion Provider
+    const completionProvider = new completionProvider_1.AshbornCompletionProvider(client);
+    ctx.subscriptions.push(vscode.languages.registerInlineCompletionItemProvider({ pattern: '**/*' }, // Apply to all files
+    completionProvider));
     // Register commands
     ctx.subscriptions.push(vscode.commands.registerCommand("ashborn.startServer", () => startServer(ctx, port)), vscode.commands.registerCommand("ashborn.stopAgent", () => _provider.stop()), vscode.commands.registerCommand("ashborn.resetSession", () => _provider.reset()), vscode.commands.registerCommand("ashborn.runAgent", async () => {
         const task = await vscode.window.showInputBox({
