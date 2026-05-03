@@ -50,6 +50,135 @@ Errors and diagnostics
 The system shall update context in real time.
 The agent shall use this context in all reasoning tasks.
 
+
+
+🧩 3. Context Awareness Engine — Task Breakdown
+🔹 Phase 1: Core Infrastructure
+✅ Task 1.1 — Create Context Manager
+
+Goal: Central place to store all context
+
+Create class:
+class ContextManager {
+  getContext(): Context {}
+  update(partial: Partial<Context>): void {}
+}
+Define Context interface:
+type Context = {
+  openFiles: string[];
+  activeFile?: string;
+  fileTree?: any;
+  diagnostics?: any[];
+  gitDiff?: string;
+};
+✅ Task 1.2 — Basic Context Logging
+
+Goal: Debug visibility
+
+Log context on every update:
+console.log("CTX:", context);
+🔹 Phase 2: Open Files Tracking
+✅ Task 2.1 — Get Open Editors
+
+Goal: Track all opened files
+
+const openEditors = vscode.window.visibleTextEditors;
+Extract:
+file path
+language
+✅ Task 2.2 — Listen for Changes
+
+Goal: Real-time updates
+
+vscode.window.onDidChangeVisibleTextEditors(...)
+🔹 Phase 3: Active Editor Context
+✅ Task 3.1 — Get Active File
+vscode.window.activeTextEditor
+✅ Task 3.2 — Get File Content
+editor.document.getText()
+✅ Task 3.3 — Track Cursor Position (optional but powerful)
+editor.selection.active
+
+💡 This unlocks:
+
+function-level reasoning
+inline AI later
+🔹 Phase 4: File Structure (Workspace Index)
+✅ Task 4.1 — Scan Workspace Files
+vscode.workspace.findFiles("**/*", "**/node_modules/**")
+✅ Task 4.2 — Build File Tree
+Convert flat paths → tree structure
+
+💡 Later used for:
+
+navigation
+agent planning
+🔹 Phase 5: Diagnostics (Errors)
+✅ Task 5.1 — Get Problems Panel Data
+vscode.languages.getDiagnostics()
+✅ Task 5.2 — Listen for Updates
+vscode.languages.onDidChangeDiagnostics(...)
+✅ Task 5.3 — Normalize Errors
+
+Convert to:
+
+{
+  file: string;
+  message: string;
+  line: number;
+  severity: string;
+}
+🔹 Phase 6: Git Integration (Diff Context)
+✅ Task 6.1 — Access Git Extension
+const gitExt = vscode.extensions.getExtension('vscode.git');
+✅ Task 6.2 — Get Repo Info
+changed files
+staged changes
+✅ Task 6.3 — Extract Diff
+
+Use:
+
+Git API (if available)
+or fallback:
+git diff
+🔹 Phase 7: Real-Time Sync Engine
+✅ Task 7.1 — Central Update Trigger
+
+Every event calls:
+
+contextManager.update(...)
+✅ Task 7.2 — Debounce Updates
+
+Prevent spam:
+
+setTimeout / debounce (200–500ms)
+🔹 Phase 8: Agent Integration
+✅ Task 8.1 — Inject Context into Agent
+this._loop.run(task, sessionId, mode, callback, context)
+✅ Task 8.2 — Context Serialization
+
+Convert to clean format:
+
+JSON.stringify(context)
+✅ Task 8.3 — Context Filtering (IMPORTANT)
+
+Limit size:
+
+only active file content
+only relevant diagnostics
+limited file list
+🔹 Phase 9: Testing & Validation
+✅ Task 9.1 — Manual Tests
+Open files → context updates
+Edit file → reflected
+Add error → appears
+✅ Task 9.2 — Logging Panel (optional 🔥)
+
+Show context in UI:
+
+debug tab in your WebView
+
+
 -------------------------------------
 
 4. File System Manipulation
