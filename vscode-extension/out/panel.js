@@ -152,6 +152,9 @@ class AshbornViewProvider {
             this._sessionId = newSession;
     }
     // ── Send a message TO the WebView ─────────────────────────────────────────
+    postMessage(msg) {
+        this._post(msg);
+    }
     _post(msg) {
         this._view?.webview.postMessage(msg);
     }

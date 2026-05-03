@@ -94,9 +94,11 @@ async function activate(ctx) {
                     return;
                 }
                 if (actionStr === "explain") {
-                    const channel = vscode.window.createOutputChannel("Ashborn Explanation");
-                    channel.show(true);
-                    channel.appendLine(result);
+                    // Ensure sidebar is visible
+                    await vscode.commands.executeCommand('ashborn-sidebar.focus');
+                    _provider.postMessage({ type: "user_message", content: `Explain selected code in ${path.basename(doc.uri.fsPath)}:` });
+                    _provider.postMessage({ type: "chunk", content: result });
+                    _provider.postMessage({ type: "done" });
                 }
                 else {
                     const edit = new vscode.WorkspaceEdit();
