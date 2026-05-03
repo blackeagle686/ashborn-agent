@@ -503,7 +503,7 @@ class AshbornLoop(AgentLoop):
     async def run_stream(self, prompt: str, memory, session_id: str, mode: str = "auto", **kwargs):
         # FAST ANSWER MODE: Bypass the heavy task loop for quick queries
         if mode == "fast_ans":
-            yield {"type": "status", "content": "⚡ Fast Answer mode active..."}
+            yield {"type": "status", "role": "analyzer", "content": "⚡ Fast Answer mode active..."}
             context = await memory.get_full_context(session_id, query=prompt)
             system_prompt = "You are ASHBORN. Give a concise, direct answer to the user's question."
             full_prompt = f"{system_prompt}\n\nContext:\n{context}\n\nUser: {prompt}"
@@ -515,7 +515,7 @@ class AshbornLoop(AgentLoop):
             return
 
         # Step 1+2: Think AND analyze workspace concurrently
-        yield {"type": "status", "content": "🧠 Decomposing your request into tasks..."}
+        yield {"type": "status", "role": "thinker", "content": "🧠 Decomposing your request into tasks..."}
         analyze_task = asyncio.create_task(
             self.analyzer.analyze_workspace(prompt)
         )
@@ -530,7 +530,7 @@ class AshbornLoop(AgentLoop):
         task_count_str = ""
         if "(" in objective_meta:
             task_count_str = objective_meta.split("(")[1].split(")")[0]
-        yield {"type": "status", "content": f"📋 {task_count_str}"}
+        yield {"type": "status", "role": "thinker", "content": f"📋 {task_count_str}"}
         await memory.add_interaction(session_id, "system", f"Task breakdown: {objective_meta}")
 
         accumulated_results = ""
@@ -553,8 +553,8 @@ class AshbornLoop(AgentLoop):
                 all_tasks_count = "?"
 
             status_line = self.planner.task_status_line(task)
-            yield {"type": "status", "content": f"⚙ Task {task_number}/{all_tasks_count}: {task['title']}"}
-            yield {"type": "chunk", "content": f"\n**[P{task['priority']}] {task['title']}**\n_{status_line}_\n"}
+            yield {"type": "status", "role": "planner", "content": f"⚙ Task {task_number}/{all_tasks_count}: {task['title']}"}
+            yield {"type": "chunk", "role": "planner", "content": f"\n**[P{task['priority']}] {task['title']}**\n_{status_line}_\n"}
 
             for attempt in range(self.MAX_RETRIES_PER_TASK):
                 plan = await self.planner.plan_task(task, accumulated_results)
@@ -563,10 +563,10 @@ class AshbornLoop(AgentLoop):
                 if any(a.get("tool") == "finish" for a in actions):
                     _mark_task(task["id"], "done")
                     task_summaries.append(f"✓ {task['title']}")
-                    yield {"type": "chunk", "content": f"  ↳ Skipped (already complete)\n"}
+                    yield {"type": "chunk", "role": "planner", "content": f"  ↳ Skipped (already complete)\n"}
                     break
 
-                yield {"type": "status", "content": f"  Executing {len(actions)} action(s)..."}
+                yield {"type": "status", "role": "actor", "content": f"  Executing {len(actions)} action(s)..."}
                 action_result = await self.actor.execute(plan)
                 total_actions += len([a for a in actions if a.get("tool") != "finish"])
 
@@ -586,15 +586,15 @@ class AshbornLoop(AgentLoop):
                 if reflection["is_complete"]:
                     _mark_task(task["id"], "done")
                     task_summaries.append(f"✓ {task['title']}")
-                    yield {"type": "chunk", "content": f"  ↳ ✓ Done: {reflection['reflection']}\n"}
+                    yield {"type": "chunk", "role": "reflector", "content": f"  ↳ ✓ Done: {reflection['reflection']}\n"}
                     break
                 else:
                     if attempt < self.MAX_RETRIES_PER_TASK - 1:
-                        yield {"type": "chunk", "content": f"  ↳ ⚠ Retrying: {reflection['reflection']}\n"}
+                        yield {"type": "chunk", "role": "reflector", "content": f"  ↳ ⚠ Retrying: {reflection['reflection']}\n"}
                     else:
                         _mark_task(task["id"], "failed")
                         task_summaries.append(f"✗ {task['title']}")
-                        yield {"type": "chunk", "content": f"  ↳ ✗ Failed: {reflection['reflection']}\n"}
+                        yield {"type": "chunk", "role": "reflector", "content": f"  ↳ ✗ Failed: {reflection['reflection']}\n"}
 
         # Step 4: Cleanup
         if self._has_task_file():
