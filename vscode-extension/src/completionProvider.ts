@@ -52,9 +52,11 @@ export class AshbornCompletionProvider implements vscode.InlineCompletionItemPro
             return;
           }
 
+          console.log(`Ashborn Completion: ${completion}`);
           const item = new vscode.InlineCompletionItem(completion, new vscode.Range(position, position));
           resolve([item]);
         } catch (e) {
+          console.error(`Ashborn Completion Error: ${e}`);
           resolve(null);
         }
       }, 500); // 500ms debounce
