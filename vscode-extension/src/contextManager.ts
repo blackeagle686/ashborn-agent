@@ -65,33 +65,51 @@ export class ContextManager {
     const parts: string[] = [];
     const ctx = this._context;
 
+    // 1. Critical: Active File & Cursor
     if (ctx.activeFile) {
-      parts.push(`[Active File] ${ctx.activeFile.path} (${ctx.activeFile.language})
-Cursor: Line ${ctx.activeFile.cursorLine}, Column ${ctx.activeFile.cursorCharacter}
-Content Preview:
-${ctx.activeFile.content.slice(0, 2000)}`);
+      // Truncate content to ~4000 chars to save tokens while keeping context
+      const content = ctx.activeFile.content.length > 4000 
+        ? ctx.activeFile.content.slice(0, 2000) + "\n\n[... content truncated ...]\n\n" + ctx.activeFile.content.slice(-2000)
+        : ctx.activeFile.content;
+
+      parts.push(`[ACTIVE_FILE]
+Path: ${ctx.activeFile.path}
+Lang: ${ctx.activeFile.language}
+Cursor: L${ctx.activeFile.cursorLine}:C${ctx.activeFile.cursorCharacter}
+Content:
+\`\`\`
+${content}
+\`\`\``);
+      
       if (ctx.activeFile.selection) {
-        parts.push(`[Selection]\n${ctx.activeFile.selection}`);
+        parts.push(`[SELECTED_CODE]\n${ctx.activeFile.selection}`);
       }
     }
 
-    if (ctx.openFiles.length > 0) {
-      parts.push(`[Open Files]\n${ctx.openFiles.join("\n")}`);
-    }
-
+    // 2. High Priority: Workspace Errors
     if (ctx.diagnostics && ctx.diagnostics.length > 0) {
-      parts.push(`[Workspace Errors]\n${ctx.diagnostics.map(d => `${d.file}:${d.line} - ${d.message}`).join("\n")}`);
+      parts.push(`[DIAGNOSTICS]\n${ctx.diagnostics.map(d => `${d.severity}: ${d.file}:${d.line} - ${d.message}`).join("\n")}`);
     }
 
+    // 3. Medium Priority: Git State
     if (ctx.gitDiff) {
-      parts.push(`[Git Diff]\n${ctx.gitDiff.slice(0, 3000)}`);
+      parts.push(`[GIT_DIFF]\n${ctx.gitDiff.slice(0, 2000)}`);
+    }
+
+    // 4. Low Priority: Open Files & Structure
+    if (ctx.openFiles.length > 0) {
+      parts.push(`[OPEN_TABS]\n${ctx.openFiles.join(", ")}`);
     }
 
     if (ctx.fileTree) {
-      parts.push(`[File Structure]\n${ctx.fileTree}`);
+      parts.push(`[WORKSPACE_TREE]\n${ctx.fileTree}`);
     }
 
-    return parts.join("\n\n---\n\n");
+    return parts.join("\n\n" + "=".repeat(20) + "\n\n");
+  }
+
+  public toJSON() {
+    return this._context;
   }
 
   private _getOpenFiles(): string[] {
