@@ -64,6 +64,30 @@
       "metadata": {
         "model": "ashborn-generator"
       }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 4,
+      "artifacts": [
+        {
+          "type": "file_update_multi",
+          "path": "math_utils/calc.py",
+          "language": "python",
+          "edits": [
+            {
+              "AllowMultiple": false,
+              "StartLine": 2,
+              "EndLine": 2,
+              "TargetContent": "    if n == 0 or n == 1:",
+              "ReplacementContent": "    if n < 0:\n        raise ValueError('Factorial is not defined for negative numbers')\n    if n == 0 or n == 1:"
+            }
+          ]
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
     }
   ]
 }

@@ -15,7 +15,7 @@
       "type": "new_file",
       "title": "Create math_utils/calc.py with factorial function",
       "description": "Create the calc.py file inside the math_utils directory and implement a factorial(n) function that computes the factorial of a non-negative integer n using recursion or iteration.",
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 3,

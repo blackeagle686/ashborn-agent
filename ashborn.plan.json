@@ -54,7 +54,7 @@
       "dependencies": [
         2
       ],
-      "status": "pending"
+      "status": "failed"
     },
     {
       "plan_step_id": 5,
