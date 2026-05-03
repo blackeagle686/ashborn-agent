@@ -210,7 +210,7 @@ The system shall validate file paths before execution.
 ✅ Fix Error at Cursor: Fixes errors at cursor position
 ✅ Generate Tests: Generates unit tests for current file
 ✅ Secure Code: Audits and secures code
- Running code not working 
+[x]   Running code not working 
 Description:
 The system shall expose agent capabilities via VS Code command palette.
 
