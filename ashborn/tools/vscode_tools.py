@@ -82,3 +82,21 @@ async def vscode_delete_file_tool(path: str, **context) -> str:
     if not vscode_call:
         return "ERROR: VS Code communication bridge not available."
     return await vscode_call("delete_file", {"path": path})
+ 
++@tool(
++    name="vscode_terminal_run",
++    description=(
++        "Executes a bash command in a dedicated VS Code terminal and captures the output. "
++        "Input: 'command' (str). "
++        "Returns the stdout/stderr of the command."
++    )
++)
++async def vscode_terminal_run_tool(command: str, **context) -> str:
++    """
++    Executes a terminal command via the VS Code extension.
++    """
++    from ashborn.server import vscode_ipc_context
++    vscode_call = vscode_ipc_context.get()
++    if not vscode_call:
++        return "ERROR: VS Code communication bridge not available."
++    return await vscode_call("terminal_run", {"command": command})
