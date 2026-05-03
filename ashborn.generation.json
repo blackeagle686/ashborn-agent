@@ -88,6 +88,37 @@
       "metadata": {
         "model": "ashborn-generator"
       }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 6,
+      "artifacts": [
+        {
+          "type": "file_write",
+          "path": "math_utils/__init__.py",
+          "language": "python",
+          "code": "",
+          "edits": []
+        },
+        {
+          "type": "file_write",
+          "path": "math_utils/calc.py",
+          "language": "python",
+          "code": "def factorial(n: int) -> int:\n    \"\"\"Return the factorial of n.\"\"\"\n    if n < 0:\n        raise ValueError(\"Factorial is not defined for negative numbers.\")\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result\n",
+          "edits": []
+        },
+        {
+          "type": "file_write",
+          "path": "math_utils/test_calc.py",
+          "language": "python",
+          "code": "from math_utils.calc import factorial\n\n# Test factorial function\ndef test_factorial():\n    assert factorial(5) == 120, \"factorial(5) should return 120\"\n\nif __name__ == \"__main__\":\n    test_factorial()\n    print(\"Test passed!\")\n",
+          "edits": []
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
     }
   ]
 }
