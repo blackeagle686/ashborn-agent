@@ -31,7 +31,7 @@
       "type": "modify_file",
       "title": "Fix invalid JSON test method signature",
       "description": "The test_invalid_json_response method is cut off at the end. Complete the method by adding the missing 'Act & Assert' section that calls send_completion_request and verifies the ValueError is raised.",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 5,
