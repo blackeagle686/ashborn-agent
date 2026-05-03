@@ -211,6 +211,7 @@ The system shall validate file paths before execution.
 ✅ Generate Tests: Generates unit tests for current file
 ✅ Secure Code: Audits and secures code
 [x] Running code not working 
+
 Description:
 The system shall expose agent capabilities via VS Code command palette.
 
