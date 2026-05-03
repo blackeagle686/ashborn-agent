@@ -225,24 +225,20 @@ export async function activate(ctx: vscode.ExtensionContext) {
   ctx.subscriptions.push(focusWatcher);
 
   // Check if file already exists on startup
-  vscode.workspace.findFiles(".ashborn-focus", null, 1).then(files => {
-    if (files.length > 0) handleFocus(files[0]);
-  });
-
-  // Auto-start server
-  if (autoStart) {
-    const ready = await client.healthCheck();
-    if (!ready) {
-      await startServer(ctx, port);
-    } else {
-      setStatus("ready", port);
-    }
-  } else {
-    setStatus("stopped", port);
+  vscode.workspac  if (vscode.window.visibleTextEditors.length === 0) {
+    showDashboard(ctx);
   }
+}
 
-  // Open the Ashborn Dashboard if no editors are open
-  if (vsco  const iconUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(ctx.extensionUri, "media", "ashborn.png"));
+function showDashboard(ctx: vscode.ExtensionContext) {
+  const panel = vscode.window.createWebviewPanel(
+    "ashborn.dashboard",
+    "Ashborn",
+    vscode.ViewColumn.One,
+    { enableScripts: true, localResourceRoots: [vscode.Uri.joinPath(ctx.extensionUri, "media")] }
+  );
+
+  const iconUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(ctx.extensionUri, "media", "ashborn.png"));
   const phxIconUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(ctx.extensionUri, "media", "phx-nobg.png"));
 
   panel.webview.html = `
@@ -337,6 +333,18 @@ export async function activate(ctx: vscode.ExtensionContext) {
         <div class="phx-ad-main">
           <img src="${phxIconUri}" class="phx-ad-logo" />
           <div class="phx-ad-content">
+            <div class="phx-ad-title">Phoenix AI Framework</div>
+            <div class="phx-ad-desc">
+              🔥 A production-ready, modular backend infrastructure SDK designed for AI-powered Python backend services.
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+         <div class="phx-ad-content">
             <div class="phx-ad-title">Phoenix AI Framework</div>
             <div class="phx-ad-desc">
               🔥 A production-ready, modular backend infrastructure SDK designed for AI-powered Python backend services.
