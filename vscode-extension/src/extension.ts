@@ -5,6 +5,7 @@ import * as http from "http";
 import { AgentClient } from "./agentClient";
 import { AshbornViewProvider } from "./panel";
 import { ContextCollector } from "./contextCollector";
+import { AshbornCompletionProvider } from "./completionProvider";
 
 let _serverProcess: cp.ChildProcess | undefined;
 let _statusBar: vscode.StatusBarItem;
@@ -35,6 +36,15 @@ export async function activate(ctx: vscode.ExtensionContext) {
       AshbornViewProvider.viewType,
       _provider,
       { webviewOptions: { retainContextWhenHidden: true } }
+    )
+  );
+
+  // Register Inline Completion Provider
+  const completionProvider = new AshbornCompletionProvider(client);
+  ctx.subscriptions.push(
+    vscode.languages.registerInlineCompletionItemProvider(
+      { pattern: '**/*' }, // Apply to all files
+      completionProvider
     )
   );
 
