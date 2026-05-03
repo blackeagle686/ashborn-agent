@@ -1,0 +1,29 @@
+{
+  "original_prompt": "Create a new folder called 'scratch_test', inside it create a file 'calc.py' with a function that calculates factorial of 5 and prints it. Then run the python script using terminal.",
+  "tasks": [
+    {
+      "id": 1,
+      "priority": 1,
+      "type": "command",
+      "title": "Create scratch_test directory",
+      "description": "Run 'mkdir -p scratch_test' to create the 'scratch_test' folder if it does not already exist.",
+      "status": "pending"
+    },
+    {
+      "id": 2,
+      "priority": 2,
+      "type": "new_file",
+      "title": "Write calc.py with factorial function",
+      "description": "Create a file named 'calc.py' inside the 'scratch_test' directory containing a function that calculates the factorial of 5 and prints the result. The code should be: def factorial(n):\n    if n == 0 or n == 1:\n        return 1\n    else:\n        return n * factorial(n-1)\nprint(factorial(5))",
+      "status": "pending"
+    },
+    {
+      "id": 3,
+      "priority": 3,
+      "type": "command",
+      "title": "Execute Python script",
+      "description": "Run 'python3 scratch_test/calc.py' from the current working directory to execute the Python script and print the factorial of 5.",
+      "status": "pending"
+    }
+  ]
+}
