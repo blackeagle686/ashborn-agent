@@ -52,6 +52,37 @@ class AshbornLoop(AgentLoop):
         except Exception:
             return []
 
+    def _get_executable_tasks(self) -> list:
+        try:
+            data = _load_tasks()
+            all_tasks = data.get("tasks", [])
+            task_status_map = {t.get("id"): t.get("status") for t in all_tasks}
+            
+            executable = []
+            for t in all_tasks:
+                if t.get("status") != "pending":
+                    continue
+                deps = t.get("dependencies", [])
+                deps_met = True
+                deps_failed = False
+                for d in deps:
+                    s = task_status_map.get(d, "done")
+                    if s == "failed":
+                        deps_failed = True
+                    elif s != "done":
+                        deps_met = False
+                
+                if deps_failed:
+                    _mark_task(t.get("id"), "failed")
+                    continue
+                
+                if deps_met:
+                    executable.append(t)
+                    
+            return sorted(executable, key=lambda t: t.get("priority", 99))
+        except Exception:
+            return []
+
     def _has_task_file(self) -> bool:
         return os.path.exists(TASK_FILE)
 
