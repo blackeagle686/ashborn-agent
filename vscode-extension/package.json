@@ -102,25 +102,41 @@
         {
           "submenu": "ashborn.actions",
           "group": "navigation@99",
-          "when": "editorHasSelection"
+          "when": "editorTextFocus"
         }
       ],
       "ashborn.actions": [
         {
           "command": "ashborn.action.explain",
-          "group": "1_actions@1"
+          "group": "1_actions@1",
+          "when": "editorHasSelection"
         },
         {
           "command": "ashborn.action.refactor",
-          "group": "1_actions@2"
+          "group": "1_actions@2",
+          "when": "editorHasSelection"
         },
         {
           "command": "ashborn.action.optimize",
-          "group": "1_actions@3"
+          "group": "1_actions@3",
+          "when": "editorHasSelection"
         },
         {
           "command": "ashborn.action.fix",
-          "group": "1_actions@4"
+          "group": "1_actions@4",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "ashborn.action.fixError",
+          "group": "2_specialized@1"
+        },
+        {
+          "command": "ashborn.action.generateTests",
+          "group": "2_specialized@2"
+        },
+        {
+          "command": "ashborn.action.secureCode",
+          "group": "2_specialized@3"
         }
       ]
     },
