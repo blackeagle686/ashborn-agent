@@ -1,4 +1,5 @@
 import json
+import re
 
 # ── Task file path ─────────────────────────────────────────────────────────────
 TASK_FILE = ".ashborn_tasks.json"
