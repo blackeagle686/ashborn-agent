@@ -200,9 +200,9 @@ Context after cursor:
         # Strip markdown if LLM misbehaves
         clean = response.strip()
         if clean.startswith("```"):
-            clean = "\\n".join(clean.split("\\n")[1:])
+            clean = "\n".join(clean.split("\n")[1:])
         if clean.endswith("```"):
-            clean = "\\n".join(clean.split("\\n")[:-1])
+            clean = "\n".join(clean.split("\n")[:-1])
         return {"status": "ok", "completion": clean}
     except Exception as e:
         log.error(f"Completion failed: {e}")
