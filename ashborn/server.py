@@ -69,6 +69,11 @@ class ToolResult(BaseModel):
     call_id: str
     result: str
 
+class CompletionRequest(BaseModel):
+    file_path: str
+    content_before: str
+    content_after: str
+
 # ── Routes ────────────────────────────────────────────────────────────────────
 @app.get("/health")
 async def health():
@@ -154,6 +159,54 @@ async def tool_result(res: ToolResult):
         _ipc_responses[res.call_id].set_result(res.result)
         return {"status": "ok"}
     return {"status": "error", "message": "Call ID not found or already timed out."}
+
+
+_completion_llm = None
+
+async def _get_completion_llm():
+    global _completion_llm
+    if _completion_llm is None:
+        try:
+            from phoenix.services.llm.openai import OpenAILLM
+            _completion_llm = OpenAILLM()
+            await _completion_llm.init()
+        except ImportError:
+            log.error("Could not import OpenAILLM from phoenix.")
+    return _completion_llm
+
+@app.post("/completion")
+async def code_completion(req: CompletionRequest):
+    """Generate inline code completions using Phoenix OpenAILLM."""
+    llm = await _get_completion_llm()
+    if not llm:
+        return {"status": "error", "message": "Completion LLM not available."}
+        
+    prompt = f\"\"\"You are an elite AI inline code completion engine.
+Your task is to predict exactly what code should be inserted at the cursor position.
+Provide ONLY the raw code to be inserted. DO NOT include markdown formatting, backticks, or any conversational text.
+
+File: {req.file_path}
+
+Context before cursor:
+{req.content_before[-1500:]}
+
+<cursor>
+
+Context after cursor:
+{req.content_after[:1500]}
+\"\"\"
+    try:
+        response = await llm.generate(prompt, max_tokens=150)
+        # Strip markdown if LLM misbehaves
+        clean = response.strip()
+        if clean.startswith("```"):
+            clean = "\\n".join(clean.split("\\n")[1:])
+        if clean.endswith("```"):
+            clean = "\\n".join(clean.split("\\n")[:-1])
+        return {"status": "ok", "completion": clean}
+    except Exception as e:
+        log.error(f"Completion failed: {e}")
+        return {"status": "error", "message": str(e)}
 
 
 @app.post("/reset")
