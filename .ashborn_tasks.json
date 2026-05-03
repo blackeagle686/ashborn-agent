@@ -7,7 +7,7 @@
       "title": "Failed Task",
       "description": "This task failed previously",
       "dependencies": [],
-      "status": "failed"
+      "status": "pending"
     }
   ]
 }

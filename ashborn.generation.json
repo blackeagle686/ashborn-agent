@@ -1,0 +1,21 @@
+{
+  "generation_blocks": [
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 101,
+      "artifacts": [
+        {
+          "type": "terminal",
+          "path": ".",
+          "language": "bash",
+          "code": "echo 'fail'",
+          "edits": []
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    }
+  ]
+}
