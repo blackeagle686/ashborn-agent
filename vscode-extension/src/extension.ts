@@ -39,6 +39,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   ctx.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor(debounceRefresh),
     vscode.window.onDidChangeVisibleTextEditors(debounceRefresh),
+    vscode.window.onDidChangeTextEditorSelection(debounceRefresh),
     vscode.workspace.onDidChangeTextDocument(debounceRefresh),
     vscode.languages.onDidChangeDiagnostics(debounceRefresh)
   );
