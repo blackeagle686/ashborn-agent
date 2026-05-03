@@ -6,6 +6,7 @@ import asyncio
 from .helpers.tasks import TASK_FILE, _load_tasks, _mark_task
 from .helpers.plan import _get_pending_plan_steps, _mark_plan_step, PLAN_FILE
 from .helpers.generation import GENERATION_FILE
+from .helpers.observability import log_agent_action, clear_logs
 from .generator import AshbornGenerator
 
 class AshbornLoop(AgentLoop):
@@ -107,6 +108,7 @@ class AshbornLoop(AgentLoop):
         return actions
 
     async def run(self, prompt: str, memory, session_id: str, mode: str = "auto", **kwargs) -> str:
+        clear_logs()
         if mode == "fast_ans":
             context = await memory.get_full_context(session_id, query=prompt)
             system_prompt = "You are ASHBORN. Give a concise, direct answer to the user's question."
@@ -117,6 +119,7 @@ class AshbornLoop(AgentLoop):
 
         # 1. Think
         objective_meta = await self.thinker.analyze(prompt, memory, session_id)
+        log_agent_action("thinker", "analyze_prompt", {"prompt": prompt}, objective_meta, "success")
         memory.session.set("current_objective", objective_meta)
 
         try:
@@ -145,6 +148,7 @@ class AshbornLoop(AgentLoop):
             if not pending_steps:
                 await self.planner.generate_plan_steps(task)
                 pending_steps = _get_pending_plan_steps(task_id)
+                log_agent_action("planner", "generate_plan_steps", {"task": task}, {"plan_steps": pending_steps}, "success")
                 
             if not pending_steps:
                 # No steps generated, mark task done
@@ -162,6 +166,7 @@ class AshbornLoop(AgentLoop):
                     # 3. Generate Code Iteratively
                     gen_data = await self.generator.generate_step(step, task)
                     blocks = gen_data.get("generation_blocks", [])
+                    log_agent_action("generator", "generate_step", {"step": step, "task": task}, gen_data, "success")
                     
                     # 4. Map to Actions & Execute
                     actions = self._map_artifacts_to_actions(blocks)
@@ -171,10 +176,12 @@ class AshbornLoop(AgentLoop):
                         break
                         
                     action_result = await self.actor.execute({"actions": actions})
+                    log_agent_action("actor", "execute_actions", {"actions": actions}, {"result": action_result}, "success")
                     total_actions += len(actions)
                     
                     # 5. Reflect
                     reflection = await self.reflector.reflect(step.get("solution", {}).get("approach", ""), {"actions": actions}, action_result)
+                    log_agent_action("reflector", "reflect", {"approach": step.get("solution", {}).get("approach", ""), "actions": actions, "result": action_result}, reflection, "success")
                     
                     accumulated_results += (
                         f"\nStep '{step.get('type')}' (attempt {attempt + 1}):\n"
@@ -216,6 +223,7 @@ class AshbornLoop(AgentLoop):
         return final_answer
 
     async def run_stream(self, prompt: str, memory, session_id: str, mode: str = "auto", **kwargs):
+        clear_logs()
         if mode == "fast_ans":
             yield {"type": "status", "role": "analyzer", "content": "⚡ Fast Answer mode active..."}
             context = await memory.get_full_context(session_id, query=prompt)
@@ -229,6 +237,7 @@ class AshbornLoop(AgentLoop):
         yield {"type": "status", "role": "thinker", "content": "🧠 Decomposing your request into tasks..."}
         analyze_task = asyncio.create_task(self.analyzer.analyze_workspace(prompt))
         objective_meta = await self.thinker.analyze(prompt, memory, session_id)
+        log_agent_action("thinker", "analyze_prompt", {"prompt": prompt}, objective_meta, "success")
         memory.session.set("current_objective", objective_meta)
         try:
             analysis = await asyncio.wait_for(analyze_task, timeout=5.0)
@@ -265,6 +274,7 @@ class AshbornLoop(AgentLoop):
                 yield {"type": "status", "role": "planner", "content": f"  ↳ Generating Plan Steps..."}
                 await self.planner.generate_plan_steps(task)
                 pending_steps = _get_pending_plan_steps(task_id)
+                log_agent_action("planner", "generate_plan_steps", {"task": task}, {"plan_steps": pending_steps}, "success")
                 
             if not pending_steps:
                 _mark_task(task_id, "done")
@@ -282,6 +292,7 @@ class AshbornLoop(AgentLoop):
                     yield {"type": "status", "role": "actor", "content": f"  ↳ Generating Code (Attempt {attempt+1})..."}
                     gen_data = await self.generator.generate_step(step, task)
                     blocks = gen_data.get("generation_blocks", [])
+                    log_agent_action("generator", "generate_step", {"step": step, "task": task}, gen_data, "success")
                     actions = self._map_artifacts_to_actions(blocks)
                     
                     if not actions:
@@ -292,9 +303,11 @@ class AshbornLoop(AgentLoop):
                         
                     yield {"type": "status", "role": "actor", "content": f"  ↳ Executing {len(actions)} actions..."}
                     action_result = await self.actor.execute({"actions": actions})
+                    log_agent_action("actor", "execute_actions", {"actions": actions}, {"result": action_result}, "success")
                     total_actions += len(actions)
                     
                     reflection = await self.reflector.reflect(step.get("solution", {}).get("approach", ""), {"actions": actions}, action_result)
+                    log_agent_action("reflector", "reflect", {"approach": step.get("solution", {}).get("approach", ""), "actions": actions, "result": action_result}, reflection, "success")
                     
                     accumulated_results += (f"\nStep '{step.get('type')}':\nResult: {action_result}\nReflection: {reflection['reflection']}\n")
                     self._schedule_background(memory.add_interaction(session_id, "system", f"Step: {step.get('type')} | Result: {action_result} | Reflection: {reflection['reflection']}"))
