@@ -1,0 +1,20 @@
+{
+  "generation_blocks": [
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 1,
+      "artifacts": [
+        {
+          "type": "terminal",
+          "path": ".",
+          "language": "bash",
+          "code": "mkdir -p math_utils && touch math_utils/__init__.py"
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    }
+  ]
+}
