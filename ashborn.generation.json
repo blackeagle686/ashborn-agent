@@ -39,6 +39,22 @@
       "metadata": {
         "model": "ashborn-generator"
       }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 6,
+      "artifacts": [
+        {
+          "type": "terminal",
+          "path": "/app",
+          "language": "bash",
+          "code": "mkdir scratch_test"
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
     }
   ]
 }
