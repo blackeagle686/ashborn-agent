@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { AgentClient } from "./agentClient";
-import { ContextCollector } from "./contextCollector";
+import { ContextManager } from "./contextManager";
 
 export type LoopEventCallback = (event: {
   type: "status" | "chunk" | "done" | "error";
@@ -18,7 +18,7 @@ export class LoopController {
 
   constructor(
     private readonly _client: AgentClient,
-    private readonly _context: ContextCollector,
+    private readonly _context: ContextManager,
     private readonly _maxSteps = 10
   ) {}
 
@@ -43,7 +43,7 @@ export class LoopController {
 
     // Prepend workspace context and resolve @mentions
     const mentionCtx = await this._resolveMentions(task);
-    const workspaceCtx = this._context.collect();
+    const workspaceCtx = this._context.serialize();
     
     let fullTask = task;
     if (mentionCtx) {
