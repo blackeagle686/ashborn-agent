@@ -163,6 +163,43 @@ class AshbornLoop(AgentLoop):
                         errors.append(f"Safety Violation: Command '{cmd}' contains forbidden pattern '{f}'")
         return errors
 
+    def _is_sensitive_action(self, actions: list) -> bool:
+        """Returns True if any action is considered sensitive and needs approval."""
+        sensitive_tools = ["terminal", "vscode_terminal_run"]
+        safe_commands = ["ls", "pwd", "mkdir -p", "touch", "cat", "git status"]
+        
+        for act in actions:
+            if act.get("tool") in sensitive_tools:
+                cmd = act.get("kwargs", {}).get("command", "").strip()
+                # Check if command is safe
+                if not any(cmd.startswith(s) for s in safe_commands):
+                    return True
+        return False
+
+    async def _check_and_ask_approval(self, actions: list) -> tuple[bool, list]:
+        """Requests approval via VS Code IPC if sensitive. Returns (is_approved, final_actions)."""
+        if not self._is_sensitive_action(actions):
+            return True, actions
+            
+        from .server import vscode_ipc_context
+        ipc_call = vscode_ipc_context.get()
+        if not ipc_call:
+            return True, actions # Fallback: assume approved if not in VS Code context
+            
+        try:
+            raw_res = await ipc_call("ask_approval", {"actions": actions})
+            res = json.loads(raw_res)
+            
+            if res.get("decision") == "approved":
+                # User might have modified actions
+                final_actions = res.get("modified_actions", actions)
+                return True, final_actions
+            else:
+                return False, actions
+        except Exception as e:
+            print(f"[LOOP ERROR] Approval request failed: {e}")
+            return False, actions
+
     async def run(self, prompt: str, memory, session_id: str, mode: str = "auto", **kwargs) -> str:
         clear_logs()
         is_resume = prompt.strip().lower() == "resume" or mode == "resume"
@@ -265,9 +302,15 @@ class AshbornLoop(AgentLoop):
                         action_result = "Pre-execution validation failed: " + "; ".join(action_errors)
                         log_agent_action("loop", "pre_execution_validate", {"actions": actions}, {"errors": action_errors}, "failed")
                     else:
-                        action_result = await self.actor.execute({"actions": actions})
-                        log_agent_action("actor", "execute_actions", {"actions": actions}, {"result": action_result}, "success")
-                        total_actions += len(actions)
+                        # --- Human-in-the-Loop Approval ---
+                        approved, actions = await self._check_and_ask_approval(actions)
+                        if not approved:
+                            action_result = "Execution denied by user."
+                            log_agent_action("loop", "ask_approval", {"actions": actions}, {"result": "denied"}, "failed")
+                        else:
+                            action_result = await self.actor.execute({"actions": actions})
+                            log_agent_action("actor", "execute_actions", {"actions": actions}, {"result": action_result}, "success")
+                            total_actions += len(actions)
                     
                     # 5. Reflect
                     reflection = await self.reflector.reflect(step.get("solution", {}).get("approach", ""), {"actions": actions}, action_result)
@@ -468,9 +511,18 @@ class AshbornLoop(AgentLoop):
                         action_result = "Pre-execution validation failed: " + "; ".join(action_errors)
                         yield {"type": "chunk", "role": "system", "content": f"    ↳ ⚠ Safety Warning: {action_result}\n"}
                     else:
-                        action_result = await self.actor.execute({"actions": actions})
-                        log_agent_action("actor", "execute_actions", {"actions": actions}, {"result": action_result}, "success")
-                        total_actions += len(actions)
+                        # --- Human-in-the-Loop Approval ---
+                        if self._is_sensitive_action(actions):
+                            yield {"type": "status", "role": "actor", "content": "  ↳ Waiting for user approval..."}
+                            
+                        approved, actions = await self._check_and_ask_approval(actions)
+                        if not approved:
+                            action_result = "Execution denied by user."
+                            yield {"type": "chunk", "role": "system", "content": f"    ↳ ⛔ {action_result}\n"}
+                        else:
+                            action_result = await self.actor.execute({"actions": actions})
+                            log_agent_action("actor", "execute_actions", {"actions": actions}, {"result": action_result}, "success")
+                            total_actions += len(actions)
                     
                     reflection = await self.reflector.reflect(step.get("solution", {}).get("approach", ""), {"actions": actions}, action_result)
                     log_agent_action("reflector", "reflect", {"approach": step.get("solution", {}).get("approach", ""), "actions": actions, "result": action_result}, reflection, "success")
