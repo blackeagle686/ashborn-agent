@@ -78,17 +78,33 @@ Respond ONLY with valid JSON.
         existing_plan = _load_plan()
         existing_steps = existing_plan.get("plan_steps", [])
         
+        id_map = {}
         next_step_id = 1
         if existing_steps:
             next_step_id = max((s.get("plan_step_id", 0) for s in existing_steps)) + 1
             
         for step in new_steps:
+            old_id = step.get("plan_step_id")
+            if old_id is not None:
+                id_map[old_id] = next_step_id
+            
             # Force task_id to match the current task
             step["task_id"] = task.get("id", 1)
             # Re-assign IDs to prevent collisions
             step["plan_step_id"] = next_step_id
             step["status"] = "pending"
             next_step_id += 1
+            
+        # Remap dependencies
+        for step in new_steps:
+            old_deps = step.get("dependencies", [])
+            new_deps = []
+            for dep in old_deps:
+                if dep in id_map:
+                    new_deps.append(id_map[dep])
+                else:
+                    new_deps.append(dep) # Assume it's a global step dependency, though unlikely
+            step["dependencies"] = new_deps
             
         existing_steps.extend(new_steps)
         existing_plan["plan_steps"] = existing_steps
