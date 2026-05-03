@@ -181,7 +181,7 @@ class AshbornLoop(AgentLoop):
         if not self._is_sensitive_action(actions):
             return True, actions
             
-        from .server import vscode_ipc_context
+        from ashborn.server import vscode_ipc_context
         ipc_call = vscode_ipc_context.get()
         if not ipc_call:
             return True, actions # Fallback: assume approved if not in VS Code context
