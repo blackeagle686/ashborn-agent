@@ -22,8 +22,11 @@ class AshbornLoop(AgentLoop):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Instantiate the generator if not provided by components
-        self.generator = AshbornGenerator(self.planner.llm)
+        # Fetch the generator injected by the Agent, fallback to instantiating directly
+        if hasattr(self, "components") and "generator" in self.components:
+            self.generator = self.components["generator"]
+        else:
+            self.generator = AshbornGenerator(self.planner.llm)
 
     def _schedule_background(self, coro):
         task = asyncio.create_task(coro)
