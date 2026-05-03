@@ -140,6 +140,9 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
         // 3. Force a reload to ensure VS Code repaints everything correctly
         await vscode.commands.executeCommand("workbench.action.reloadWindow");
         break;
+      case "getContext":
+        this._post({ type: "context", content: this._ctx.serialize() });
+        break;
     }
   }
 
