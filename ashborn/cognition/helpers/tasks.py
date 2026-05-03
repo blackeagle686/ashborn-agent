@@ -32,6 +32,17 @@ def _mark_task(task_id: int, status: str) -> None:
             break
     _save_tasks(data)
 
+def _reset_failed_tasks() -> None:
+    """Reset any failed tasks back to pending for resume."""
+    data = _load_tasks()
+    modified = False
+    for t in data.get("tasks", []):
+        if t.get("status") == "failed":
+            t["status"] = "pending"
+            modified = True
+    if modified:
+        _save_tasks(data)
+
 def _clean_json(raw: str) -> str:
     """Strip markdown fences and return bare JSON, handling some common malformations."""
     s = raw.strip()
