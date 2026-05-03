@@ -540,3 +540,40 @@ State Management
 Context Backbone
 Determinism
 Validation Layer
+
+
+================================
+
+Description:
+The system shall require explicit user approval before executing terminal commands that may modify, install, or delete system resources.
+
+✅ Functional Behavior
+The system shall analyze every terminal command before execution.
+The system shall detect whether the command is sensitive or potentially destructive.
+If the command is classified as sensitive (e.g., file deletion, package installation, permission changes), the system shall:
+Pause execution
+Display the command to the user
+Request explicit approval
+The system shall provide the user with the following options:
+Approve execution
+Deny execution
+Modify the command
+The system shall only proceed with execution if the user explicitly approves.
+If the user denies the request, the system shall:
+Abort execution
+Log the event
+If the user modifies the command, the system shall:
+Re-validate the updated command
+Repeat the approval process if necessary
+⚠️ Special Cases
+The system shall automatically block execution of critical destructive commands (e.g., full system wipe patterns).
+The system shall allow safe commands to execute without approval if classified as low risk.
+📥 Inputs
+Terminal command (string)
+Execution context (current directory, source, intent if available)
+📤 Outputs
+Execution decision (approved / denied / modified)
+Final command (if approved or modified)
+🔒 Constraints
+The system must not execute any sensitive command without user approval.
+The approval process must occur before command execution, not after.
