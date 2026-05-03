@@ -3,8 +3,9 @@ import json
 import os
 import asyncio
 
-from .helpers.tasks import TASK_FILE, _load_tasks, _mark_task
-from .helpers.plan import _get_pending_plan_steps, _get_executable_plan_steps, _mark_plan_step, PLAN_FILE
+from .helpers.tasks import TASK_FILE, _load_tasks, _mark_task, _reset_failed_tasks
+from .helpers.plan import _get_pending_plan_steps, _get_executable_plan_steps, _mark_plan_step, _reset_failed_plan_steps, PLAN_FILE
+from .helpers.state import _load_state, _save_state, _init_state_from_tasks, _update_state, _clear_state, STATE_FILE
 
 # ... (omitting top part since I need to use multi_replace to be precise)
 from .helpers.generation import GENERATION_FILE
@@ -151,15 +152,33 @@ class AshbornLoop(AgentLoop):
             return ans
 
         # 1. Think
-        objective_meta = await self.thinker.analyze(prompt, memory, session_id)
-        log_agent_action("thinker", "analyze_prompt", {"prompt": prompt}, objective_meta, "success")
+        is_resume = prompt.strip().lower() == "resume" or mode == "resume"
+        
+        if is_resume:
+            log_agent_action("loop", "resume_execution", {}, {"status": "resuming"}, "success")
+            _reset_failed_tasks()
+            _reset_failed_plan_steps()
+            objective_meta = "Resuming previous task list..."
+        else:
+            _clear_state()
+            objective_meta = await self.thinker.analyze(prompt, memory, session_id)
+            log_agent_action("thinker", "analyze_prompt", {"prompt": prompt}, objective_meta, "success")
+            
+            # Initialize execution state from new tasks
+            try:
+                tasks_data = _load_tasks()
+                _init_state_from_tasks(tasks_data.get("tasks", []))
+            except Exception:
+                pass
+
         memory.session.set("current_objective", objective_meta)
 
-        try:
-            analysis = await self.analyzer.analyze_workspace(prompt)
-            memory.session.set("project_analysis", analysis)
-        except Exception:
-            pass
+        if not is_resume:
+            try:
+                analysis = await self.analyzer.analyze_workspace(prompt)
+                memory.session.set("project_analysis", analysis)
+            except Exception:
+                pass
 
         await memory.add_interaction(session_id, "system", f"Task breakdown: {objective_meta}")
         
@@ -250,16 +269,27 @@ class AshbornLoop(AgentLoop):
                     
             if task_failed:
                 _mark_task(task_id, "failed")
+                _update_state(task_id, "failed", task.get('title'))
                 task_summaries.append(f"✗ [{task.get('priority')}] {task.get('title')}: failed at step {step_id}")
             else:
                 _mark_task(task_id, "done")
+                _update_state(task_id, "done", task.get('title'))
                 task_summaries.append(f"✓ [{task.get('priority')}] {task.get('title')}")
 
-        # Cleanup
-        for file in [TASK_FILE, PLAN_FILE, GENERATION_FILE]:
-            if os.path.exists(file):
-                try: os.remove(file)
-                except Exception: pass
+        # Cleanup only on full success
+        all_done = True
+        try:
+            tasks_data = _load_tasks()
+            if any(t.get("status") != "done" for t in tasks_data.get("tasks", [])):
+                all_done = False
+        except:
+            all_done = False
+
+        if all_done:
+            for file in [TASK_FILE, PLAN_FILE, GENERATION_FILE, STATE_FILE]:
+                if os.path.exists(file):
+                    try: os.remove(file)
+                    except Exception: pass
 
         summary = "\n".join(task_summaries) if task_summaries else "No tasks were executed."
         final_answer = f"**Ashborn Task Execution Complete**\n\n{summary}\n\n---\n{accumulated_results.strip()}"
@@ -278,17 +308,34 @@ class AshbornLoop(AgentLoop):
             await memory.add_interaction(session_id, "assistant", "Fast answer generated.")
             return
 
-        yield {"type": "status", "role": "thinker", "content": "🧠 Decomposing your request into tasks..."}
-        analyze_task = asyncio.create_task(self.analyzer.analyze_workspace(prompt))
-        objective_meta = await self.thinker.analyze(prompt, memory, session_id)
-        log_agent_action("thinker", "analyze_prompt", {"prompt": prompt}, objective_meta, "success")
-        memory.session.set("current_objective", objective_meta)
-        try:
-            analysis = await asyncio.wait_for(analyze_task, timeout=5.0)
-            memory.session.set("project_analysis", analysis)
-        except Exception:
-            pass
+        is_resume = prompt.strip().lower() == "resume" or mode == "resume"
+        
+        if is_resume:
+            yield {"type": "status", "role": "system", "content": "🔄 Resuming previous execution state..."}
+            _reset_failed_tasks()
+            _reset_failed_plan_steps()
+            objective_meta = "Resuming previous task list..."
+        else:
+            yield {"type": "status", "role": "thinker", "content": "🧠 Decomposing your request into tasks..."}
+            _clear_state()
+            analyze_task = asyncio.create_task(self.analyzer.analyze_workspace(prompt))
+            objective_meta = await self.thinker.analyze(prompt, memory, session_id)
+            log_agent_action("thinker", "analyze_prompt", {"prompt": prompt}, objective_meta, "success")
+            
+            # Initialize execution state from new tasks
+            try:
+                tasks_data = _load_tasks()
+                _init_state_from_tasks(tasks_data.get("tasks", []))
+            except Exception:
+                pass
+                
+            try:
+                analysis = await asyncio.wait_for(analyze_task, timeout=5.0)
+                memory.session.set("project_analysis", analysis)
+            except Exception:
+                pass
 
+        memory.session.set("current_objective", objective_meta)
         yield {"type": "status", "role": "thinker", "content": "📋 Tasks Breakdown Complete"}
         await memory.add_interaction(session_id, "system", f"Task breakdown: {objective_meta}")
 
@@ -406,18 +453,30 @@ class AshbornLoop(AgentLoop):
 
             if task_failed:
                 _mark_task(task_id, "failed")
+                _update_state(task_id, "failed", task.get('title'))
                 task_summaries.append(f"✗ {task.get('title')}")
                 yield {"type": "chunk", "role": "reflector", "content": f"  ↳ ✗ Task failed.\n"}
             else:
                 _mark_task(task_id, "done")
+                _update_state(task_id, "done", task.get('title'))
                 task_summaries.append(f"✓ {task.get('title')}")
                 yield {"type": "chunk", "role": "reflector", "content": f"  ↳ ✓ Task complete.\n"}
 
-        yield {"type": "status", "content": "🗑 Cleaning up files..."}
-        for file in [TASK_FILE, PLAN_FILE, GENERATION_FILE]:
-            if os.path.exists(file):
-                try: os.remove(file)
-                except Exception: pass
+        # Cleanup only on full success
+        all_done = True
+        try:
+            tasks_data = _load_tasks()
+            if any(t.get("status") != "done" for t in tasks_data.get("tasks", [])):
+                all_done = False
+        except:
+            all_done = False
+
+        if all_done:
+            yield {"type": "status", "content": "🗑 Cleaning up files..."}
+            for file in [TASK_FILE, PLAN_FILE, GENERATION_FILE, STATE_FILE]:
+                if os.path.exists(file):
+                    try: os.remove(file)
+                    except Exception: pass
 
         summary_lines = "\n".join(task_summaries) if task_summaries else "No tasks were executed."
         yield {"type": "chunk", "content": f"\n\n---\n**All tasks complete!**\n\n{summary_lines}\n"}
