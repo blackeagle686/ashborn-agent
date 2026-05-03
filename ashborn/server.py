@@ -181,7 +181,7 @@ async def code_completion(req: CompletionRequest):
     if not llm:
         return {"status": "error", "message": "Completion LLM not available."}
         
-    prompt = f\"\"\"You are an elite AI inline code completion engine.
+    prompt = f"""You are an elite AI inline code completion engine.
 Your task is to predict exactly what code should be inserted at the cursor position.
 Provide ONLY the raw code to be inserted. DO NOT include markdown formatting, backticks, or any conversational text.
 
@@ -194,7 +194,7 @@ Context before cursor:
 
 Context after cursor:
 {req.content_after[:1500]}
-\"\"\"
+"""
     try:
         response = await llm.generate(prompt, max_tokens=150)
         # Strip markdown if LLM misbehaves
