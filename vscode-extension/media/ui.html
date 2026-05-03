@@ -117,29 +117,65 @@
     </div>
   </div>
 
-  <!-- ── Chat History ────────────────────────────────────────────── -->
-  <div class="chat-container" id="chat-container">
-    <div class="welcome">
-      <img src="{{ASHBORN_ICON_URI}}" class="welcome-logo" />
-      <div class="welcome-title">Ashborn Agent</div>
-      <div class="welcome-sub">Your autonomous dev partner.<br/>Describe a task and I'll execute it.</div>
-      
-      <!-- Phoenix AI Advertisement -->
-      <div class="phx-ad-card">
-        <div class="phx-ad-badge">Powered By</div>
-        <div class="phx-ad-main">
-          <img src="{{PHOENIX_AI_ICON_URI}}" class="phx-ad-logo" />
-          <div class="phx-ad-content">
-            <div class="phx-ad-title">Phoenix AI Framework</div>
-            <div class="phx-ad-desc">
-              🔥 A production-ready, modular backend infrastructure SDK designed for AI-powered Python backend services. 
-              Eliminate repetitive backend setup for FastAPI, Django, or custom event-driven services.
+  <!-- ── Sidebar Tabs ───────────────────────────────────────────── -->
+  <div class="sidebar-tabs" id="sidebar-tabs">
+    <button class="tab-btn active" data-view="chat" title="Chat Interaction">💬 Chat</button>
+    <button class="tab-btn" data-view="history" title="Task History">📜 History</button>
+    <button class="tab-btn" data-view="explorer" title="File Explorer">📁 Explorer</button>
+    <button class="tab-btn" data-view="templates" title="Prompt Templates">⚡ Tips</button>
+  </div>
+
+  <!-- ── Main Views ──────────────────────────────────────────────── -->
+  <div class="view-stack">
+    <!-- View: Chat -->
+    <div class="view-container active" id="view-chat">
+      <div class="chat-container" id="chat-container">
+        <div class="welcome">
+          <img src="{{ASHBORN_ICON_URI}}" class="welcome-logo" />
+          <div class="welcome-title">Ashborn Agent</div>
+          <div class="welcome-sub">Your autonomous dev partner.<br/>Describe a task and I'll execute it.</div>
+          
+          <!-- Phoenix AI Advertisement -->
+          <div class="phx-ad-card">
+            <div class="phx-ad-badge">Powered By</div>
+            <div class="phx-ad-main">
+              <img src="{{PHOENIX_AI_ICON_URI}}" class="phx-ad-logo" />
+              <div class="phx-ad-content">
+                <div class="phx-ad-title">Phoenix AI Framework</div>
+                <div class="phx-ad-desc">
+                  🔥 A production-ready, modular backend infrastructure SDK designed for AI-powered Python backend services. 
+                </div>
+              </div>
             </div>
           </div>
+
+          <div class="welcome-footer">v1.0.0</div>
         </div>
       </div>
+    </div>
 
-      <div class="welcome-footer">v1.0.0</div>
+    <!-- View: History -->
+    <div class="view-container" id="view-history" style="display: none;">
+      <div class="view-header">Task History</div>
+      <div class="history-list" id="history-list">
+        <div class="empty-state">No history yet. Send your first task!</div>
+      </div>
+    </div>
+
+    <!-- View: Explorer -->
+    <div class="view-container" id="view-explorer" style="display: none;">
+      <div class="view-header">File Explorer</div>
+      <div class="explorer-list" id="explorer-list">
+        <div class="empty-state">Loading workspace...</div>
+      </div>
+    </div>
+
+    <!-- View: Templates -->
+    <div class="view-container" id="view-templates" style="display: none;">
+      <div class="view-header">Prompt Templates</div>
+      <div class="template-grid" id="template-grid">
+        <!-- Templates will be injected by JS -->
+      </div>
     </div>
   </div>
 
