@@ -15,7 +15,7 @@
       "type": "modify_file",
       "title": "Add docstring example and type hints",
       "description": "Enhance the send_completion_request function by adding a practical usage example in its docstring and include proper type hints for all parameters and return value.",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 3,
@@ -23,7 +23,7 @@
       "type": "modify_file",
       "title": "Improve error handling with specific exception types",
       "description": "Refactor the exception handling block to catch specific HTTP errors (like ConnectionError, Timeout) separately from general RequestException, providing more informative error messages.",
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 4,

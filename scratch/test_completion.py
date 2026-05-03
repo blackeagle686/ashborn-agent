@@ -1,6 +1,6 @@
 import requests
 
-def send_completion_request(file_path, content_before, content_after):
+def send_completion_request(file_path: str, content_before: str, content_after: str) -> dict:
     """
     Sends a completion request to the ASHBORN server.
     
@@ -11,6 +11,15 @@ def send_completion_request(file_path, content_before, content_after):
     
     Returns:
         dict: Server response or error message.
+
+    Example:
+        >>> result = send_completion_request(
+        ...     file_path="example.py",
+        ...     content_before="def hello():\n    print(\"world\")",
+        ...     content_after=""
+        ... )
+        >>> print(result)
+        {'status': 'success', 'completion': '    print("hello world")'}
     """
     data = {
         "file_path": file_path,
