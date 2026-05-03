@@ -58,7 +58,7 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
   private async _onMessage(msg: any) {
     switch (msg.type) {
       case "send":
-        await this._runAgent(msg.task, msg.mode ?? "auto");
+        await this.runAgent(msg.task, msg.mode ?? "auto");
         break;
       case "stop":
         this.stop();
@@ -147,7 +147,7 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
   }
 
   // ── Send a task to the agent loop ─────────────────────────────────────────
-  private async _runAgent(task: string, mode: string) {
+  public async runAgent(task: string, mode: string) {
     if (this._loop.isRunning) {
       vscode.window.showWarningMessage("Ashborn is already running. Stop it first.");
       return;
