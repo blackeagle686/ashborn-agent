@@ -2,7 +2,7 @@
   "context_id": "c16557fd-2f8b-400b-814a-cd0a3e41ca33",
   "metadata": {
     "created_at": "2026-05-03T20:30:52.949215",
-    "updated_at": "2026-05-03T20:31:19.559211",
+    "updated_at": "2026-05-03T20:31:33.983080",
     "original_prompt": "Create a new python package called 'math_utils'. It must contain an __init__.py, a calc.py with a factorial function, and a test_calc.py that asserts factorial(5) == 120. Please generate them together in one pass."
   },
   "tasks": [
@@ -22,7 +22,7 @@
       "title": "Create math_utils/calc.py with factorial function",
       "description": "Implement the factorial function in calc.py using recursion or iteration. The function should take a non-negative integer n and return n!.",
       "dependencies": [],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 3,
@@ -100,7 +100,7 @@
         "approach": "Analyze the requirements: implement a factorial function in calc.py within the math_utils directory. The function must accept a non-negative integer n and return n!. Consider whether to use recursion or iteration, ensuring correctness for edge cases like n=0 (where 0! = 1)."
       },
       "dependencies": [],
-      "status": "pending"
+      "status": "done"
     },
     {
       "plan_step_id": 6,
@@ -115,7 +115,7 @@
       "dependencies": [
         "analysis"
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "plan_step_id": 7,
@@ -128,7 +128,7 @@
       "dependencies": [
         "design"
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "plan_step_id": 8,
@@ -141,7 +141,7 @@
       "dependencies": [
         "implementation"
       ],
-      "status": "pending"
+      "status": "done"
     }
   ],
   "generations": [
@@ -312,15 +312,60 @@
       "metadata": {
         "model": "ashborn-generator"
       }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 8,
+      "artifacts": [
+        {
+          "type": "terminal",
+          "path": "test_math_utils.py",
+          "language": "bash",
+          "code": "python -c \"\nimport sys\nsys.path.append('.')\nfrom math_utils.calc import factorial\n\n# Test cases\ntest_cases = [0, 1, 5]\nfor n in test_cases:\n    print(f'factorial({n}) = {factorial(n)}')\n\n# Test negative number (should raise error)\ntry:\n    result = factorial(-1)\nexcept ValueError as e:\n    print('Correctly raised ValueError for negative input:', e)\nelse:\n    print('ERROR: Expected ValueError but got result:', result)\n\"\n"
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 8,
+      "artifacts": [
+        {
+          "type": "terminal",
+          "path": "test_math_utils.py",
+          "language": "bash",
+          "code": "python -m pytest test_math_utils.py -v"
+        },
+        {
+          "type": "file_write",
+          "path": "math_utils/calc.py",
+          "language": "python",
+          "code": "def factorial(n):\n    if not isinstance(n, int) or n < 0:\n        raise ValueError(\"Input must be a non-negative integer.\")\n    if n == 0 or n == 1:\n        return 1\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result"
+        },
+        {
+          "type": "file_write",
+          "path": "test_math_utils.py",
+          "language": "python",
+          "code": "import unittest\nfrom math_utils.calc import factorial\n\nclass TestFactorial(unittest.TestCase):\n    def test_factorial_zero(self):\n        self.assertEqual(factorial(0), 1)\n\n    def test_factorial_one(self):\n        self.assertEqual(factorial(1), 1)\n\n    def test_factorial_five(self):\n        self.assertEqual(factorial(5), 120)\n\n    def test_factorial_negative_input(self):\n        with self.assertRaises(ValueError):\n            factorial(-3)\n\nif __name__ == '__main__':\n    unittest.main()"
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
     }
   ],
   "execution_state": {
-    "completed_steps": [],
-    "pending_steps": [
+    "completed_steps": [
       {
         "id": 2,
         "title": "Create math_utils/calc.py with factorial function"
-      },
+      }
+    ],
+    "pending_steps": [
       {
         "id": 3,
         "title": "Create math_utils/test_calc.py with assertion"
