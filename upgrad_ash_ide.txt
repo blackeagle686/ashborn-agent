@@ -578,5 +578,3 @@ Final command (if approved or modified)
 The system must not execute any sensitive command without user approval.
 The approval process must occur before command execution, not after.
 
-
-# just saving the 
