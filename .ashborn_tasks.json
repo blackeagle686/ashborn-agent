@@ -15,7 +15,7 @@
       "type": "new_file",
       "title": "Create calc.py with factorial function",
       "description": "Inside the 'scratch_test' folder, create a file named 'calc.py'. Write a Python function that computes the factorial of 5 and prints the result. The script should call this function when executed.",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 3,
