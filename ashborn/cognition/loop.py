@@ -57,7 +57,7 @@ class AshbornLoop(AgentLoop):
         for block in generation_blocks:
             for art in block.get("artifacts", []):
                 if art["type"] == "file_write":
-                    actions.append({"tool": "file_write", "kwargs": {"TargetFile": art.get("path", ""), "CodeContent": art.get("code", "")}})
+                    actions.append({"tool": "file_write", "kwargs": {"file_path": art.get("path", ""), "content": art.get("code", "")}})
                 elif art["type"] == "file_update_multi":
                     try:
                         chunks = json.loads(art.get("code", "[]")) if isinstance(art.get("code"), str) else art.get("code", [])
@@ -66,14 +66,12 @@ class AshbornLoop(AgentLoop):
                     actions.append({
                         "tool": "file_update_multi", 
                         "kwargs": {
-                            "TargetFile": art.get("path", ""), 
-                            "ReplacementChunks": chunks,
-                            "Instruction": "Auto-generated update",
-                            "Description": "Apply changes from plan step"
+                            "file_path": art.get("path", ""), 
+                            "edits": chunks
                         }
                     })
                 elif art["type"] == "terminal":
-                    actions.append({"tool": "terminal", "kwargs": {"CommandLine": art.get("code", ""), "Cwd": art.get("path", "./")}})
+                    actions.append({"tool": "terminal", "kwargs": {"command": art.get("code", "")}})
         return actions
 
     async def run(self, prompt: str, memory, session_id: str, mode: str = "auto", **kwargs) -> str:
