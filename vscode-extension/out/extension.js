@@ -97,7 +97,10 @@ async function activate(ctx) {
                     // Ensure sidebar is visible
                     await vscode.commands.executeCommand('workbench.view.extension.ashborn-sidebar');
                     await vscode.commands.executeCommand('ashborn.chatView.focus');
+                    // Wait a bit for webview to be ready if it was just opened
+                    await new Promise(resolve => setTimeout(resolve, 500));
                     _provider.postMessage({ type: "user_message", content: `Explain selected code in ${path.basename(doc.uri.fsPath)}:` });
+                    _provider.postMessage({ type: "status", state: "thinking", content: "Generating explanation..." });
                     _provider.postMessage({ type: "chunk", content: result });
                     _provider.postMessage({ type: "done" });
                 }
