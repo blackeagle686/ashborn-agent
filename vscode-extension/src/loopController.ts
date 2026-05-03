@@ -124,7 +124,53 @@ export class LoopController {
     if (tool === "terminal_run") {
       return await this._executor.terminalRun(args.command);
     }
+    if (tool === "ask_approval") {
+      return await this._askUserApproval(args.actions);
+    }
     return `ERROR: Unknown VS Code tool: ${tool}`;
+  }
+
+  private async _askUserApproval(actions: any[]): Promise<string> {
+    const summary = actions.map(a => {
+        if (a.tool === "terminal" || a.tool === "vscode_terminal_run") {
+            return `Terminal: ${a.kwargs.command}`;
+        }
+        if (a.tool === "file_write") {
+            return `Write File: ${a.kwargs.path}`;
+        }
+        return `Tool: ${a.tool}`;
+    }).join("\n");
+
+    const choice = await vscode.window.showInformationMessage(
+      `Ashborn is requesting approval for the following actions:\n\n${summary}`,
+      { modal: true },
+      "Approve",
+      "Modify Command",
+      "Deny"
+    );
+
+    if (choice === "Approve") {
+      return JSON.stringify({ decision: "approved" });
+    }
+
+    if (choice === "Modify Command") {
+        // Find the first terminal command to modify (common case)
+        const terminalAction = actions.find(a => a.tool === "terminal" || a.tool === "vscode_terminal_run");
+        if (terminalAction) {
+            const modified = await vscode.window.showInputBox({
+                title: "Modify Terminal Command",
+                value: terminalAction.kwargs.command,
+                prompt: "Edit the command before execution"
+            });
+            if (modified) {
+                terminalAction.kwargs.command = modified;
+                return JSON.stringify({ decision: "approved", modified_actions: actions });
+            }
+        }
+        return JSON.stringify({ decision: "denied", reason: "User cancelled modification" });
+    }
+
+    return JSON.stringify({ decision: "denied", reason: "User denied execution" });
   }
 
   private async _openFileInEditor(filePath: string): Promise<string> {
