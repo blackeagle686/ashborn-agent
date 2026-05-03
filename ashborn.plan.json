@@ -115,6 +115,64 @@
         7
       ],
       "status": "pending"
+    },
+    {
+      "plan_step_id": 9,
+      "task_id": 3,
+      "step_index": 0,
+      "type": "analysis",
+      "solution": {
+        "approach": "Analyze the task to understand requirements: create a test file in math_utils/test_calc.py that imports factorial from calc module and asserts factorial(5) == 120.",
+        "algorithm": "",
+        "complexity": ""
+      },
+      "dependencies": [],
+      "status": "done"
+    },
+    {
+      "plan_step_id": 10,
+      "task_id": 3,
+      "step_index": 1,
+      "type": "design",
+      "solution": {
+        "approach": "Design the test structure: create a Python test file with import statement for factorial function from calc module and include a simple assert statement to verify factorial(5) equals 120.",
+        "algorithm": "",
+        "complexity": ""
+      },
+      "dependencies": [
+        9
+      ],
+      "status": "pending"
+    },
+    {
+      "plan_step_id": 11,
+      "task_id": 3,
+      "step_index": 2,
+      "type": "implementation",
+      "solution": {
+        "approach": "Implement the test file by writing the actual code to math_utils/test_calc.py containing the import and assertion logic.",
+        "algorithm": "",
+        "complexity": ""
+      },
+      "dependencies": [
+        10
+      ],
+      "status": "pending"
+    },
+    {
+      "plan_step_id": 12,
+      "task_id": 3,
+      "step_index": 3,
+      "type": "validation",
+      "solution": {
+        "approach": "Validate the implementation by checking that the file exists at math_utils/test_calc.py and contains the correct import and assertion code.",
+        "algorithm": "",
+        "complexity": ""
+      },
+      "dependencies": [
+        11
+      ],
+      "status": "pending"
     }
   ]
 }
