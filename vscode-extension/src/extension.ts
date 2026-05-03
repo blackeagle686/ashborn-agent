@@ -152,8 +152,8 @@ export async function activate(ctx: vscode.ExtensionContext) {
       // 1. Focus the view (this opens the panel if hidden)
       await vscode.commands.executeCommand("ashborn.chatView.focus");
       
-      // 2. Ensure the panel is actually visible and on the right
-      await vscode.commands.executeCommand("workbench.action.focusPanel");
+      // 2. Ensure the sidebar is visible
+      await vscode.commands.executeCommand('workbench.view.extension.ashborn-sidebar');
     } catch (e) {
       // Ignore if commands aren't supported in this version
     }
