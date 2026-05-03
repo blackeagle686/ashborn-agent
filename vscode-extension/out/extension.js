@@ -63,7 +63,7 @@ async function activate(ctx) {
     ctx.subscriptions.push(vscode.window.registerWebviewViewProvider(panel_1.AshbornViewProvider.viewType, _provider, { webviewOptions: { retainContextWhenHidden: true } }));
     // Register Inline Completion Provider
     const completionProvider = new completionProvider_1.AshbornCompletionProvider(client);
-    ctx.subscriptions.push(vscode.languages.registerInlineCompletionItemProvider({ pattern: '**/*' }, // Apply to all files
+    ctx.subscriptions.push(vscode.languages.registerInlineCompletionItemProvider([{ pattern: '**/*' }, { scheme: 'untitled' }], // Apply to all files
     completionProvider));
     // Register commands
     ctx.subscriptions.push(vscode.commands.registerCommand("ashborn.startServer", () => startServer(ctx, port)), vscode.commands.registerCommand("ashborn.stopAgent", () => _provider.stop()), vscode.commands.registerCommand("ashborn.resetSession", () => _provider.reset()), vscode.commands.registerCommand("ashborn.runAgent", async () => {

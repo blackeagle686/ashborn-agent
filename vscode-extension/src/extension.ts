@@ -43,7 +43,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   const completionProvider = new AshbornCompletionProvider(client);
   ctx.subscriptions.push(
     vscode.languages.registerInlineCompletionItemProvider(
-      { pattern: '**/*' }, // Apply to all files
+      [{ pattern: '**/*' }, { scheme: 'untitled' }], // Apply to all files
       completionProvider
     )
   );
