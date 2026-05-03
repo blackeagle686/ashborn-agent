@@ -7,7 +7,7 @@
       "type": "command",
       "title": "Create scratch_test directory",
       "description": "Run command to create a new directory named 'scratch_test' in the current working directory.",
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 2,
