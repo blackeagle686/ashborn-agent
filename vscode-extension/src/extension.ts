@@ -4,7 +4,7 @@ import * as cp from "child_process";
 import * as http from "http";
 import { AgentClient } from "./agentClient";
 import { AshbornViewProvider } from "./panel";
-import { ContextCollector } from "./contextCollector";
+import { ContextManager } from "./contextManager";
 import { AshbornCompletionProvider } from "./completionProvider";
 import { AshbornCodeActionProvider } from "./codeActionProvider";
 
@@ -28,8 +28,20 @@ export async function activate(ctx: vscode.ExtensionContext) {
 
   // Core services
   const client = new AgentClient(port);
-  const collector = new ContextCollector();
-  _provider = new AshbornViewProvider(ctx.extensionUri, client, collector);
+  const contextManager = new ContextManager();
+  _provider = new AshbornViewProvider(ctx.extensionUri, client, contextManager);
+
+  // ── Context Listeners ─────────────────────────────────────────────────────
+  const debounceRefresh = () => {
+    contextManager.refresh();
+  };
+
+  ctx.subscriptions.push(
+    vscode.window.onDidChangeActiveTextEditor(debounceRefresh),
+    vscode.window.onDidChangeVisibleTextEditors(debounceRefresh),
+    vscode.workspace.onDidChangeTextDocument(debounceRefresh),
+    vscode.languages.onDidChangeDiagnostics(debounceRefresh)
+  );
 
   // Register sidebar WebView
   ctx.subscriptions.push(
