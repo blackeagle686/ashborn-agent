@@ -260,9 +260,14 @@ class AshbornLoop(AgentLoop):
                         step_success = True
                         break
                         
-                    action_result = await self.actor.execute({"actions": actions})
-                    log_agent_action("actor", "execute_actions", {"actions": actions}, {"result": action_result}, "success")
-                    total_actions += len(actions)
+                    action_errors = self._pre_execution_validate(actions)
+                    if action_errors:
+                        action_result = "Pre-execution validation failed: " + "; ".join(action_errors)
+                        log_agent_action("loop", "pre_execution_validate", {"actions": actions}, {"errors": action_errors}, "failed")
+                    else:
+                        action_result = await self.actor.execute({"actions": actions})
+                        log_agent_action("actor", "execute_actions", {"actions": actions}, {"result": action_result}, "success")
+                        total_actions += len(actions)
                     
                     # 5. Reflect
                     reflection = await self.reflector.reflect(step.get("solution", {}).get("approach", ""), {"actions": actions}, action_result)
@@ -457,9 +462,15 @@ class AshbornLoop(AgentLoop):
                         continue
                         
                     yield {"type": "status", "role": "actor", "content": f"  ↳ Executing {len(actions)} actions..."}
-                    action_result = await self.actor.execute({"actions": actions})
-                    log_agent_action("actor", "execute_actions", {"actions": actions}, {"result": action_result}, "success")
-                    total_actions += len(actions)
+                    
+                    action_errors = self._pre_execution_validate(actions)
+                    if action_errors:
+                        action_result = "Pre-execution validation failed: " + "; ".join(action_errors)
+                        yield {"type": "chunk", "role": "system", "content": f"    ↳ ⚠ Safety Warning: {action_result}\n"}
+                    else:
+                        action_result = await self.actor.execute({"actions": actions})
+                        log_agent_action("actor", "execute_actions", {"actions": actions}, {"result": action_result}, "success")
+                        total_actions += len(actions)
                     
                     reflection = await self.reflector.reflect(step.get("solution", {}).get("approach", ""), {"actions": actions}, action_result)
                     log_agent_action("reflector", "reflect", {"approach": step.get("solution", {}).get("approach", ""), "actions": actions, "result": action_result}, reflection, "success")
