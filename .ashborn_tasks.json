@@ -31,7 +31,7 @@
       "type": "modify_file",
       "title": "Add input validation test for payload fields",
       "description": "Append a new test method `test_invalid_payload_fields` that verifies the function rejects invalid payload values (e.g., negative max_tokens, out-of-range temperature).",
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 5,
