@@ -15,7 +15,7 @@
       "type": "command",
       "title": "Initialize Next.js project",
       "description": "Navigate into the 'wallet-frontend' directory and run 'npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --no-git' to scaffold a Next.js TypeScript app with Tailwind CSS, ESLint, and an src directory.",
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 3,
