@@ -2,46 +2,30 @@ import json
 import os
 import re
 import threading
+from .backbone import get_tasks, save_tasks, update_task_status, BACKBONE_FILE
 
-# ── Task file path ─────────────────────────────────────────────────────────────
-TASK_FILE = ".ashborn_tasks.json"
-_task_lock = threading.Lock()
-
-# ── Task file helpers ──────────────────────────────────────────────────────────
+# ── Task file path (kept for compatibility, though we now use BACKBONE_FILE) ────
+TASK_FILE = BACKBONE_FILE 
 
 def _load_tasks() -> dict:
-    with _task_lock:
-        if not os.path.exists(TASK_FILE):
-            return {"tasks": []}
-        try:
-            with open(TASK_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            return {"tasks": []}
+    return {"tasks": get_tasks()}
 
 def _save_tasks(data: dict) -> None:
-    with _task_lock:
-        with open(TASK_FILE, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
+    save_tasks(data.get("tasks", []), data.get("original_prompt"))
 
 def _mark_task(task_id: int, status: str) -> None:
-    data = _load_tasks()
-    for t in data["tasks"]:
-        if t["id"] == task_id:
-            t["status"] = status
-            break
-    _save_tasks(data)
+    update_task_status(task_id, status)
 
 def _reset_failed_tasks() -> None:
     """Reset any failed tasks back to pending for resume."""
-    data = _load_tasks()
+    tasks = get_tasks()
     modified = False
-    for t in data.get("tasks", []):
+    for t in tasks:
         if t.get("status") == "failed":
             t["status"] = "pending"
             modified = True
     if modified:
-        _save_tasks(data)
+        save_tasks(tasks)
 
 def _clean_json(raw: str) -> str:
     """Strip markdown fences and return bare JSON, handling some common malformations."""
@@ -64,7 +48,6 @@ def _clean_json(raw: str) -> str:
         s = s[start:end+1]
         
     # 3. Handle common malformations like trailing commas
-    # This is a bit risky but often helpful: remove comma before ] or }
     s = re.sub(r',\s*([\]}])', r'\1', s)
     
     return s

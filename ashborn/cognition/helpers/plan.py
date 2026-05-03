@@ -1,47 +1,32 @@
 import json
 import os
 import threading
+from .backbone import get_plan_steps, save_plan_steps, update_plan_step_status, BACKBONE_FILE
 
-PLAN_FILE = "ashborn.plan.json"
-_plan_lock = threading.Lock()
+PLAN_FILE = BACKBONE_FILE
 
 def _load_plan() -> dict:
-    with _plan_lock:
-        if not os.path.exists(PLAN_FILE):
-            return {"plan_steps": []}
-        try:
-            with open(PLAN_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            return {"plan_steps": []}
+    return {"plan_steps": get_plan_steps()}
 
 def _save_plan(data: dict) -> None:
-    with _plan_lock:
-        with open(PLAN_FILE, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
+    save_plan_steps(data.get("plan_steps", []))
 
 def _mark_plan_step(step_id: int, status: str) -> None:
-    data = _load_plan()
-    for s in data.get("plan_steps", []):
-        if s.get("plan_step_id") == step_id:
-            s["status"] = status
-            break
-    _save_plan(data)
+    update_plan_step_status(step_id, status)
 
 def _reset_failed_plan_steps() -> None:
     """Reset any failed plan steps back to pending for resume."""
-    data = _load_plan()
+    steps = get_plan_steps()
     modified = False
-    for s in data.get("plan_steps", []):
+    for s in steps:
         if s.get("status") == "failed":
             s["status"] = "pending"
             modified = True
     if modified:
-        _save_plan(data)
+        save_plan_steps(steps)
 
 def _get_executable_plan_steps(task_id: int) -> list:
-    data = _load_plan()
-    all_steps = data.get("plan_steps", [])
+    all_steps = get_plan_steps()
     step_status_map = {s.get("plan_step_id"): s.get("status") for s in all_steps}
     
     executable = []
@@ -60,7 +45,7 @@ def _get_executable_plan_steps(task_id: int) -> list:
                 deps_met = False
                 
         if deps_failed:
-            _mark_plan_step(s.get("plan_step_id"), "failed")
+            update_plan_step_status(s.get("plan_step_id"), "failed")
             continue
             
         if deps_met:
@@ -70,5 +55,4 @@ def _get_executable_plan_steps(task_id: int) -> list:
 
 def _get_pending_plan_steps(task_id: int) -> list:
     """Returns ALL pending steps regardless of dependencies, useful for checking if a task is fully finished."""
-    data = _load_plan()
-    return [s for s in data.get("plan_steps", []) if s.get("task_id") == task_id and s.get("status") == "pending"]
+    return [s for s in get_plan_steps() if s.get("task_id") == task_id and s.get("status") == "pending"]
