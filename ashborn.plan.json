@@ -12,6 +12,64 @@
       },
       "dependencies": [],
       "status": "done"
+    },
+    {
+      "plan_step_id": 2,
+      "task_id": 2,
+      "step_index": 0,
+      "type": "analysis",
+      "solution": {
+        "approach": "Analyze the task requirements: create calc.py in scratch_test folder with a function to calculate factorial of 5 and print result",
+        "algorithm": "No specific algorithm needed for analysis phase",
+        "complexity": "O(1)"
+      },
+      "dependencies": [],
+      "status": "done"
+    },
+    {
+      "plan_step_id": 3,
+      "task_id": 2,
+      "step_index": 1,
+      "type": "design",
+      "solution": {
+        "approach": "Design the Python script structure: create calc.py file that imports necessary modules, defines a factorial calculation function, computes factorial of 5, and prints the result",
+        "algorithm": "Factorial calculation using iterative approach (5! = 5 × 4 × 3 × 2 × 1)",
+        "complexity": "O(n) for factorial computation"
+      },
+      "dependencies": [
+        1
+      ],
+      "status": "done"
+    },
+    {
+      "plan_step_id": 4,
+      "task_id": 2,
+      "step_index": 2,
+      "type": "implementation",
+      "solution": {
+        "approach": "Create the calc.py file in the scratch_test directory with the complete Python implementation including import statements, factorial function definition, calculation of 5!, and print statement",
+        "algorithm": "Write Python code to the filesystem",
+        "complexity": "I/O operations"
+      },
+      "dependencies": [
+        2
+      ],
+      "status": "done"
+    },
+    {
+      "plan_step_id": 5,
+      "task_id": 2,
+      "step_index": 3,
+      "type": "validation",
+      "solution": {
+        "approach": "Verify that calc.py exists in scratch_test directory and contains correct factorial calculation logic that produces output 120 when executed",
+        "algorithm": "File existence check and content validation",
+        "complexity": "O(1)"
+      },
+      "dependencies": [
+        3
+      ],
+      "status": "pending"
     }
   ]
 }
