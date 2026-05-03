@@ -424,6 +424,9 @@ Upgrade Generator to produce production-ready artifacts
 Real project generation (not snippets)
 Cleaner integration with Actor
 Consistent architecture
+
+===================================================
+
 🧩 Phase 3: Dependency Graph System
 🎯 Goal
 
