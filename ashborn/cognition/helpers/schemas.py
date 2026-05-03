@@ -46,9 +46,15 @@ GENERATION_SCHEMA = {
                     "artifacts": {
                         "type": "array",
                         "items": {
-                            "required": ["type", "path", "code"],
+                            "required": ["type", "path"],
                             "properties": {
-                                "type": {"enum": ["file_write", "file_update_multi", "terminal"]}
+                                "type": {"enum": ["file_write", "file_update_multi", "terminal"]},
+                                "edits": {
+                                    "type": "array",
+                                    "items": {
+                                        "required": ["AllowMultiple", "StartLine", "EndLine", "TargetContent", "ReplacementContent"]
+                                    }
+                                }
                             }
                         }
                     }

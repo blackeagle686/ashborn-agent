@@ -20,7 +20,14 @@ class AshbornGenerator:
         # For file_update_multi, we might want to validate the chunks, but it's harder to validate partial python without context.
         # We will focus on full file code and terminal commands.
         if artifact.get("type") == "file_update_multi":
-            return None # Skip partial chunk validation for now
+            edits = artifact.get("edits", [])
+            if not isinstance(edits, list) or len(edits) == 0:
+                return "Error: type 'file_update_multi' requires a non-empty 'edits' array."
+            for i, e in enumerate(edits):
+                missing = [k for k in ["StartLine", "EndLine", "TargetContent", "ReplacementContent"] if k not in e]
+                if missing:
+                    return f"Error in edit {i}: missing keys {missing}. Do NOT use 'old_lines' or 'new_lines'."
+            return None
             
         lang = artifact.get("language", "").lower()
         code = artifact.get("code", "")
