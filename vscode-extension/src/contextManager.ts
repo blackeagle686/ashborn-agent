@@ -57,8 +57,8 @@ export class ContextManager {
     
     if (this._updateTimeout) clearTimeout(this._updateTimeout);
     this._updateTimeout = setTimeout(() => {
-      console.log("ASHBORN CTX UPDATED:", JSON.stringify(this._context, null, 2).slice(0, 500) + "...");
-    }, 1000);
+      console.log("ASHBORN CTX UPDATED");
+    }, 500);
   }
 
   public serialize(): string {
@@ -168,17 +168,24 @@ ${ctx.activeFile.content.slice(0, 2000)}`);
   private async _getGitDiff(): Promise<string | undefined> {
     try {
       const gitExtension = vscode.extensions.getExtension("vscode.git")?.exports;
-      if (!gitExtension) return undefined;
-
-      const api = gitExtension.getAPI(1);
-      const repo = api.repositories[0];
-      if (!repo) return undefined;
-
-      // Get staged and unstaged changes
-      const stagedChanges = await repo.diff(true);
-      const unstagedChanges = await repo.diff(false);
+      if (gitExtension) {
+        const api = gitExtension.getAPI(1);
+        const repo = api.repositories[0];
+        if (repo) {
+          const stagedChanges = await repo.diff(true);
+          const unstagedChanges = await repo.diff(false);
+          return `STAGED:\n${stagedChanges || "none"}\n\nUNSTAGED:\n${unstagedChanges || "none"}`;
+        }
+      }
       
-      return `STAGED:\n${stagedChanges || "none"}\n\nUNSTAGED:\n${unstagedChanges || "none"}`;
+      // Fallback to shell command
+      const ws = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+      if (!ws) return undefined;
+      
+      const { execSync } = require("child_process");
+      const staged = execSync("git diff --cached", { cwd: ws }).toString();
+      const unstaged = execSync("git diff", { cwd: ws }).toString();
+      return `STAGED (fallback):\n${staged || "none"}\n\nUNSTAGED (fallback):\n${unstaged || "none"}`;
     } catch {
       return undefined;
     }
