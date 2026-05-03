@@ -28,6 +28,17 @@ def _mark_plan_step(step_id: int, status: str) -> None:
             break
     _save_plan(data)
 
+def _reset_failed_plan_steps() -> None:
+    """Reset any failed plan steps back to pending for resume."""
+    data = _load_plan()
+    modified = False
+    for s in data.get("plan_steps", []):
+        if s.get("status") == "failed":
+            s["status"] = "pending"
+            modified = True
+    if modified:
+        _save_plan(data)
+
 def _get_executable_plan_steps(task_id: int) -> list:
     data = _load_plan()
     all_steps = data.get("plan_steps", [])
