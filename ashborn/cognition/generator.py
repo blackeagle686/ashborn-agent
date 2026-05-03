@@ -50,6 +50,11 @@ class AshbornGenerator:
             except Exception as e:
                 return f"JSON Parse Error: {str(e)}"
                 
+        # Path validation: Prevent absolute paths or going out of workspace
+        path = artifact.get("path", "")
+        if path.startswith("/") or ".." in path:
+            return f"Security Error: Absolute paths or directory traversal ('..') are forbidden: {path}"
+            
         return None
 
     # ── File path detection ────────────────────────────────────────────────────
@@ -168,6 +173,11 @@ Existing File Context:
                         gen_data = {"generation_blocks": []}
                 else:
                     gen_data = {"generation_blocks": []}
+
+            # Schema Validation
+            errors = validate_schema(gen_data, GENERATION_SCHEMA)
+            if errors:
+                validation_errors.extend(errors)
 
             # Run Syntax Validation Layer
             validation_errors = []

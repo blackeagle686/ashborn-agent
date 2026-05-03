@@ -141,6 +141,28 @@ class AshbornLoop(AgentLoop):
                         actions.append({"tool": "terminal", "kwargs": {"command": art.get("code", "")}})
         return actions
 
+    def _pre_execution_validate(self, actions: list) -> list:
+        """Checks for dangerous or malformed actions before execution."""
+        errors = []
+        for act in actions:
+            tool = act.get("tool")
+            kwargs = act.get("kwargs", {})
+            
+            # 1. Path Safety
+            path = kwargs.get("path") or kwargs.get("file_path")
+            if path:
+                if path.startswith("/") or ".." in path:
+                    errors.append(f"Safety Violation: Path '{path}' is absolute or contains '..'")
+            
+            # 2. Command Safety
+            if tool in ["terminal", "vscode_terminal_run"]:
+                cmd = kwargs.get("command", "")
+                forbidden = ["rm -rf /", "mkfs", "dd if="] # Simple examples
+                for f in forbidden:
+                    if f in cmd:
+                        errors.append(f"Safety Violation: Command '{cmd}' contains forbidden pattern '{f}'")
+        return errors
+
     async def run(self, prompt: str, memory, session_id: str, mode: str = "auto", **kwargs) -> str:
         clear_logs()
         is_resume = prompt.strip().lower() == "resume" or mode == "resume"
