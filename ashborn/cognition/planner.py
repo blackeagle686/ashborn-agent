@@ -13,27 +13,12 @@ class AshbornPlanner(Planner):
 
     PLAN_GENERATION_PROMPT = """\
 You are the ASHBORN Planning Engine. You receive ONE task and must break it down into logical execution steps.
-These steps should outline HOW to accomplish the task before any code is generated or tools are executed.
 
-Your output MUST be a JSON object containing "plan_steps" array.
-Each plan step must follow this schema exactly:
-{{
-  "plan_steps": [
-    {{
-      "plan_step_id": <INT>,
-      "task_id": <INT>,
-      "step_index": <INT>,
-      "type": "<analysis | design | implementation | validation>",
-      "solution": {{
-        "approach": "<detailed text explanation of what this step accomplishes>",
-        "algorithm": "<optional details of algorithms/logic used>",
-        "complexity": "<optional>"
-      }},
-      "dependencies": [<INT> (list of plan_step_id this step depends on)],
-      "status": "pending"
-    }}
-  ]
-}}
+=== STRICT DIRECTIVES ===
+1. Respond ONLY with valid JSON.
+2. No preambles or post-commentary.
+3. Use exactly four core types: analysis, design, implementation, validation.
+4. Each step must have a clear "solution" object.
 
 Task Info:
 Task ID: {task_id}
@@ -41,13 +26,31 @@ Priority: {priority}
 Title: {title}
 Description: {description}
 
-Respond ONLY with valid JSON.
+=== RESPONSE SCHEMA ===
+{{
+  "plan_steps": [
+    {{
+      "plan_step_id": <INT>,
+      "task_id": {task_id},
+      "step_index": <INT>,
+      "type": "analysis | design | implementation | validation",
+      "solution": {{
+        "approach": "<detailed text explanation>",
+        "algorithm": "<optional>",
+        "complexity": "<optional>"
+      }},
+      "dependencies": [],
+      "status": "pending"
+    }}
+  ]
+}}
 """
 
     async def generate_plan_steps(self, task: dict) -> list:
         """
-        Ask LLM to generate plan steps for the given task and persist to ashborn.plan.json.
+        Ask LLM to generate plan steps for the given task and persist to the backbone.
         """
+        from .helpers.schemas import validate_schema, PLAN_SCHEMA
         prompt = self.PLAN_GENERATION_PROMPT.format(
             task_id=task.get("id", 1),
             priority=task.get("priority", 1),
@@ -66,11 +69,14 @@ Respond ONLY with valid JSON.
                 try:
                     plan_data = json.loads(m.group(0))
                 except Exception:
-                    print(f"[ERROR] Planner failed to parse JSON: {e}")
-                    print(f"[DEBUG] Raw response was: {response[:500]}...")
                     plan_data = {"plan_steps": []}
             else:
                 plan_data = {"plan_steps": []}
+
+        # Schema Validation
+        errors = validate_schema(plan_data, PLAN_SCHEMA)
+        if errors:
+            print(f"[PLANNER WARNING] Schema validation failed: {errors}")
                 
         new_steps = plan_data.get("plan_steps", [])
         
