@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { AgentClient } from "./agentClient";
 import { ContextManager } from "./contextManager";
+import { ActionExecutor } from "./actionExecutor";
 
 export type LoopEventCallback = (event: {
   type: "status" | "chunk" | "done" | "error";
@@ -15,12 +16,15 @@ export type LoopEventCallback = (event: {
 export class LoopController {
   private _running = false;
   private _stepCount = 0;
+  private _executor: ActionExecutor;
 
   constructor(
     private readonly _client: AgentClient,
     private readonly _context: ContextManager,
     private readonly _maxSteps = 10
-  ) {}
+  ) {
+    this._executor = new ActionExecutor();
+  }
 
   get isRunning() {
     return this._running;
@@ -107,6 +111,15 @@ export class LoopController {
     }
     if (tool === "open_file") {
       return await this._openFileInEditor(args.path);
+    }
+    if (tool === "create_file") {
+      return await this._executor.createFile(args.path, args.content);
+    }
+    if (tool === "edit_file") {
+      return await this._executor.editFile(args.path, args.content);
+    }
+    if (tool === "delete_file") {
+      return await this._executor.deleteFile(args.path);
     }
     return `ERROR: Unknown VS Code tool: ${tool}`;
   }
