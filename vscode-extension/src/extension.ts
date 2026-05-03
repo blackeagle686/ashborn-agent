@@ -6,6 +6,7 @@ import { AgentClient } from "./agentClient";
 import { AshbornViewProvider } from "./panel";
 import { ContextCollector } from "./contextCollector";
 import { AshbornCompletionProvider } from "./completionProvider";
+import { AshbornCodeActionProvider } from "./codeActionProvider";
 
 let _serverProcess: cp.ChildProcess | undefined;
 let _statusBar: vscode.StatusBarItem;
@@ -48,8 +49,71 @@ export async function activate(ctx: vscode.ExtensionContext) {
     )
   );
 
+  // Register Code Action Provider
+  ctx.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider(
+      [{ pattern: '**/*' }, { scheme: 'untitled' }],
+      new AshbornCodeActionProvider(),
+      { providedCodeActionKinds: AshbornCodeActionProvider.providedCodeActionKinds }
+    )
+  );
+
+  // Helper to run code actions
+  const executeAction = async (actionStr: string, document?: vscode.TextDocument, range?: vscode.Range | vscode.Selection) => {
+    let editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+    
+    // Fallback to active editor's document and selection if not passed (e.g. via Context Menu)
+    const doc = document || editor.document;
+    const sel = range || editor.selection;
+
+    if (sel.isEmpty) {
+      vscode.window.showInformationMessage("Please select some code first.");
+      return;
+    }
+
+    const selectedText = doc.getText(sel);
+    const fullText = doc.getText();
+
+    vscode.window.withProgress({
+      location: vscode.ProgressLocation.Notification,
+      title: `Ashborn: Executing ${actionStr}...`,
+      cancellable: false
+    }, async (progress) => {
+      try {
+        const result = await client.executeCodeAction(
+          actionStr,
+          doc.uri.fsPath,
+          selectedText,
+          fullText
+        );
+
+        if (!result) {
+          vscode.window.showErrorMessage("Ashborn: Failed to generate result.");
+          return;
+        }
+
+        if (actionStr === "explain") {
+          const channel = vscode.window.createOutputChannel("Ashborn Explanation");
+          channel.show(true);
+          channel.appendLine(result);
+        } else {
+          const edit = new vscode.WorkspaceEdit();
+          edit.replace(doc.uri, sel as vscode.Range, result);
+          await vscode.workspace.applyEdit(edit);
+        }
+      } catch (err) {
+        vscode.window.showErrorMessage(`Ashborn: Error executing action: ${err}`);
+      }
+    });
+  };
+
   // Register commands
   ctx.subscriptions.push(
+    vscode.commands.registerCommand("ashborn.action.explain", (d, r) => executeAction("explain", d, r)),
+    vscode.commands.registerCommand("ashborn.action.refactor", (d, r) => executeAction("refactor", d, r)),
+    vscode.commands.registerCommand("ashborn.action.optimize", (d, r) => executeAction("optimize", d, r)),
+    vscode.commands.registerCommand("ashborn.action.fix", (d, r) => executeAction("fix", d, r)),
     vscode.commands.registerCommand("ashborn.startServer", () =>
       startServer(ctx, port)
     ),
