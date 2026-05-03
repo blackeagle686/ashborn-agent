@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from ashborn.agent import get_ashborn_agent
-from phoenix.framework.memory.local_memory import LocalMemory
 
 async def main():
     print("========================================")
@@ -14,8 +13,6 @@ async def main():
     print("========================================\n")
     
     agent = await get_ashborn_agent()
-    memory = LocalMemory()
-    session_id = "test-plan-mode-101"
     
     prompt = "Create a new folder called 'scratch_test', inside it create a file 'calc.py' with a function that calculates factorial of 5 and prints it. Then run the python script using terminal."
     
@@ -24,8 +21,6 @@ async def main():
     
     try:
         # Agent.run_stream abstracts away the session & memory and uses AshbornLoop.run_stream internally.
-        # But wait, Phoenix's Agent.run_stream might take (prompt, mode="auto")
-        # Let's pass memory and session_id explicitly if using loop directly, but using Agent is cleaner:
         async for chunk in agent.run_stream(prompt, mode="plan"):
             ctype = chunk.get("type")
             role = chunk.get("role", "SYSTEM").upper()
