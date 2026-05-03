@@ -1,0 +1,61 @@
+{
+  "original_prompt": "Perform a security audit on test_ash_unit.py, identify potential vulnerabilities, and suggest/apply fixes.",
+  "tasks": [
+    {
+      "id": 1,
+      "priority": 1,
+      "type": "read",
+      "title": "Read full content of test_ash_unit.py",
+      "description": "Read the complete contents of scratch/test_ash_unit.py to analyze all test cases and identify security-related issues in test data or logic.",
+      "status": "pending"
+    },
+    {
+      "id": 2,
+      "priority": 2,
+      "type": "read",
+      "title": "Read send_completion_request function in test_ash.py",
+      "description": "Inspect scratch/test_ash.py to understand the actual implementation of send_completion_request, especially how it handles authentication, input validation, and error responses.",
+      "status": "pending"
+    },
+    {
+      "id": 3,
+      "priority": 3,
+      "type": "modify_file",
+      "title": "Fix hardcoded API key in test setup",
+      "description": "Replace the hardcoded 'your-api-key-here' in self.valid_headers with a placeholder like 'Bearer <REDACTED>' and add a comment explaining that real credentials should never be committed. Also ensure no actual secrets appear in test files.",
+      "status": "pending"
+    },
+    {
+      "id": 4,
+      "priority": 4,
+      "type": "modify_file",
+      "title": "Add input validation test for payload fields",
+      "description": "Append a new test method `test_invalid_payload_fields` that verifies the function rejects invalid payload values (e.g., negative max_tokens, out-of-range temperature).",
+      "status": "pending"
+    },
+    {
+      "id": 5,
+      "priority": 5,
+      "type": "modify_file",
+      "title": "Add test for URL injection vulnerability",
+      "description": "Create a test case that attempts to pass a malicious URL (e.g., file:// or javascript:) in base_url and verify the function either sanitizes it or raises an appropriate exception.",
+      "status": "pending"
+    },
+    {
+      "id": 6,
+      "priority": 6,
+      "type": "modify_file",
+      "title": "Ensure consistent error handling in all test methods",
+      "description": "Review and fix any incomplete assertions or missing exception handling in existing tests (e.g., incomplete mock setup in test_http_5xx_error_response).",
+      "status": "pending"
+    },
+    {
+      "id": 7,
+      "priority": 7,
+      "type": "command",
+      "title": "Run unit tests to verify fixes",
+      "description": "Execute `python -m pytest scratch/test_ash_unit.py -v` to confirm all tests pass after applying security improvements.",
+      "status": "pending"
+    }
+  ]
+}
