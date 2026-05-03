@@ -238,4 +238,52 @@ export class AgentClient {
       req.end();
     });
   }
+
+  async executeCodeAction(
+    action: string,
+    filePath: string,
+    selectedText: string,
+    fullText: string
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const body = JSON.stringify({
+        action,
+        file_path: filePath,
+        selected_text: selectedText,
+        full_text: fullText,
+      });
+
+      const req = http.request(
+        {
+          hostname: "127.0.0.1",
+          port: this._port,
+          path: "/code_action",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Content-Length": Buffer.byteLength(body),
+          },
+        },
+        (res) => {
+          let data = "";
+          res.on("data", (c) => (data += c));
+          res.on("end", () => {
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.status === "ok") {
+                resolve(parsed.result || "");
+              } else {
+                resolve("");
+              }
+            } catch {
+              resolve("");
+            }
+          });
+        }
+      );
+      req.on("error", () => resolve(""));
+      req.write(body);
+      req.end();
+    });
+  }
 }
