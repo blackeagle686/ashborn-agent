@@ -43,6 +43,7 @@ const agentClient_1 = require("./agentClient");
 const panel_1 = require("./panel");
 const contextCollector_1 = require("./contextCollector");
 const completionProvider_1 = require("./completionProvider");
+const codeActionProvider_1 = require("./codeActionProvider");
 let _serverProcess;
 let _statusBar;
 let _provider;
@@ -65,8 +66,51 @@ async function activate(ctx) {
     const completionProvider = new completionProvider_1.AshbornCompletionProvider(client);
     ctx.subscriptions.push(vscode.languages.registerInlineCompletionItemProvider([{ pattern: '**/*' }, { scheme: 'untitled' }], // Apply to all files
     completionProvider));
+    // Register Code Action Provider
+    ctx.subscriptions.push(vscode.languages.registerCodeActionsProvider([{ pattern: '**/*' }, { scheme: 'untitled' }], new codeActionProvider_1.AshbornCodeActionProvider(), { providedCodeActionKinds: codeActionProvider_1.AshbornCodeActionProvider.providedCodeActionKinds }));
+    // Helper to run code actions
+    const executeAction = async (actionStr, document, range) => {
+        let editor = vscode.window.activeTextEditor;
+        if (!editor)
+            return;
+        // Fallback to active editor's document and selection if not passed (e.g. via Context Menu)
+        const doc = document || editor.document;
+        const sel = range || editor.selection;
+        if (sel.isEmpty) {
+            vscode.window.showInformationMessage("Please select some code first.");
+            return;
+        }
+        const selectedText = doc.getText(sel);
+        const fullText = doc.getText();
+        vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: `Ashborn: Executing ${actionStr}...`,
+            cancellable: false
+        }, async (progress) => {
+            try {
+                const result = await client.executeCodeAction(actionStr, doc.uri.fsPath, selectedText, fullText);
+                if (!result) {
+                    vscode.window.showErrorMessage("Ashborn: Failed to generate result.");
+                    return;
+                }
+                if (actionStr === "explain") {
+                    const channel = vscode.window.createOutputChannel("Ashborn Explanation");
+                    channel.show(true);
+                    channel.appendLine(result);
+                }
+                else {
+                    const edit = new vscode.WorkspaceEdit();
+                    edit.replace(doc.uri, sel, result);
+                    await vscode.workspace.applyEdit(edit);
+                }
+            }
+            catch (err) {
+                vscode.window.showErrorMessage(`Ashborn: Error executing action: ${err}`);
+            }
+        });
+    };
     // Register commands
-    ctx.subscriptions.push(vscode.commands.registerCommand("ashborn.startServer", () => startServer(ctx, port)), vscode.commands.registerCommand("ashborn.stopAgent", () => _provider.stop()), vscode.commands.registerCommand("ashborn.resetSession", () => _provider.reset()), vscode.commands.registerCommand("ashborn.runAgent", async () => {
+    ctx.subscriptions.push(vscode.commands.registerCommand("ashborn.action.explain", (d, r) => executeAction("explain", d, r)), vscode.commands.registerCommand("ashborn.action.refactor", (d, r) => executeAction("refactor", d, r)), vscode.commands.registerCommand("ashborn.action.optimize", (d, r) => executeAction("optimize", d, r)), vscode.commands.registerCommand("ashborn.action.fix", (d, r) => executeAction("fix", d, r)), vscode.commands.registerCommand("ashborn.startServer", () => startServer(ctx, port)), vscode.commands.registerCommand("ashborn.stopAgent", () => _provider.stop()), vscode.commands.registerCommand("ashborn.resetSession", () => _provider.reset()), vscode.commands.registerCommand("ashborn.runAgent", async () => {
         const task = await vscode.window.showInputBox({
             prompt: "Describe what you want Ashborn to do",
             placeHolder: "e.g. Add unit tests for the auth module",
