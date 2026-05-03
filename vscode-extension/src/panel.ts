@@ -108,22 +108,22 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
           // silently ignore — file might not exist yet
         }
         break;
-      case "theme":
-  const lightTheme = "Default Light Modern";
-  const darkTheme = "Default Dark Modern";
+         case "theme":
+            const lightTheme = "Default Light Modern";
+            const darkTheme = "Default Dark Modern";
 
-  const targetTheme = msg.isLight ? lightTheme : darkTheme;
+            const targetTheme = msg.isLight ? lightTheme : darkTheme;
 
-  await vscode.workspace.getConfiguration("workbench").update(
-    "colorTheme",
-    targetTheme,
-    vscode.ConfigurationTarget.Global
-  );
+            await vscode.workspace.getConfiguration("workbench").update(
+              "colorTheme",
+              targetTheme,
+              vscode.ConfigurationTarget.Global
+            );
 
-  vscode.window.showInformationMessage(
-    `Ashborn: Applied theme → "${targetTheme}"`
-  );
-  break;
+            vscode.window.showInformationMessage(
+              `Ashborn: Applied theme → "${targetTheme}"`
+            );
+            break;
     }
   }
 
