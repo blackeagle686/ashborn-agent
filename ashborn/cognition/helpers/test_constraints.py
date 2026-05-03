@@ -31,7 +31,11 @@ def test_safety_validation():
     print("\n--- Testing Safety Validation ---")
     
     # Create a mock loop (we only need the validation method)
-    loop = AshbornLoop(None, None, None, None)
+    # We'll use a dummy class to avoid __init__ issues
+    class MockLoop(AshbornLoop):
+        def __init__(self): pass
+    
+    loop = MockLoop()
     
     # 1. Safe Actions
     safe_actions = [{"tool": "file_write", "kwargs": {"path": "test.txt", "content": "hi"}}]
