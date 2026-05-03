@@ -56,8 +56,48 @@
       {
         "command": "ashborn.startServer",
         "title": "Ashborn: Start Server"
+      },
+      {
+        "command": "ashborn.action.explain",
+        "title": "Ashborn: Explain Code"
+      },
+      {
+        "command": "ashborn.action.refactor",
+        "title": "Ashborn: Refactor Code"
+      },
+      {
+        "command": "ashborn.action.optimize",
+        "title": "Ashborn: Optimize Performance"
+      },
+      {
+        "command": "ashborn.action.fix",
+        "title": "Ashborn: Fix Bugs"
       }
     ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "ashborn.action.explain",
+          "group": "ashborn@1",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "ashborn.action.refactor",
+          "group": "ashborn@2",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "ashborn.action.optimize",
+          "group": "ashborn@3",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "ashborn.action.fix",
+          "group": "ashborn@4",
+          "when": "editorHasSelection"
+        }
+      ]
+    },
     "configuration": {
       "title": "Ashborn Agent",
       "properties": {
