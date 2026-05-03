@@ -76,7 +76,6 @@ export async function activate(ctx: vscode.ExtensionContext) {
     let editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
-    // Handle cases where VS Code passes a Uri instead of TextDocument (Context Menu)
     const doc = (document && "getText" in document) ? (document as vscode.TextDocument) : editor.document;
     const sel = (range && "start" in range) ? range : editor.selection;
 
@@ -95,21 +94,13 @@ export async function activate(ctx: vscode.ExtensionContext) {
     }, async (progress) => {
       try {
         if (actionStr === "explain") {
-          // Ensure sidebar is visible
           await vscode.commands.executeCommand('workbench.view.extension.ashborn-sidebar');
           await vscode.commands.executeCommand('ashborn.chatView.focus');
-          
-          // Show the user message and thinking state immediately
           _provider.postMessage({ type: "user_message", content: `Explain selected code in ${path.basename(doc.uri.fsPath)}:` });
           _provider.postMessage({ type: "status", state: "thinking", content: "Ashborn is analyzing your code..." });
         }
 
-        const result = await client.executeCodeAction(
-          actionStr,
-          doc.uri.fsPath,
-          selectedText,
-          fullText
-        );
+        const result = await client.executeCodeAction(actionStr, doc.uri.fsPath, selectedText, fullText);
 
         if (!result) {
           vscode.window.showErrorMessage("Ashborn: Failed to generate result.");
@@ -136,15 +127,9 @@ export async function activate(ctx: vscode.ExtensionContext) {
     vscode.commands.registerCommand("ashborn.action.refactor", (d, r) => executeAction("refactor", d, r)),
     vscode.commands.registerCommand("ashborn.action.optimize", (d, r) => executeAction("optimize", d, r)),
     vscode.commands.registerCommand("ashborn.action.fix", (d, r) => executeAction("fix", d, r)),
-    vscode.commands.registerCommand("ashborn.startServer", () =>
-      startServer(ctx, port)
-    ),
-    vscode.commands.registerCommand("ashborn.stopAgent", () =>
-      _provider.stop()
-    ),
-    vscode.commands.registerCommand("ashborn.resetSession", () =>
-      _provider.reset()
-    ),
+    vscode.commands.registerCommand("ashborn.startServer", () => startServer(ctx, port)),
+    vscode.commands.registerCommand("ashborn.stopAgent", () => _provider.stop()),
+    vscode.commands.registerCommand("ashborn.resetSession", () => _provider.reset()),
     vscode.commands.registerCommand("ashborn.runAgent", async (task?: string) => {
       const finalTask = task || await vscode.window.showInputBox({
         prompt: "Describe what you want Ashborn to do",
@@ -154,7 +139,6 @@ export async function activate(ctx: vscode.ExtensionContext) {
         _provider.runAgent(finalTask, "plan");
       }
     }),
-
     vscode.commands.registerCommand("ashborn.runTaskWithInput", async () => {
       const task = await vscode.window.showInputBox({
         prompt: "Enter a task for Ashborn",
@@ -164,15 +148,12 @@ export async function activate(ctx: vscode.ExtensionContext) {
         _provider.runAgent(task, "auto");
       }
     }),
-
     vscode.commands.registerCommand("ashborn.action.fixError", async () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) return;
-
       const pos = editor.selection.active;
       const diagnostics = vscode.languages.getDiagnostics(editor.document.uri);
       const errorAtCursor = diagnostics.find(d => d.range.contains(pos));
-
       if (errorAtCursor) {
         const task = `Fix the following ${errorAtCursor.severity === vscode.DiagnosticSeverity.Error ? "error" : "warning"} in ${path.basename(editor.document.uri.fsPath)} at line ${errorAtCursor.range.start.line + 1}:\n"${errorAtCursor.message}"`;
         _provider.runAgent(task, "auto");
@@ -180,14 +161,12 @@ export async function activate(ctx: vscode.ExtensionContext) {
         vscode.window.showInformationMessage("No error or warning found at cursor.");
       }
     }),
-
     vscode.commands.registerCommand("ashborn.action.generateTests", async () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) return;
       const task = `Generate comprehensive unit tests for the file: ${path.basename(editor.document.uri.fsPath)}`;
       _provider.runAgent(task, "plan");
     }),
-
     vscode.commands.registerCommand("ashborn.action.secureCode", async () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) return;
@@ -197,24 +176,14 @@ export async function activate(ctx: vscode.ExtensionContext) {
   );
 
   // ── Layout Enforcement ───────────────────────────────────────────────────
-  // We force the Ashborn view to the secondary sidebar (right) on startup
-  // This overrides VS Code's tendency to merge views or hide the bar.
   const enforceLayout = async () => {
     try {
-      // 1. Focus the view (this opens the panel if hidden)
       await vscode.commands.executeCommand("ashborn.chatView.focus");
-
-      // 2. Ensure the sidebar is visible
       await vscode.commands.executeCommand('workbench.view.extension.ashborn-sidebar');
-    } catch (e) {
-      // Ignore if commands aren't supported in this version
-    }
+    } catch (e) {}
   };
-
-  // Run layout enforcement shortly after activation
   setTimeout(enforceLayout, 2000);
 
-  // Watch for .ashborn-focus file to pop open the sidebar reliably
   const focusWatcher = vscode.workspace.createFileSystemWatcher("**/.ashborn-focus");
   const handleFocus = async (uri: vscode.Uri) => {
     await enforceLayout();
@@ -224,8 +193,20 @@ export async function activate(ctx: vscode.ExtensionContext) {
   focusWatcher.onDidChange(handleFocus);
   ctx.subscriptions.push(focusWatcher);
 
-  // Check if file already exists on startup
-  vscode.workspac  if (vscode.window.visibleTextEditors.length === 0) {
+  // Auto-start server
+  if (autoStart) {
+    const ready = await client.healthCheck();
+    if (!ready) {
+      await startServer(ctx, port);
+    } else {
+      setStatus("ready", port);
+    }
+  } else {
+    setStatus("stopped", port);
+  }
+
+  // Open the Ashborn Dashboard if no editors are open
+  if (vscode.window.visibleTextEditors.length === 0) {
     showDashboard(ctx);
   }
 }
@@ -286,7 +267,6 @@ function showDashboard(ctx: vscode.ExtensionContext) {
         .hint { margin-top: 30px; color: #6b6b80; font-size: 0.95em; letter-spacing: 1px; }
         kbd { background: rgba(128,128,128,0.15); padding: 3px 8px; border-radius: 6px; color: inherit; border: 1px solid rgba(128,128,128,0.2); font-family: monospace; }
         
-        /* Advertisement Card */
         .phx-ad-card {
           margin-top: 50px;
           background: var(--surface-glass);
@@ -327,7 +307,6 @@ function showDashboard(ctx: vscode.ExtensionContext) {
       <h1>ASHBORN</h1>
       <div class="hint">Press <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>I</kbd> to open Chat</div>
 
-      <!-- Phoenix AI Advertisement -->
       <div class="phx-ad-card">
         <div class="phx-ad-badge">Powered By</div>
         <div class="phx-ad-main">
@@ -344,30 +323,7 @@ function showDashboard(ctx: vscode.ExtensionContext) {
     </html>
   `;
 }
-         <div class="phx-ad-content">
-            <div class="phx-ad-title">Phoenix AI Framework</div>
-            <div class="phx-ad-desc">
-              🔥 A production-ready, modular backend infrastructure SDK designed for AI-powered Python backend services.
-            </div>
-          </div>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
-d: rgba(128,128,128,0.2); padding: 2px 6px; border-radius: 4px; color: inherit; border: 1px solid rgba(128,128,128,0.3); }
-      </style>
-    </head>
-    <body>
-      <img src="${iconUri}" class="logo">
-      <h1>ASHBORN</h1>
-      <div class="hint">Press <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>I</kbd> to open Chat</div>
-    </body>
-    </html>
-  `;
-}
 
-// ── Deactivate ────────────────────────────────────────────────────────────────
 export function deactivate() {
   if (_serverProcess) {
     _serverProcess.kill();
@@ -375,7 +331,6 @@ export function deactivate() {
   }
 }
 
-// ── Server lifecycle ──────────────────────────────────────────────────────────
 async function startServer(ctx: vscode.ExtensionContext, port: number) {
   if (_serverProcess) {
     vscode.window.showInformationMessage("Ashborn server is already running.");
@@ -383,15 +338,10 @@ async function startServer(ctx: vscode.ExtensionContext, port: number) {
   }
 
   const ws = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-
-  // The global installation path of Ashborn Agent
   const ASHBORN_DIR = "/home/tlk/Documents/Projects/my_AItools/ashborn-agent";
-
   const config = vscode.workspace.getConfiguration("ashborn");
   const venvRel: string = config.get("venvPath") ?? "venv";
-  const venvPath = path.isAbsolute(venvRel)
-    ? venvRel
-    : path.join(ASHBORN_DIR, venvRel);
+  const venvPath = path.isAbsolute(venvRel) ? venvRel : path.join(ASHBORN_DIR, venvRel);
   const python = path.join(venvPath, "bin", "python3");
 
   setStatus("starting", port);
@@ -402,40 +352,27 @@ async function startServer(ctx: vscode.ExtensionContext, port: number) {
     ["-m", "uvicorn", "ashborn.server:app", "--host", "127.0.0.1", "--port", String(port), "--log-level", "warning"],
     {
       cwd: ws || ASHBORN_DIR,
-      env: {
-        ...process.env,
-        PYTHONPATH: ASHBORN_DIR
-      },
+      env: { ...process.env, PYTHONPATH: ASHBORN_DIR },
       stdio: ["ignore", "pipe", "pipe"]
     }
   );
 
-  _serverProcess.stdout?.on("data", (d: Buffer) =>
-    console.log("[ashborn-server]", d.toString().trim())
-  );
-  _serverProcess.stderr?.on("data", (d: Buffer) =>
-    console.error("[ashborn-server]", d.toString().trim())
-  );
+  _serverProcess.stdout?.on("data", (d: Buffer) => console.log("[ashborn-server]", d.toString().trim()));
+  _serverProcess.stderr?.on("data", (d: Buffer) => console.error("[ashborn-server]", d.toString().trim()));
   _serverProcess.on("exit", (code) => {
-    console.log(`[ashborn-server] exited with code ${code}`);
     _serverProcess = undefined;
     setStatus("stopped", port);
   });
 
-  // Poll until ready (max 30 s)
   const client = new AgentClient(port);
   let attempts = 0;
   const poll = setInterval(async () => {
     attempts++;
-
-    // Check health
     const status: any = await new Promise(resolve => {
       const req = http.get(`http://127.0.0.1:${port}/health`, (res) => {
         let data = "";
         res.on("data", (c) => (data += c));
-        res.on("end", () => {
-          try { resolve(JSON.parse(data)); } catch { resolve(null); }
-        });
+        res.on("end", () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
       });
       req.on("error", () => resolve(null));
     });
@@ -452,26 +389,14 @@ async function startServer(ctx: vscode.ExtensionContext, port: number) {
     } else if (attempts > 120) {
       clearInterval(poll);
       setStatus("error", port);
-      vscode.window.showErrorMessage(
-        "❌ Ashborn server failed to start (timed out after 120s). Check the Output panel."
-      );
+      vscode.window.showErrorMessage("❌ Ashborn server failed to start (timed out).");
     }
   }, 1000);
 }
 
 function setStatus(state: "starting" | "ready" | "stopped" | "error", port: number) {
-  const icons: Record<string, string> = {
-    starting: "$(loading~spin)",
-    ready: "$(flame)",
-    stopped: "$(circle-slash)",
-    error: "$(error)",
-  };
-  const labels: Record<string, string> = {
-    starting: "Ashborn: starting…",
-    ready: `Ashborn :${port}`,
-    stopped: "Ashborn: offline",
-    error: "Ashborn: error",
-  };
+  const icons: Record<string, string> = { starting: "$(loading~spin)", ready: "$(flame)", stopped: "$(circle-slash)", error: "$(error)" };
+  const labels: Record<string, string> = { starting: "Ashborn: starting…", ready: `Ashborn :${port}`, stopped: "Ashborn: offline", error: "Ashborn: error" };
   _statusBar.text = `${icons[state]} ${labels[state]}`;
   _statusBar.tooltip = `Ashborn Agent Server — port ${port} — ${state}`;
   _statusBar.show();
