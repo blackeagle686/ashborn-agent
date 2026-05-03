@@ -7,7 +7,7 @@
       "type": "read",
       "title": "Read full content of test_ash_unit.py",
       "description": "Read the complete contents of scratch/test_ash_unit.py to analyze all test cases and identify security-related issues in test data or logic.",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 2,
@@ -15,7 +15,7 @@
       "type": "read",
       "title": "Read send_completion_request function in test_ash.py",
       "description": "Inspect scratch/test_ash.py to understand the actual implementation of send_completion_request, especially how it handles authentication, input validation, and error responses.",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 3,
