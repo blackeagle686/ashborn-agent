@@ -166,6 +166,17 @@ class AshbornLoop(AgentLoop):
                     # 3. Generate Code Iteratively
                     gen_data = await self.generator.generate_step(step, task)
                     blocks = gen_data.get("generation_blocks", [])
+                    
+                    if any(b.get("status") == "syntax_error" for b in blocks):
+                        error_msg = next((b.get("error") for b in blocks if b.get("status") == "syntax_error"), "Syntax validation failed")
+                        log_agent_action("generator", "generate_step", {"step": step, "task": task}, {"error": error_msg}, "failed")
+                        reflection = await self.reflector.reflect(step.get("solution", {}).get("approach", ""), {"actions": []}, f"Generation failed: {error_msg}")
+                        log_agent_action("reflector", "reflect", {"approach": step.get("solution", {}).get("approach", "")}, reflection, "success")
+                        
+                        accumulated_results += f"\nStep '{step.get('type')}' (attempt {attempt + 1}):\n  Result: Syntax Error\n  Reflection: {reflection['reflection']}\n"
+                        self._schedule_background(memory.add_interaction(session_id, "system", f"Step: {step.get('type')} | Result: Syntax Error | Reflection: {reflection['reflection']}"))
+                        continue
+                        
                     log_agent_action("generator", "generate_step", {"step": step, "task": task}, gen_data, "success")
                     
                     # 4. Map to Actions & Execute
@@ -292,6 +303,18 @@ class AshbornLoop(AgentLoop):
                     yield {"type": "status", "role": "actor", "content": f"  ↳ Generating Code (Attempt {attempt+1})..."}
                     gen_data = await self.generator.generate_step(step, task)
                     blocks = gen_data.get("generation_blocks", [])
+                    
+                    if any(b.get("status") == "syntax_error" for b in blocks):
+                        error_msg = next((b.get("error") for b in blocks if b.get("status") == "syntax_error"), "Syntax validation failed")
+                        log_agent_action("generator", "generate_step", {"step": step, "task": task}, {"error": error_msg}, "failed")
+                        reflection = await self.reflector.reflect(step.get("solution", {}).get("approach", ""), {"actions": []}, f"Generation failed: {error_msg}")
+                        log_agent_action("reflector", "reflect", {"approach": step.get("solution", {}).get("approach", "")}, reflection, "success")
+                        
+                        accumulated_results += f"\nStep '{step.get('type')}':\nResult: Syntax Error\nReflection: {reflection['reflection']}\n"
+                        self._schedule_background(memory.add_interaction(session_id, "system", f"Step: {step.get('type')} | Result: Syntax Error | Reflection: {reflection['reflection']}"))
+                        yield {"type": "chunk", "role": "reflector", "content": f"    ↳ ⚠ Retry: Syntax error detected before execution: {reflection['reflection']}\n"}
+                        continue
+                        
                     log_agent_action("generator", "generate_step", {"step": step, "task": task}, gen_data, "success")
                     actions = self._map_artifacts_to_actions(blocks)
                     
