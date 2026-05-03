@@ -15,7 +15,7 @@
       "type": "modify_file",
       "title": "Replace hardcoded API key with environment variable",
       "description": "Update the test script to load the Authorization header value from an environment variable (e.g., ASHBORN_API_KEY) instead of using 'your-api-key-here'. Use os.getenv() to retrieve it.",
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 3,
@@ -23,7 +23,7 @@
       "type": "modify_file",
       "title": "Add input validation for URL and payload",
       "description": "In send_completion_request(), validate that url is a non-empty string and uses https:// scheme. Validate payload is a dict and contains expected keys like 'prompt' and 'max_tokens'.",
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 4,
