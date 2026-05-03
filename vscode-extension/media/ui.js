@@ -29,6 +29,11 @@
   const cfgBaseUrl  = document.getElementById("cfg-base-url");
   const cfgModel    = document.getElementById("cfg-model");
   const cfgLogLevel = document.getElementById("cfg-log-level");
+  
+  const contextPanel = document.getElementById("context-panel");
+  const btnContext    = document.getElementById("btn-context");
+  const btnCloseContext = document.getElementById("btn-close-context");
+  const contextDataEl   = document.getElementById("context-data");
 
   // ── Voice / TTS refs ──────────────────────────────────────────────────────────
   const btnMic          = document.getElementById("btn-mic");
@@ -400,6 +405,18 @@
     settingsPanel.style.display = "none";
   });
 
+  btnContext.addEventListener("click", () => {
+    const isHidden = contextPanel.style.display === "none";
+    contextPanel.style.display = isHidden ? "flex" : "none";
+    if (isHidden) {
+      vscode.postMessage({ type: "getContext" });
+    }
+  });
+
+  btnCloseContext.addEventListener("click", () => {
+    contextPanel.style.display = "none";
+  });
+
   btnSaveSettings.addEventListener("click", () => {
     const settings = {
       OPENAI_API_KEY: cfgApiKey.value,
@@ -581,6 +598,10 @@
           settingsStatus.textContent = "✗ Failed: " + msg.message;
           settingsStatus.className = "settings-status error";
         }
+        break;
+
+      case "context":
+        contextDataEl.textContent = msg.content || "No context data available.";
         break;
     }
   });
