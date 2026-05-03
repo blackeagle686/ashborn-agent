@@ -1,6 +1,8 @@
 import json
 import re
 import os
+import ast
+import subprocess
 
 from .helpers.tasks import _clean_json
 from .helpers.generation import _add_generation_block
@@ -12,6 +14,43 @@ class AshbornGenerator:
     """
     def __init__(self, llm):
         self.llm = llm
+
+    def _validate_artifact(self, artifact: dict) -> str | None:
+        """Validates the syntax of an artifact's code before execution."""
+        # For file_update_multi, we might want to validate the chunks, but it's harder to validate partial python without context.
+        # We will focus on full file code and terminal commands.
+        if artifact.get("type") == "file_update_multi":
+            return None # Skip partial chunk validation for now
+            
+        lang = artifact.get("language", "").lower()
+        code = artifact.get("code", "")
+        
+        if not code:
+            return None
+            
+        if lang in ["python", "py"]:
+            try:
+                ast.parse(code)
+            except SyntaxError as e:
+                return f"Python SyntaxError: {e.msg} at line {e.lineno}"
+            except Exception as e:
+                return f"Python Parse Error: {str(e)}"
+                
+        elif lang in ["bash", "sh"] or artifact.get("type") == "terminal":
+            try:
+                result = subprocess.run(["bash", "-n", "-c", code], capture_output=True, text=True, timeout=5)
+                if result.returncode != 0:
+                    return f"Bash Syntax Error: {result.stderr.strip()}"
+            except Exception as e:
+                return f"Bash Validation Error: {str(e)}"
+                
+        elif lang == "json":
+            try:
+                json.loads(code)
+            except Exception as e:
+                return f"JSON Parse Error: {str(e)}"
+                
+        return None
 
     # ── File path detection ────────────────────────────────────────────────────
     _FILE_PATH_RE = re.compile(
@@ -75,6 +114,8 @@ Your output MUST be a JSON object conforming to this exact schema:
 }}
 
 === FILE OPERATION RULES ===
+- Multi-file Generation: You SHOULD generate multiple artifacts simultaneously if they belong together logically (e.g., creating a module, an `__init__.py`, and a test file in one pass).
+- Consistency: Enforce proper project structures. Always use relative imports within your own packages. Include necessary types.
 - type "file_write": Use for NEW files. "code" is the full file content.
 - type "file_update_multi": Use for EXISTING files. Use the "edits" field (JSON array of chunks). Do NOT use "code".
 - type "terminal": "code" is the bash command to run.
@@ -116,7 +157,7 @@ Respond ONLY with valid JSON.
                 )
             file_context = "\n".join(sections)
             
-        prompt = self.GENERATION_PROMPT.format(
+        base_prompt = self.GENERATION_PROMPT.format(
             step_id=step.get("plan_step_id", 1),
             type=step.get("type", ""),
             approach=step.get("solution", {}).get("approach", ""),
@@ -124,30 +165,57 @@ Respond ONLY with valid JSON.
             file_context=file_context or "No existing files detected."
         )
 
-        response = await self.llm.generate(prompt, session_id=None)
-        clean = _clean_json(response)
+        MAX_ATTEMPTS = 2
+        validation_errors = []
+        gen_data = {"generation_blocks": []}
         
-        try:
-            gen_data = json.loads(clean)
-        except Exception as e:
-            # Try to find JSON block via regex if direct loads fails
-            m = re.search(r'\{.*\}', clean, re.DOTALL)
-            if m:
-                try:
-                    gen_data = json.loads(m.group(0))
-                except Exception:
-                    # If it still fails, it might be an escaping issue. 
-                    # We'll return an empty block and log the error.
-                    print(f"[ERROR] Generator failed to parse JSON: {e}")
-                    print(f"[DEBUG] Raw response was: {response[:500]}...")
+        for attempt in range(MAX_ATTEMPTS):
+            prompt = base_prompt
+            if validation_errors:
+                err_str = "\n".join(f"- {e}" for e in validation_errors)
+                prompt += f"\n\n=== PREVIOUS ATTEMPT FAILED SYNTAX VALIDATION ===\nFix these errors:\n{err_str}\n"
+
+            response = await self.llm.generate(prompt, session_id=None)
+            clean = _clean_json(response)
+            
+            try:
+                gen_data = json.loads(clean)
+            except Exception as e:
+                m = re.search(r'\{.*\}', clean, re.DOTALL)
+                if m:
+                    try:
+                        gen_data = json.loads(m.group(0))
+                    except Exception:
+                        gen_data = {"generation_blocks": []}
+                else:
                     gen_data = {"generation_blocks": []}
-            else:
-                gen_data = {"generation_blocks": []}
+
+            # Run Syntax Validation Layer
+            validation_errors = []
+            blocks = gen_data.get("generation_blocks", [])
+            for b in blocks:
+                for art in b.get("artifacts", []):
+                    err = self._validate_artifact(art)
+                    if err:
+                        validation_errors.append(f"In {art.get('path', 'unknown')}: {err}")
+            
+            if not validation_errors:
+                break # Success!
                 
-        # Persist block
+        if validation_errors:
+            # If we exhausted attempts and still have errors, return a syntax_error status block
+            return {
+                "generation_blocks": [{
+                    "plan_step_id": step.get("plan_step_id"),
+                    "artifacts": [],
+                    "status": "syntax_error",
+                    "error": "\n".join(validation_errors)
+                }]
+            }
+
+        # Persist valid blocks
         blocks = gen_data.get("generation_blocks", [])
         for b in blocks:
-            # Force step id mapping
             b["plan_step_id"] = step.get("plan_step_id")
             _add_generation_block(b)
             
