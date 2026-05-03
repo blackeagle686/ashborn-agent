@@ -127,16 +127,32 @@ class AshbornViewProvider {
                 }
                 break;
             case "theme":
-                const lightTheme = "Visual Studio Light";
+                const lightTheme = "Default Light Modern";
                 const darkTheme = "Default Dark Modern";
                 const targetTheme = msg.isLight ? lightTheme : darkTheme;
                 const config = vscode.workspace.getConfiguration();
-                // 1. Clear any color customizations that might be overriding the theme
-                await config.update("workbench.colorCustomizations", {}, vscode.ConfigurationTarget.Global);
-                // 2. Apply the target theme globally
-                await config.update("workbench.colorTheme", targetTheme, vscode.ConfigurationTarget.Global);
-                console.log(`Ashborn: Theme toggled to "${targetTheme}". Color customizations cleared.`);
-                vscode.window.showInformationMessage(`Ashborn: Applied "${targetTheme}" and cleared overrides.`);
+                // 1. Clear all color and token customizations (Global + Workspace)
+                // This removes any hardcoded dark backgrounds or syntax overrides
+                const targets = [vscode.ConfigurationTarget.Global, vscode.ConfigurationTarget.Workspace];
+                for (const target of targets) {
+                    try {
+                        await config.update("workbench.colorCustomizations", {}, target);
+                        await config.update("editor.tokenColorCustomizations", {}, target);
+                    }
+                    catch (e) {
+                        // Silently ignore if target is not available (e.g. no workspace open)
+                    }
+                }
+                // 2. Apply theme to both Global and Workspace to ensure it wins the priority battle
+                for (const target of targets) {
+                    try {
+                        await config.update("workbench.colorTheme", targetTheme, target);
+                    }
+                    catch (e) { }
+                }
+                console.log(`Ashborn: Theme reset to "${targetTheme}". All overrides cleared.`);
+                // 3. Force a reload to ensure VS Code repaints everything correctly
+                await vscode.commands.executeCommand("workbench.action.reloadWindow");
                 break;
         }
     }
