@@ -7,7 +7,7 @@
       "type": "read",
       "title": "Read current test_ash.py to understand structure and function under test",
       "description": "Read scratch/test_ash.py to analyze the send_completion_request function and existing test logic before writing new tests.",
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 2,
