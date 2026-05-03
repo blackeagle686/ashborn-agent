@@ -70,6 +70,7 @@ async function activate(ctx) {
     ctx.subscriptions.push(vscode.languages.registerCodeActionsProvider([{ pattern: '**/*' }, { scheme: 'untitled' }], new codeActionProvider_1.AshbornCodeActionProvider(), { providedCodeActionKinds: codeActionProvider_1.AshbornCodeActionProvider.providedCodeActionKinds }));
     // Helper to run code actions
     const executeAction = async (actionStr, document, range) => {
+        vscode.window.showInformationMessage(`Ashborn: Starting ${actionStr}...`);
         let editor = vscode.window.activeTextEditor;
         if (!editor)
             return;
