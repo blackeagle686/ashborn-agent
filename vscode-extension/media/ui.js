@@ -137,9 +137,21 @@
   }
 
   // ── UI helpers ───────────────────────────────────────────────────────────────
-  function setStatus(state, label) {
+  function setStatus(state, label, role = null) {
     dotEl.className = `status-dot ${state}`;
     txtEl.textContent = label;
+    updateAgentHUD(role);
+  }
+
+  function updateAgentHUD(role) {
+    const units = document.querySelectorAll(".agent-unit");
+    units.forEach(u => {
+      if (u.dataset.role === role) {
+        u.classList.add("active");
+      } else {
+        u.classList.remove("active");
+      }
+    });
   }
 
   function scrollBottom() {
@@ -163,14 +175,17 @@
     scrollBottom();
   }
 
-  function startAgentMessage() {
+  function startAgentMessage(role = null) {
     removeWelcome();
     const msg = document.createElement("div");
     msg.className = "msg msg-agent";
+    if (role) msg.setAttribute("data-role", role);
+
     const bubble = document.createElement("div");
     bubble.className = "msg-bubble streaming";
 
-    msg.innerHTML = `<div class="msg-label">🔥 Ashborn</div>`;
+    const label = role ? role.charAt(0).toUpperCase() + role.slice(1) : "Ashborn";
+    msg.innerHTML = `<div class="msg-label">🔥 ${label}</div>`;
     msg.appendChild(bubble);
     chat.appendChild(msg);
     currentBubble = bubble;
@@ -179,8 +194,8 @@
     return bubble;
   }
 
-  function appendChunk(text) {
-    if (!currentBubble) startAgentMessage();
+  function appendChunk(text, role = null) {
+    if (!currentBubble) startAgentMessage(role);
     currentText += text;
     
     // Efficiently update HTML
@@ -539,21 +554,21 @@
 
       case "status":
         if (msg.state === "thinking") {
-          setStatus("thinking", msg.content ?? "Thinking…");
-          if (!currentBubble) startAgentMessage();
+          setStatus("thinking", msg.content ?? "Thinking…", msg.role);
+          if (!currentBubble) startAgentMessage(msg.role);
         } else if (msg.state === "executing") {
-          setStatus("executing", msg.content ?? "Executing…");
+          setStatus("executing", msg.content ?? "Executing…", msg.role);
           addStatusMsg(msg.content ?? "Executing…");
         } else if (msg.state === "idle") {
-          setStatus("idle", msg.content ?? "Idle");
+          setStatus("idle", msg.content ?? "Idle", null);
           removeStatusMsgs();
         } else if (msg.state === "error") {
-          setStatus("error", "Error");
+          setStatus("error", "Error", null);
         }
         break;
 
       case "chunk":
-        appendChunk(msg.content ?? "");
+        appendChunk(msg.content ?? "", msg.role);
         break;
 
       case "done":
