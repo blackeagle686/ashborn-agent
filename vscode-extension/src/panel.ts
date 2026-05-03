@@ -149,6 +149,10 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
   }
 
   // ── Send a message TO the WebView ─────────────────────────────────────────
+  public postMessage(msg: object) {
+    this._post(msg);
+  }
+
   private _post(msg: object) {
     this._view?.webview.postMessage(msg);
   }
