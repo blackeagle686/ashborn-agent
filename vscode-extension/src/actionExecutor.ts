@@ -109,14 +109,62 @@ export class ActionExecutor {
     }
   }
 
-  async runCommand(command: string): Promise<void> {
-    let terminal = vscode.window.terminals.find(
-      (t) => t.name === "Ashborn Agent"
-    );
-    if (!terminal) {
-      terminal = vscode.window.createTerminal("Ashborn Agent");
-    }
-    terminal.show(true);
-    terminal.sendText(command);
+  private _terminal: vscode.Terminal | undefined;
+  private _terminalWriteEmitter = new vscode.EventEmitter<string>();
+
+  async terminalRun(command: string): Promise<string> {
+    return new Promise((resolve) => {
+      let output = "";
+      
+      if (!this._terminal) {
+        const pty: vscode.Pseudoterminal = {
+          onDidWrite: this._terminalWriteEmitter.event,
+          open: () => {},
+          close: () => { this._terminal = undefined; },
+          handleInput: (data) => {
+            // Future: handle user input to process
+            this._terminalWriteEmitter.fire(data);
+          }
+        };
+        this._terminal = vscode.window.createTerminal({
+          name: "Ashborn Terminal",
+          pty
+        });
+      }
+
+      this._terminal.show(true);
+      this._terminalWriteEmitter.fire(`\r\n\x1b[35m$ ${command}\x1b[0m\r\n`);
+
+      const cp = require("child_process");
+      const wsRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+      
+      const child = cp.spawn(command, {
+        shell: true,
+        cwd: wsRoot
+      });
+
+      child.stdout.on("data", (data: Buffer) => {
+        const str = data.toString();
+        output += str;
+        // Convert LF to CRLF for terminal display
+        this._terminalWriteEmitter.fire(str.replace(/\n/g, "\r\n"));
+      });
+
+      child.stderr.on("data", (data: Buffer) => {
+        const str = data.toString();
+        output += str;
+        this._terminalWriteEmitter.fire(`\x1b[31m${str.replace(/\n/g, "\r\n")}\x1b[0m`);
+      });
+
+      child.on("close", (code: number) => {
+        this._terminalWriteEmitter.fire(`\r\n\x1b[32m[Process exited with code ${code}]\x1b[0m\r\n`);
+        resolve(output || (code === 0 ? "Command executed successfully." : `Command failed with code ${code}`));
+      });
+
+      child.on("error", (err: Error) => {
+        this._terminalWriteEmitter.fire(`\r\n\x1b[31m[Error: ${err.message}]\x1b[0m\r\n`);
+        resolve(`ERROR: ${err.message}`);
+      });
+    });
   }
 }
