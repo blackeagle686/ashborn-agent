@@ -119,6 +119,47 @@
       "metadata": {
         "model": "ashborn-generator"
       }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 7,
+      "artifacts": [
+        {
+          "type": "file_write",
+          "path": "test_calc.py",
+          "language": "python",
+          "code": "def factorial(n):\n    if n == 0 or n == 1:\n        return 1\n    else:\n        return n * factorial(n - 1)\n\n# Test case\ndef test_factorial():\n    assert factorial(5) == 120\n\nif __name__ == \"__main__\":\n    test_factorial()\n    print(\"Test passed!\")"
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 8,
+      "artifacts": [],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 9,
+      "artifacts": [
+        {
+          "type": "terminal",
+          "path": ".",
+          "language": "bash",
+          "code": "python test_calc.py"
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
     }
   ]
 }
