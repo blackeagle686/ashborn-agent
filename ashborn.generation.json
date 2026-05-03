@@ -1,0 +1,68 @@
+{
+  "generation_blocks": [
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 1,
+      "artifacts": [
+        {
+          "type": "terminal",
+          "path": "/workspace",
+          "language": "bash",
+          "code": "mkdir scratch_test"
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 1,
+      "artifacts": [
+        {
+          "type": "terminal",
+          "path": "/app",
+          "language": "bash",
+          "code": "mkdir scratch_test"
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 2,
+      "artifacts": [
+        {
+          "type": "file_write",
+          "path": "scratch_test/calc.py",
+          "language": "python",
+          "code": "def factorial(n):\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result\n\nif __name__ == \"__main__\":\n    print(factorial(5))"
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 2,
+      "artifacts": [
+        {
+          "type": "file_write",
+          "path": "/app/scratch_test/calc.py",
+          "language": "python",
+          "code": "def factorial(n):\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result\n\nif __name__ == \"__main__\":\n    print(factorial(5))"
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    }
+  ]
+}

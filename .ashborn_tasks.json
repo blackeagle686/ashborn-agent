@@ -7,7 +7,7 @@
       "type": "command",
       "title": "Create scratch_test directory",
       "description": "Run 'mkdir scratch_test' to create the directory where calc.py will be placed.",
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 2,
@@ -15,7 +15,7 @@
       "type": "new_file",
       "title": "Create calc.py with factorial function",
       "description": "Inside the scratch_test folder, create a file named calc.py containing a Python function that calculates the factorial of 5 and prints the result.",
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 3,
