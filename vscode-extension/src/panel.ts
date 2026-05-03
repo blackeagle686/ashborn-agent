@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
 import { AgentClient } from "./agentClient";
-import { ContextCollector } from "./contextCollector";
+import { ContextManager } from "./contextManager";
 import { LoopController } from "./loopController";
 
 export class AshbornViewProvider implements vscode.WebviewViewProvider {
@@ -15,7 +15,7 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
   constructor(
     private readonly _extensionUri: vscode.Uri,
     private readonly _client: AgentClient,
-    private readonly _ctx: ContextCollector
+    private readonly _ctx: ContextManager
   ) {
     this._loop = new LoopController(_client, _ctx);
   }
