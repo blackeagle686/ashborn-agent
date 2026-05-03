@@ -133,6 +133,9 @@ class LoopController {
         if (tool === "delete_file") {
             return await this._executor.deleteFile(args.path);
         }
+        if (tool === "terminal_run") {
+            return await this._executor.terminalRun(args.command);
+        }
         return `ERROR: Unknown VS Code tool: ${tool}`;
     }
     async _openFileInEditor(filePath) {
