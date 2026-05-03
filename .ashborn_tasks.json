@@ -7,7 +7,7 @@
       "type": "modify_file",
       "title": "Update timeout value from 10 to 5 seconds",
       "description": "In scratch/test_completion.py, change the timeout parameter in the requests.post call from 10 to 5 seconds for better responsiveness.",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 2,

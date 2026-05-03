@@ -18,7 +18,7 @@ def send_completion_request(file_path, content_before, content_after):
         "content_after": content_after
     }
     try:
-        res = requests.post("http://127.0.0.1:8765/completion", json=data, timeout=10)
+        res = requests.post("http://127.0.0.1:8765/completion", json=data, timeout=5)
         res.raise_for_status()
         return res.json()
     except requests.exceptions.RequestException as e:
