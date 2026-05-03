@@ -77,6 +77,8 @@ Goal: Debug visibility
 
 Log context on every update:
 console.log("CTX:", context);
+
+
 🔹 Phase 2: Open Files Tracking
 ✅ Task 2.1 — Get Open Editors
 
