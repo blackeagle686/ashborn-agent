@@ -80,7 +80,16 @@ export async function activate(ctx: vscode.ExtensionContext) {
       title: `Ashborn: Executing ${actionStr}...`,
       cancellable: false
     }, async (progress) => {
-      try {
+        if (actionStr === "explain") {
+          // Ensure sidebar is visible
+          await vscode.commands.executeCommand('workbench.view.extension.ashborn-sidebar');
+          await vscode.commands.executeCommand('ashborn.chatView.focus');
+          
+          // Show the user message and thinking state immediately
+          _provider.postMessage({ type: "user_message", content: `Explain selected code in ${path.basename(doc.uri.fsPath)}:` });
+          _provider.postMessage({ type: "status", state: "thinking", content: "Ashborn is analyzing your code..." });
+        }
+
         const result = await client.executeCodeAction(
           actionStr,
           doc.uri.fsPath,
@@ -94,15 +103,6 @@ export async function activate(ctx: vscode.ExtensionContext) {
         }
 
         if (actionStr === "explain") {
-          // Ensure sidebar is visible
-          await vscode.commands.executeCommand('workbench.view.extension.ashborn-sidebar');
-          await vscode.commands.executeCommand('ashborn.chatView.focus');
-
-          // Wait a bit for webview to be ready if it was just opened
-          await new Promise(resolve => setTimeout(resolve, 500));
-
-          _provider.postMessage({ type: "user_message", content: `Explain selected code in ${path.basename(doc.uri.fsPath)}:` });
-          _provider.postMessage({ type: "status", state: "thinking", content: "Generating explanation..." });
           _provider.postMessage({ type: "chunk", content: result });
           _provider.postMessage({ type: "done" });
         } else {
