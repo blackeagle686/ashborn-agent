@@ -35,6 +35,12 @@
   const btnCloseContext = document.getElementById("btn-close-context");
   const contextDataEl   = document.getElementById("context-data");
 
+  const sidebarTabs = document.querySelectorAll(".tab-btn");
+  const viewContainers = document.querySelectorAll(".view-container");
+  const historyList = document.getElementById("history-list");
+  const explorerList = document.getElementById("explorer-list");
+  const templateGrid = document.getElementById("template-grid");
+
   // ── Voice / TTS refs ──────────────────────────────────────────────────────────
   const btnMic          = document.getElementById("btn-mic");
   const listeningOverlay = document.getElementById("listening-overlay");
@@ -329,10 +335,126 @@
   function sendMessage() {
     const task = input.value.trim();
     if (!task || isStreaming) return;
+    saveToHistory(task);
     input.value = "";
     setInputEnabled(false);
     setStatus("thinking", "Thinking…");
     vscode.postMessage({ type: "send", task, mode: currentMode });
+  }
+
+  // ── Tab Switching ────────────────────────────────────────────────────────────
+  sidebarTabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      const viewId = tab.dataset.view;
+      
+      // Update active tab
+      sidebarTabs.forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      
+      // Update active view
+      viewContainers.forEach(v => {
+        if (v.id === `view-${viewId}`) {
+          v.style.display = "flex";
+          v.classList.add("active");
+        } else {
+          v.style.display = "none";
+          v.classList.remove("active");
+        }
+      });
+
+      // Special logic for views
+      if (viewId === "history") renderHistory();
+      if (viewId === "explorer") vscode.postMessage({ type: "getFiles" });
+      if (viewId === "templates") renderTemplates();
+    });
+  });
+
+  // ── Task History ─────────────────────────────────────────────────────────────
+  function saveToHistory(task) {
+    let history = JSON.parse(localStorage.getItem("ashborn_history") || "[]");
+    // Don't save duplicates at the top
+    if (history[0] === task) return;
+    history.unshift(task);
+    history = history.slice(0, 50); // Keep last 50
+    localStorage.setItem("ashborn_history", JSON.stringify(history));
+  }
+
+  function renderHistory() {
+    const history = JSON.parse(localStorage.getItem("ashborn_history") || "[]");
+    if (history.length === 0) {
+      historyList.innerHTML = '<div class="empty-state">No history yet. Send your first task!</div>';
+      return;
+    }
+
+    historyList.innerHTML = "";
+    history.forEach((task, i) => {
+      const item = document.createElement("div");
+      item.className = "history-item";
+      item.innerHTML = `
+        <div class="history-item-title">${escapeHtml(task)}</div>
+        <div class="history-item-meta">
+          <span>Task #${history.length - i}</span>
+          <span>Click to reuse</span>
+        </div>
+      `;
+      item.onclick = () => {
+        input.value = task;
+        input.focus();
+        input.dispatchEvent(new Event("input"));
+        // Switch back to chat
+        document.querySelector('[data-view="chat"]').click();
+      };
+      historyList.appendChild(item);
+    });
+  }
+
+  // ── Explorer View ────────────────────────────────────────────────────────────
+  function renderExplorer(files) {
+    if (!files || files.length === 0) {
+      explorerList.innerHTML = '<div class="empty-state">No files found.</div>';
+      return;
+    }
+
+    explorerList.innerHTML = "";
+    files.forEach(file => {
+      const item = document.createElement("div");
+      item.className = "explorer-item";
+      const icon = file.endsWith("/") ? "📁" : "📄";
+      item.innerHTML = `<span class="explorer-icon">${icon}</span><span>${file}</span>`;
+      item.onclick = () => {
+        vscode.postMessage({ type: "openFile", path: file });
+      };
+      explorerList.appendChild(item);
+    });
+  }
+
+  // ── Templates View ───────────────────────────────────────────────────────────
+  const TEMPLATES = [
+    { icon: "🐞", title: "Fix Bugs", desc: "Scan current file for bugs and apply fixes.", prompt: "Find and fix bugs in the current file." },
+    { icon: "🏗️", title: "Refactor", desc: "Improve code structure and readability.", prompt: "Refactor the selected code for better maintainability." },
+    { icon: "🧪", title: "Add Tests", desc: "Generate unit tests for this module.", prompt: "Write comprehensive unit tests for the current file." },
+    { icon: "🛡️", title: "Security Audit", desc: "Audit code for vulnerabilities.", prompt: "Perform a security audit on this file and fix any issues found." },
+    { icon: "📝", title: "Add Docs", desc: "Generate JSDoc/Docstrings.", prompt: "Add detailed documentation (comments/docstrings) to the current file." }
+  ];
+
+  function renderTemplates() {
+    templateGrid.innerHTML = "";
+    TEMPLATES.forEach(tmp => {
+      const card = document.createElement("div");
+      card.className = "template-card";
+      card.innerHTML = `
+        <div class="template-card-icon">${tmp.icon}</div>
+        <div class="template-card-title">${tmp.title}</div>
+        <div class="template-card-desc">${tmp.desc}</div>
+      `;
+      card.onclick = () => {
+        input.value = tmp.prompt;
+        input.focus();
+        input.dispatchEvent(new Event("input"));
+        document.querySelector('[data-view="chat"]').click();
+      };
+      templateGrid.appendChild(card);
+    });
   }
 
   // ── File-link click handler (delegated) ──────────────────────────────────────
@@ -588,6 +710,7 @@
 
       case "files":
         allFiles = msg.files || [];
+        renderExplorer(allFiles);
         // Trigger a re-filter if already typing
         input.dispatchEvent(new Event('input'));
         break;
