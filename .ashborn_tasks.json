@@ -7,7 +7,7 @@
       "type": "command",
       "title": "Create scratch_test directory",
       "description": "Run 'mkdir -p scratch_test' to create the 'scratch_test' folder if it does not already exist.",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 2,
