@@ -8,7 +8,7 @@
       "title": "Create math_utils/__init__.py",
       "description": "Create the __init__.py file inside the math_utils directory to mark it as a Python package. Leave it empty or add a docstring if desired.",
       "dependencies": [],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 2,
