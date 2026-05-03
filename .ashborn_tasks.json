@@ -23,7 +23,7 @@
       "type": "modify_file",
       "title": "Update test_ash.py to use environment variables securely",
       "description": "Modify scratch/test_ash.py to load the Authorization header from os.getenv('ASHBORN_API_KEY') instead of hardcoded 'your-api-key-here', and add basic input validation for url and payload parameters.",
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 4,
