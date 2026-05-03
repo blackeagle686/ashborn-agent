@@ -1,0 +1,13 @@
+{
+  "original_prompt": "delete this file @test_completion.py",
+  "tasks": [
+    {
+      "id": 1,
+      "priority": 1,
+      "type": "command",
+      "title": "Delete test_completion.py file",
+      "description": "Remove the file at scratch/test_completion.py using rm command",
+      "status": "pending"
+    }
+  ]
+}
