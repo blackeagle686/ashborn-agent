@@ -2,6 +2,7 @@ import * as http from "http";
 
 export type AgentEvent = {
   type: "session" | "status" | "chunk" | "done" | "error" | "vscode_tool";
+  role?: "thinker" | "planner" | "actor" | "reflector" | "analyzer";
   content?: string;
   session_id?: string;
   tool?: string;
