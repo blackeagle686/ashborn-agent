@@ -1,0 +1,36 @@
+{
+  "generation_blocks": [
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 1,
+      "artifacts": [
+        {
+          "type": "terminal",
+          "path": ".",
+          "language": "bash",
+          "code": "mkdir scratch_test"
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 1,
+      "artifacts": [
+        {
+          "type": "terminal",
+          "path": ".",
+          "language": "bash",
+          "code": "mkdir scratch_test"
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    }
+  ]
+}

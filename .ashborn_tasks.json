@@ -7,7 +7,7 @@
       "type": "command",
       "title": "Create scratch_test directory",
       "description": "Execute 'mkdir scratch_test' to create the directory where the Python script will be placed.",
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 2,
