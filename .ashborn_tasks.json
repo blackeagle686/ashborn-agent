@@ -1,0 +1,32 @@
+{
+  "original_prompt": "Create a new python package called 'math_utils'. It must contain an __init__.py, a calc.py with a factorial function, and a test_calc.py that asserts factorial(5) == 120. Please generate them together in one pass.",
+  "tasks": [
+    {
+      "id": 1,
+      "priority": 1,
+      "type": "new_file",
+      "title": "Create math_utils/__init__.py",
+      "description": "Create the __init__.py file inside the math_utils directory to mark it as a Python package. Leave it empty or add a docstring if desired.",
+      "dependencies": [],
+      "status": "pending"
+    },
+    {
+      "id": 2,
+      "priority": 1,
+      "type": "new_file",
+      "title": "Create math_utils/calc.py with factorial function",
+      "description": "Create calc.py inside the math_utils directory containing a function named factorial(n) that computes the factorial of n using a simple iterative approach.",
+      "dependencies": [],
+      "status": "pending"
+    },
+    {
+      "id": 3,
+      "priority": 1,
+      "type": "new_file",
+      "title": "Create math_utils/test_calc.py",
+      "description": "Create test_calc.py inside the math_utils directory containing a test that imports factorial from calc and asserts factorial(5) == 120.",
+      "dependencies": [],
+      "status": "pending"
+    }
+  ]
+}
