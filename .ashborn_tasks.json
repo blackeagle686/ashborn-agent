@@ -39,7 +39,7 @@
       "type": "modify_file",
       "title": "Add test for URL injection vulnerability",
       "description": "Create a test case that attempts to pass a malicious URL (e.g., file:// or javascript:) in base_url and verify the function either sanitizes it or raises an appropriate exception.",
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 6,
