@@ -184,7 +184,7 @@ debug tab in your WebView
 
 -------------------------------------
 
-4. File System Manipulation ()
+4. File System Manipulation (DONE 🚀)
 
 Description:
 The system shall allow the agent to create, edit, and delete files.
@@ -201,7 +201,7 @@ The system shall validate file paths before execution.
 
 -------------------------------------
 
-5. Command Palette Integration
+5. Command Palette Integration (DONE 🚀)
 
 Description:
 The system shall expose agent capabilities via VS Code command palette.
