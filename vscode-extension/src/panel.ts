@@ -108,22 +108,30 @@ export class AshbornViewProvider implements vscode.WebviewViewProvider {
           // silently ignore — file might not exist yet
         }
         break;
-         case "theme":
-            const lightTheme = "Default Light Modern";
-            const darkTheme = "Default Dark Modern";
+      case "theme":
+        const lightTheme = "Visual Studio Light";
+        const darkTheme = "Default Dark Modern";
+        const targetTheme = msg.isLight ? lightTheme : darkTheme;
 
-            const targetTheme = msg.isLight ? lightTheme : darkTheme;
+        const config = vscode.workspace.getConfiguration();
 
-            await vscode.workspace.getConfiguration("workbench").update(
-              "colorTheme",
-              targetTheme,
-              vscode.ConfigurationTarget.Global
-            );
+        // 1. Clear any color customizations that might be overriding the theme
+        await config.update(
+          "workbench.colorCustomizations",
+          {},
+          vscode.ConfigurationTarget.Global
+        );
 
-            vscode.window.showInformationMessage(
-              `Ashborn: Applied theme → "${targetTheme}"`
-            );
-            break;
+        // 2. Apply the target theme globally
+        await config.update(
+          "workbench.colorTheme",
+          targetTheme,
+          vscode.ConfigurationTarget.Global
+        );
+
+        console.log(`Ashborn: Theme toggled to "${targetTheme}". Color customizations cleared.`);
+        vscode.window.showInformationMessage(`Ashborn: Applied "${targetTheme}" and cleared overrides.`);
+        break;
     }
   }
 
