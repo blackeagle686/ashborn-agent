@@ -203,6 +203,14 @@ The system shall validate file paths before execution.
 
 5. Command Palette Integration (DONE 🚀)
 
+## Note: 
+✅ Refactor Code: Applies refactoring changes
+✅ Optimize Code: Applies performance optimizations
+✅ Fix Bugs: Fixes reported bugs
+✅ Fix Error at Cursor: Fixes errors at cursor position
+✅ Generate Tests: Generates unit tests for current file
+✅ Secure Code: Audits and secures code
+
 Description:
 The system shall expose agent capabilities via VS Code command palette.
 
