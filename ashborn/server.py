@@ -74,6 +74,12 @@ class CompletionRequest(BaseModel):
     content_before: str
     content_after: str
 
+class CodeActionRequest(BaseModel):
+    action: str
+    file_path: str
+    selected_text: str
+    full_text: str
+
 # ── Routes ────────────────────────────────────────────────────────────────────
 @app.get("/health")
 async def health():
@@ -206,6 +212,49 @@ Context after cursor:
         return {"status": "ok", "completion": clean}
     except Exception as e:
         log.error(f"Completion failed: {e}")
+        return {"status": "error", "message": str(e)}
+
+@app.post("/code_action")
+async def code_action(req: CodeActionRequest):
+    """Process context menu AI code actions."""
+    llm = await _get_completion_llm()
+    if not llm:
+        return {"status": "error", "message": "LLM not available."}
+
+    action_prompts = {
+        "explain": "Explain what this code does in a concise, technical manner. Do not provide code blocks, just explain.",
+        "refactor": "Refactor this code to improve readability and maintainability. Return ONLY the new code snippet, with NO markdown formatting.",
+        "optimize": "Optimize this code for performance. Return ONLY the new code snippet, with NO markdown formatting.",
+        "fix": "Fix any bugs or issues in this code. Return ONLY the new code snippet, with NO markdown formatting."
+    }
+    
+    instruction = action_prompts.get(req.action, "Process this code.")
+    
+    prompt = f"""You are an elite AI developer agent.
+{instruction}
+
+File: {req.file_path}
+
+Context:
+{req.full_text[:3000]}
+
+Selected Code:
+{req.selected_text}
+"""
+    try:
+        response = await llm.generate(prompt, max_tokens=1000)
+        clean = response.strip()
+        
+        # Strip markdown if it's a code-returning action
+        if req.action in ["refactor", "optimize", "fix"]:
+            if clean.startswith("```"):
+                clean = "\n".join(clean.split("\n")[1:])
+            if clean.endswith("```"):
+                clean = "\n".join(clean.split("\n")[:-1])
+                
+        return {"status": "ok", "result": clean.strip()}
+    except Exception as e:
+        log.error(f"Code action failed: {e}")
         return {"status": "error", "message": str(e)}
 
 
