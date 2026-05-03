@@ -1362,3 +1362,36 @@ html, body {
   height: 20px;
   object-fit: contain;
 }
+
+/* ── Context Panel (Debug) ─────────────────────────────────── */
+.context-panel {
+  max-height: 90vh;
+  z-index: 1001;
+}
+
+.context-info {
+  font-size: 11px;
+  color: var(--fg-muted);
+  margin-bottom: 10px;
+}
+
+.context-data {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Menlo', 'Consolas', monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--fg-main);
+  overflow: auto;
+  max-height: 60vh;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Light mode overrides for context data */
+body.vscode-light .context-data {
+  background: #f5f5f5;
+  color: #333;
+}
