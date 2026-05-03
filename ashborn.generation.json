@@ -15,6 +15,55 @@
       "metadata": {
         "model": "ashborn-generator"
       }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 2,
+      "artifacts": [],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 3,
+      "artifacts": [],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 4,
+      "artifacts": [
+        {
+          "type": "file_update_multi",
+          "path": "calc.py",
+          "language": "python",
+          "edits": [
+            {
+              "AllowMultiple": false,
+              "StartLine": 2,
+              "EndLine": 2,
+              "TargetContent": "    if n == 0 or n == 1:",
+              "ReplacementContent": "    if n < 0:\n        raise ValueError('Factorial is not defined for negative numbers')\n    if n == 0 or n == 1:"
+            },
+            {
+              "AllowMultiple": false,
+              "StartLine": 9,
+              "EndLine": 10,
+              "TargetContent": "if __name__ == \"__main__\":\n    print(factorial(5))",
+              "ReplacementContent": "if __name__ == \"__main__\":\n    # Test the factorial function\n    test_values = [-1, 0, 1, 5, 10]\n    for val in test_values:\n        try:\n            result = factorial(val)\n            print(f\"factorial({val}) = {result}\")\n        except ValueError as e:\n            print(f\"factorial({val}) = Error: {e}\")"
+            }
+          ]
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
     }
   ]
 }
