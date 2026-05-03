@@ -74,27 +74,37 @@
         "title": "Ashborn: Fix Bugs"
       }
     ],
+    "submenus": [
+      {
+        "id": "ashborn.actions",
+        "label": "Ashborn AI",
+        "icon": "$(flame)"
+      }
+    ],
     "menus": {
       "editor/context": [
         {
-          "command": "ashborn.action.explain",
-          "group": "ashborn@1",
+          "submenu": "ashborn.actions",
+          "group": "navigation@99",
           "when": "editorHasSelection"
+        }
+      ],
+      "ashborn.actions": [
+        {
+          "command": "ashborn.action.explain",
+          "group": "1_actions@1"
         },
         {
           "command": "ashborn.action.refactor",
-          "group": "ashborn@2",
-          "when": "editorHasSelection"
+          "group": "1_actions@2"
         },
         {
           "command": "ashborn.action.optimize",
-          "group": "ashborn@3",
-          "when": "editorHasSelection"
+          "group": "1_actions@3"
         },
         {
           "command": "ashborn.action.fix",
-          "group": "ashborn@4",
-          "when": "editorHasSelection"
+          "group": "1_actions@4"
         }
       ]
     },
