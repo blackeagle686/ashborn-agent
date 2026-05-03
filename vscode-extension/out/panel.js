@@ -73,7 +73,7 @@ class AshbornViewProvider {
     async _onMessage(msg) {
         switch (msg.type) {
             case "send":
-                await this._runAgent(msg.task, msg.mode ?? "auto");
+                await this.runAgent(msg.task, msg.mode ?? "auto");
                 break;
             case "stop":
                 this.stop();
@@ -160,7 +160,7 @@ class AshbornViewProvider {
         }
     }
     // ── Send a task to the agent loop ─────────────────────────────────────────
-    async _runAgent(task, mode) {
+    async runAgent(task, mode) {
         if (this._loop.isRunning) {
             vscode.window.showWarningMessage("Ashborn is already running. Stop it first.");
             return;
