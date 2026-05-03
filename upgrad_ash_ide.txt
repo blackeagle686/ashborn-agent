@@ -389,6 +389,9 @@ Enable full visibility into agent decisions and outputs.
 Easier debugging
 Full traceability
 Foundation for future optimization
+
+===================================================
+
 ⚙️ Phase 2: Generator v2 (Structured Code Generation)
 🎯 Goal
 
