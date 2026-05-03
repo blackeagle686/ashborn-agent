@@ -1,18 +1,28 @@
 import json
+import os
 import re
+import threading
 
 # ── Task file path ─────────────────────────────────────────────────────────────
 TASK_FILE = ".ashborn_tasks.json"
+_task_lock = threading.Lock()
 
 # ── Task file helpers ──────────────────────────────────────────────────────────
 
 def _load_tasks() -> dict:
-    with open(TASK_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+    with _task_lock:
+        if not os.path.exists(TASK_FILE):
+            return {"tasks": []}
+        try:
+            with open(TASK_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {"tasks": []}
 
 def _save_tasks(data: dict) -> None:
-    with open(TASK_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    with _task_lock:
+        with open(TASK_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
 
 def _mark_task(task_id: int, status: str) -> None:
     data = _load_tasks()

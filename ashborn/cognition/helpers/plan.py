@@ -1,20 +1,24 @@
 import json
 import os
+import threading
 
 PLAN_FILE = "ashborn.plan.json"
+_plan_lock = threading.Lock()
 
 def _load_plan() -> dict:
-    if not os.path.exists(PLAN_FILE):
-        return {"plan_steps": []}
-    try:
-        with open(PLAN_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return {"plan_steps": []}
+    with _plan_lock:
+        if not os.path.exists(PLAN_FILE):
+            return {"plan_steps": []}
+        try:
+            with open(PLAN_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {"plan_steps": []}
 
 def _save_plan(data: dict) -> None:
-    with open(PLAN_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    with _plan_lock:
+        with open(PLAN_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
 
 def _mark_plan_step(step_id: int, status: str) -> None:
     data = _load_plan()
