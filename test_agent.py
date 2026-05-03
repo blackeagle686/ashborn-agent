@@ -1,0 +1,54 @@
+import asyncio
+import os
+from dotenv import load_dotenv
+
+# Load API keys from .env
+load_dotenv()
+
+from ashborn.agent import get_ashborn_agent
+from phoenix.framework.memory.local_memory import LocalMemory
+
+async def main():
+    print("========================================")
+    print("🚀 Initializing Ashborn Agent Test")
+    print("========================================\n")
+    
+    agent = await get_ashborn_agent()
+    memory = LocalMemory()
+    session_id = "test-plan-mode-101"
+    
+    prompt = "Create a new folder called 'scratch_test', inside it create a file 'calc.py' with a function that calculates factorial of 5 and prints it. Then run the python script using terminal."
+    
+    print(f"[USER PROMPT]: {prompt}\n")
+    print("⏳ Running agent in FULL PLAN MODE...\n")
+    
+    try:
+        # Agent.run_stream abstracts away the session & memory and uses AshbornLoop.run_stream internally.
+        # But wait, Phoenix's Agent.run_stream might take (prompt, mode="auto")
+        # Let's pass memory and session_id explicitly if using loop directly, but using Agent is cleaner:
+        async for chunk in agent.run_stream(prompt, mode="plan"):
+            ctype = chunk.get("type")
+            role = chunk.get("role", "SYSTEM").upper()
+            content = chunk.get("content", "")
+            
+            if ctype == "status":
+                print(f"\n[{role} STATUS] => {content}")
+            elif ctype == "chunk":
+                # Print streaming text immediately
+                print(content, end="", flush=True)
+            elif ctype == "thought":
+                print(f"\n[{role} THOUGHT] => {content}")
+            else:
+                print(f"\n[EVENT: {ctype}] => {content}")
+                
+    except Exception as e:
+        print(f"\n[ERROR] => {e}")
+        import traceback
+        traceback.print_exc()
+        
+    print("\n\n========================================")
+    print("✅ Test Complete!")
+    print("========================================")
+
+if __name__ == "__main__":
+    asyncio.run(main())
