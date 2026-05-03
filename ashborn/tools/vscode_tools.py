@@ -27,3 +27,58 @@ async def vscode_search_tool(query: str, is_regex: bool = False, include: str = 
     })
     
     return result
+@tool(
+    name="vscode_create_file",
+    description=(
+        "Creates a new file in the workspace with the specified content. "
+        "Input: 'path' (str), 'content' (str). "
+        "Returns a success message or an error."
+    )
+)
+async def vscode_create_file_tool(path: str, content: str, **context) -> str:
+    """
+    Creates a file by calling back into the VS Code extension.
+    """
+    from ashborn.server import vscode_ipc_context
+    vscode_call = vscode_ipc_context.get()
+    if not vscode_call:
+        return "ERROR: VS Code communication bridge not available."
+    return await vscode_call("create_file", {"path": path, "content": content})
+
+@tool(
+    name="vscode_edit_file",
+    description=(
+        "Updates an existing file in the workspace with new content. "
+        "The user will be prompted to review a diff before applying. "
+        "Input: 'path' (str), 'content' (str). "
+        "Returns a success message, 'REJECTED', or an error."
+    )
+)
+async def vscode_edit_file_tool(path: str, content: str, **context) -> str:
+    """
+    Edits a file by calling back into the VS Code extension (shows diff).
+    """
+    from ashborn.server import vscode_ipc_context
+    vscode_call = vscode_ipc_context.get()
+    if not vscode_call:
+        return "ERROR: VS Code communication bridge not available."
+    return await vscode_call("edit_file", {"path": path, "content": content})
+
+@tool(
+    name="vscode_delete_file",
+    description=(
+        "Deletes a file or directory in the workspace. "
+        "The user will be prompted for confirmation. "
+        "Input: 'path' (str). "
+        "Returns a success message, 'REJECTED', or an error."
+    )
+)
+async def vscode_delete_file_tool(path: str, **context) -> str:
+    """
+    Deletes a file by calling back into the VS Code extension (requires confirmation).
+    """
+    from ashborn.server import vscode_ipc_context
+    vscode_call = vscode_ipc_context.get()
+    if not vscode_call:
+        return "ERROR: VS Code communication bridge not available."
+    return await vscode_call("delete_file", {"path": path})
