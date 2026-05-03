@@ -31,7 +31,23 @@ ICON_PATH    = os.path.join(SCRIPT_DIR, "vscode-extension", "media", "ashborn.pn
 POLL_INTERVAL = 1.5  # seconds
 
 # Target directory to open
-TARGET_DIR = sys.argv[1] if len(sys.argv) > 1 else SCRIPT_DIR
+# 1. Use the environment variable passed from launch_ashborn.sh if available
+# 2. Otherwise use the CLI argument
+# 3. Fallback to current directory
+USER_CWD = os.environ.get("ASHBORN_WORKSPACE_ROOT", os.getcwd())
+
+if len(sys.argv) > 1:
+    arg_dir = sys.argv[1]
+    # Resolve '.' or relative paths against the USER_CWD
+    if not os.path.isAbsolute(arg_dir):
+        TARGET_DIR = os.path.abspath(os.path.join(USER_CWD, arg_dir))
+    else:
+        TARGET_DIR = arg_dir
+else:
+    TARGET_DIR = USER_CWD
+
+if not os.path.isdir(TARGET_DIR):
+    TARGET_DIR = SCRIPT_DIR
 
 # The exact binary and flags used by the original launcher
 VSCODE_CMD = [
@@ -341,7 +357,7 @@ def start_server():
     env["PYTHONPATH"] = SCRIPT_DIR
     proc = subprocess.Popen(
         SERVER_CMD,
-        cwd=SCRIPT_DIR,
+        cwd=TARGET_DIR,  # Start server in the target workspace
         env=env,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
