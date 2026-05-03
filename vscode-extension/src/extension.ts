@@ -60,6 +60,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
 
   // Helper to run code actions
   const executeAction = async (actionStr: string, document?: vscode.TextDocument, range?: vscode.Range | vscode.Selection) => {
+    vscode.window.showInformationMessage(`Ashborn: Starting ${actionStr}...`);
     let editor = vscode.window.activeTextEditor;
     if (!editor) return;
     
