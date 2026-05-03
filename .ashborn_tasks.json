@@ -7,7 +7,7 @@
       "type": "command",
       "title": "Create scratch_test directory",
       "description": "Run 'mkdir scratch_test' to create the directory where calc.py will be placed.",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 2,
