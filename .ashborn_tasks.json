@@ -15,7 +15,7 @@
       "type": "new_file",
       "title": "Create comprehensive unit test file for test_ash.py",
       "description": "Create a new file scratch/test_ash_unit.py containing full unit tests for the send_completion_request function using unittest or pytest framework. Include tests for: valid request success, invalid URL handling, empty payload, missing API key, network errors (timeout, connection error), HTTP error responses (4xx/5xx), invalid JSON response, and environment variable loading.",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 3,
