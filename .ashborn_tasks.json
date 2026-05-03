@@ -7,7 +7,7 @@
       "type": "new_file",
       "title": "Create project directory structure",
       "description": "Create a 'wallet-frontend' folder inside the .ashborn-focus directory to serve as the root of the frontend application.",
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 2,
