@@ -12,7 +12,7 @@ export interface Context {
     cursorLine: number;
     cursorCharacter: number;
   };
-  fileTree?: string[];
+  fileTree?: string;
   diagnostics?: {
     file: string;
     message: string;
@@ -87,8 +87,8 @@ ${ctx.activeFile.content.slice(0, 2000)}`);
       parts.push(`[Git Diff]\n${ctx.gitDiff.slice(0, 3000)}`);
     }
 
-    if (ctx.fileTree && ctx.fileTree.length > 0) {
-      parts.push(`[File Structure]\n${ctx.fileTree.join("\n")}`);
+    if (ctx.fileTree) {
+      parts.push(`[File Structure]\n${ctx.fileTree}`);
     }
 
     return parts.join("\n\n---\n\n");
@@ -133,9 +133,36 @@ ${ctx.activeFile.content.slice(0, 2000)}`);
     return errors.slice(0, 20); // Cap at 20 most important diagnostics
   }
 
-  private async _getFileTree(): Promise<string[]> {
-    const files = await vscode.workspace.findFiles("**/*", "**/node_modules/**", 100);
-    return files.map(f => vscode.workspace.asRelativePath(f));
+  private async _getFileTree(): Promise<string> {
+    const files = await vscode.workspace.findFiles("**/*", "**/node_modules/**", 150);
+    const paths = files.map(f => vscode.workspace.asRelativePath(f));
+    return this._buildTreeString(paths);
+  }
+
+  private _buildTreeString(paths: string[]): string {
+    const tree: any = {};
+    paths.forEach(p => {
+      const parts = p.split("/");
+      let current = tree;
+      parts.forEach(part => {
+        if (!current[part]) current[part] = {};
+        current = current[part];
+      });
+    });
+
+    const render = (node: any, indent: string = ""): string => {
+      let result = "";
+      const keys = Object.keys(node).sort();
+      keys.forEach((key, i) => {
+        const isLast = i === keys.length - 1;
+        const connector = isLast ? "└── " : "├── ";
+        result += `${indent}${connector}${key}\n`;
+        result += render(node[key], indent + (isLast ? "    " : "│   "));
+      });
+      return result;
+    };
+
+    return render(tree);
   }
 
   private async _getGitDiff(): Promise<string | undefined> {
