@@ -43,6 +43,7 @@ Respond ONLY with a valid JSON object in this exact format:
             "type": "<new_file|modify_file|command|read>",
             "title": "<short title>",
             "description": "<detailed implementation instruction>",
+            "dependencies": [],
             "status": "pending"
         }}
     ]
