@@ -22,10 +22,27 @@ def _mark_task(task_id: int, status: str) -> None:
     _save_tasks(data)
 
 def _clean_json(raw: str) -> str:
-    """Strip markdown fences and return bare JSON."""
+    """Strip markdown fences and return bare JSON, handling some common malformations."""
     s = raw.strip()
+    
+    # 1. Strip markdown code fences
     if "```json" in s:
         s = s.split("```json")[1].split("```")[0].strip()
     elif "```" in s:
-        s = s.split("```")[1].split("```")[0].strip()
+        parts = s.split("```")
+        if len(parts) >= 3:
+            s = parts[1].strip()
+        else:
+            s = parts[0].strip()
+            
+    # 2. Heuristic: Find first { and last }
+    start = s.find('{')
+    end = s.rfind('}')
+    if start != -1 and end != -1:
+        s = s[start:end+1]
+        
+    # 3. Handle common malformations like trailing commas
+    # This is a bit risky but often helpful: remove comma before ] or }
+    s = re.sub(r',\s*([\]}])', r'\1', s)
+    
     return s
