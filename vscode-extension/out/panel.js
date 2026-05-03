@@ -127,29 +127,10 @@ class AshbornViewProvider {
                 }
                 break;
             case "theme":
-                const workbenchConfig = vscode.workspace.getConfiguration("workbench");
-                const currentTheme = workbenchConfig.get("colorTheme") || "";
-                let targetTheme;
-                if (msg.isLight) {
-                    // If already in a light-sounding theme, maybe it didn't work. Try common ones.
-                    targetTheme = workbenchConfig.get("preferredLightColorTheme") || "Default Light Modern";
-                    // Fallback for VSCodium or older VS Code
-                    if (targetTheme === "Default Light Modern" && (currentTheme.includes("Dark") || currentTheme === "")) {
-                        // Keep it as is, but if we want to be sure:
-                        // targetTheme = "Visual Studio Light"; 
-                    }
-                }
-                else {
-                    targetTheme = workbenchConfig.get("preferredDarkColorTheme") || "Default Dark Modern";
-                }
-                console.log(`Ashborn: Toggling theme to ${targetTheme} (Current: ${currentTheme})`);
-                try {
-                    await workbenchConfig.update("colorTheme", targetTheme, vscode.ConfigurationTarget.Global);
-                }
-                catch (e) {
-                    console.error("Failed to update global theme, trying Workspace target:", e);
-                    await workbenchConfig.update("colorTheme", targetTheme, vscode.ConfigurationTarget.Workspace);
-                }
+                const lightTheme = "Default Light Modern";
+                const darkTheme = "Default Dark Modern";
+                const targetTheme = msg.isLight ? lightTheme : darkTheme;
+                await vscode.workspace.getConfiguration("workbench").update("colorTheme", targetTheme, vscode.ConfigurationTarget.Global);
                 vscode.window.showInformationMessage(`Ashborn: Applied theme → "${targetTheme}"`);
                 break;
         }
