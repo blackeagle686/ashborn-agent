@@ -95,7 +95,8 @@ export async function activate(ctx: vscode.ExtensionContext) {
 
         if (actionStr === "explain") {
           // Ensure sidebar is visible
-          await vscode.commands.executeCommand('ashborn-sidebar.focus');
+          await vscode.commands.executeCommand('workbench.view.extension.ashborn-sidebar');
+          await vscode.commands.executeCommand('ashborn.chatView.focus');
           
           _provider.postMessage({ type: "user_message", content: `Explain selected code in ${path.basename(doc.uri.fsPath)}:` });
           _provider.postMessage({ type: "chunk", content: result });
