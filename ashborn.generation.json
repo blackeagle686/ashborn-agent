@@ -167,6 +167,30 @@
       "metadata": {
         "model": "ashborn-generator"
       }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 10,
+      "artifacts": [
+        {
+          "type": "file_update_multi",
+          "path": "test_calc.py",
+          "language": "python",
+          "edits": [
+            {
+              "AllowMultiple": false,
+              "StartLine": 1,
+              "EndLine": 1,
+              "TargetContent": "def factorial(n):",
+              "ReplacementContent": "from calc import factorial"
+            }
+          ]
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
     }
   ]
 }
