@@ -62,7 +62,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   const executeAction = async (actionStr: string, document?: vscode.TextDocument, range?: vscode.Range | vscode.Selection) => {
     let editor = vscode.window.activeTextEditor;
     if (!editor) return;
-    
+
     // Handle cases where VS Code passes a Uri instead of TextDocument (Context Menu)
     const doc = (document && "getText" in document) ? (document as vscode.TextDocument) : editor.document;
     const sel = (range && "start" in range) ? range : editor.selection;
@@ -97,7 +97,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
           // Ensure sidebar is visible
           await vscode.commands.executeCommand('workbench.view.extension.ashborn-sidebar');
           await vscode.commands.executeCommand('ashborn.chatView.focus');
-          
+
           // Wait a bit for webview to be ready if it was just opened
           await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -150,7 +150,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
     try {
       // 1. Focus the view (this opens the panel if hidden)
       await vscode.commands.executeCommand("ashborn.chatView.focus");
-      
+
       // 2. Ensure the sidebar is visible
       await vscode.commands.executeCommand('workbench.view.extension.ashborn-sidebar');
     } catch (e) {
@@ -165,7 +165,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   const focusWatcher = vscode.workspace.createFileSystemWatcher("**/.ashborn-focus");
   const handleFocus = async (uri: vscode.Uri) => {
     await enforceLayout();
-    try { await vscode.workspace.fs.delete(uri); } catch {}
+    try { await vscode.workspace.fs.delete(uri); } catch { }
   };
   focusWatcher.onDidCreate(handleFocus);
   focusWatcher.onDidChange(handleFocus);
@@ -287,13 +287,13 @@ async function startServer(ctx: vscode.ExtensionContext, port: number) {
   _serverProcess = cp.spawn(
     python,
     ["-m", "uvicorn", "ashborn.server:app", "--host", "127.0.0.1", "--port", String(port), "--log-level", "warning"],
-    { 
-      cwd: ws || ASHBORN_DIR, 
-      env: { 
-        ...process.env, 
-        PYTHONPATH: ASHBORN_DIR 
+    {
+      cwd: ws || ASHBORN_DIR,
+      env: {
+        ...process.env,
+        PYTHONPATH: ASHBORN_DIR
       },
-      stdio: ["ignore", "pipe", "pipe"] 
+      stdio: ["ignore", "pipe", "pipe"]
     }
   );
 
@@ -314,17 +314,17 @@ async function startServer(ctx: vscode.ExtensionContext, port: number) {
   let attempts = 0;
   const poll = setInterval(async () => {
     attempts++;
-    
+
     // Check health
     const status: any = await new Promise(resolve => {
-        const req = http.get(`http://127.0.0.1:${port}/health`, (res) => {
-            let data = "";
-            res.on("data", (c) => (data += c));
-            res.on("end", () => {
-                try { resolve(JSON.parse(data)); } catch { resolve(null); }
-            });
+      const req = http.get(`http://127.0.0.1:${port}/health`, (res) => {
+        let data = "";
+        res.on("data", (c) => (data += c));
+        res.on("end", () => {
+          try { resolve(JSON.parse(data)); } catch { resolve(null); }
         });
-        req.on("error", () => resolve(null));
+      });
+      req.on("error", () => resolve(null));
     });
 
     if (status && status.status === "ok") {
