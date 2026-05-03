@@ -15,11 +15,26 @@ def send_completion_request(url: str, payload: dict, headers: dict = None) -> di
     Raises:
         requests.exceptions.RequestException: If the request fails.
         ValueError: If the response is not valid JSON.
+def send_completion_request(url: str, payload: dict, headers: dict = None) -> dict:
+    """
+    Send a completion request to the ASHBORN API.
+
+    Args:
+        url (str): The API endpoint URL.
+        payload (dict): The JSON payload to send.
+        headers (dict, optional): Additional HTTP headers.
+
+    Returns:
+        dict: The JSON response from the server.
+
+    Raises:
+        requests.exceptions.RequestException: If the request fails.
+        ValueError: If the response is not valid JSON.
     """
     try:
         if headers is None:
             headers = {'Content-Type': 'application/json'}
-        
+
         response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()
         return response.json()

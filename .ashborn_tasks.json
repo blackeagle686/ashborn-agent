@@ -15,7 +15,7 @@
       "type": "modify_file",
       "title": "Fix truncated test method at line 47",
       "description": "The test_missing_api_key_with_default_headers method is incomplete - it ends abruptly with 'mock_response.raise_for_status.retu' and lacks proper assertion logic. Complete the method body by adding the missing 'return_value = None' and implementing the test assertions.",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 3,
