@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoopController = void 0;
 const vscode = __importStar(require("vscode"));
+const actionExecutor_1 = require("./actionExecutor");
 /**
  * Orchestrates the autonomous agent loop.
  * Collects context → sends task → streams response → optionally repeats.
@@ -46,6 +47,7 @@ class LoopController {
         this._maxSteps = _maxSteps;
         this._running = false;
         this._stepCount = 0;
+        this._executor = new actionExecutor_1.ActionExecutor();
     }
     get isRunning() {
         return this._running;
@@ -121,6 +123,15 @@ class LoopController {
         }
         if (tool === "open_file") {
             return await this._openFileInEditor(args.path);
+        }
+        if (tool === "create_file") {
+            return await this._executor.createFile(args.path, args.content);
+        }
+        if (tool === "edit_file") {
+            return await this._executor.editFile(args.path, args.content);
+        }
+        if (tool === "delete_file") {
+            return await this._executor.deleteFile(args.path);
         }
         return `ERROR: Unknown VS Code tool: ${tool}`;
     }
