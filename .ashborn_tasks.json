@@ -15,7 +15,7 @@
       "type": "new_file",
       "title": "Create calc.py in scratch_test",
       "description": "Create a file named 'calc.py' inside the 'scratch_test' folder containing a function to calculate the factorial of 5 and print the result.",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 3,
