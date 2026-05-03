@@ -23,7 +23,7 @@
       "type": "modify_file",
       "title": "Fix hardcoded API key in test setup",
       "description": "Replace the hardcoded 'your-api-key-here' in self.valid_headers with a placeholder like 'Bearer <REDACTED>' and add a comment explaining that real credentials should never be committed. Also ensure no actual secrets appear in test files.",
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 4,
