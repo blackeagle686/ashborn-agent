@@ -1,13 +1,10 @@
-import math
-
 def factorial(n):
-    """Calculate factorial of n using iterative approach."""
+    if n == 0 or n == 1:
+        return 1
     result = 1
-    for i in range(1, n + 1):
+    for i in range(2, n + 1):
         result *= i
     return result
 
 if __name__ == "__main__":
-    # Compute factorial of 5
-    result = factorial(5)
-    print(f"Factorial of 5 is: {result}")
+    print(factorial(5))
