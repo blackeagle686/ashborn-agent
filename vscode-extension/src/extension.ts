@@ -59,13 +59,9 @@ export async function activate(ctx: vscode.ExtensionContext) {
   );
 
   // Helper to run code actions
-  const executeAction = async (actionStr: string, document?: vscode.TextDocument, range?: vscode.Range | vscode.Selection) => {
-    let editor = vscode.window.activeTextEditor;
-    if (!editor) return;
-    
-    // Fallback to active editor's document and selection if not passed (e.g. via Context Menu)
-    const doc = document || editor.document;
-    const sel = range || editor.selection;
+    // Handle cases where VS Code passes a Uri instead of TextDocument (Context Menu)
+    const doc = (document && "getText" in document) ? (document as vscode.TextDocument) : editor.document;
+    const sel = (range && "start" in range) ? range : editor.selection;
 
     if (sel.isEmpty) {
       vscode.window.showInformationMessage("Please select some code first.");
