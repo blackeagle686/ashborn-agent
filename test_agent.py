@@ -14,7 +14,7 @@ async def main():
     
     agent = await get_ashborn_agent()
     
-    prompt = "Create a new folder called 'scratch_test', inside it create a file 'calc.py' with a function that calculates factorial of 5 and prints it. Then run the python script using terminal."
+    prompt = "Create a new python package called 'math_utils'. It must contain an __init__.py, a calc.py with a factorial function, and a test_calc.py that asserts factorial(5) == 120. Please generate them together in one pass."
     
     print(f"[USER PROMPT]: {prompt}\n")
     print("⏳ Running agent in FULL PLAN MODE...\n")
