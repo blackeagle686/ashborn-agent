@@ -53,25 +53,46 @@ class AshbornLoop(AgentLoop):
         return os.path.exists(TASK_FILE)
 
     def _map_artifacts_to_actions(self, generation_blocks: list) -> list:
+        try:
+            from ashborn.server import vscode_ipc_context
+            is_vscode = vscode_ipc_context.get() is not None
+        except ImportError:
+            is_vscode = False
+            
         actions = []
         for block in generation_blocks:
             for art in block.get("artifacts", []):
                 if art["type"] == "file_write":
-                    actions.append({"tool": "file_write", "kwargs": {"file_path": art.get("path", ""), "content": art.get("code", "")}})
+                    if is_vscode:
+                        actions.append({"tool": "vscode_create_file", "kwargs": {"path": art.get("path", ""), "content": art.get("code", "")}})
+                    else:
+                        actions.append({"tool": "file_write", "kwargs": {"file_path": art.get("path", ""), "content": art.get("code", "")}})
                 elif art["type"] == "file_update_multi":
                     try:
                         chunks = json.loads(art.get("code", "[]")) if isinstance(art.get("code"), str) else art.get("code", [])
                     except:
                         chunks = []
-                    actions.append({
-                        "tool": "file_update_multi", 
-                        "kwargs": {
-                            "file_path": art.get("path", ""), 
-                            "edits": chunks
-                        }
-                    })
+                    
+                    if is_vscode:
+                        # VS Code extension currently handles full file edits via "edit_file" 
+                        # We might need to map chunks back to full string or just pass the chunks if the extension supports it.
+                        # Wait, vscode_edit_file_tool takes `content`. 
+                        # If we have chunks, we should probably apply them locally or use the local tool.
+                        # Actually, let's use the local file_update_multi for surgical precision even in VS Code, 
+                        # since the VS Code extension file watcher will pick up the local file changes immediately!
+                        # The only downside is no "diff review" popup.
+                        actions.append({
+                            "tool": "file_update_multi", 
+                            "kwargs": {
+                                "file_path": art.get("path", ""), 
+                                "edits": chunks
+                            }
+                        })
                 elif art["type"] == "terminal":
-                    actions.append({"tool": "terminal", "kwargs": {"command": art.get("code", "")}})
+                    if is_vscode:
+                        actions.append({"tool": "vscode_terminal_run", "kwargs": {"command": art.get("code", "")}})
+                    else:
+                        actions.append({"tool": "terminal", "kwargs": {"command": art.get("code", "")}})
         return actions
 
     async def run(self, prompt: str, memory, session_id: str, mode: str = "auto", **kwargs) -> str:
