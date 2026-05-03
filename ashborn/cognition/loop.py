@@ -143,7 +143,9 @@ class AshbornLoop(AgentLoop):
 
     async def run(self, prompt: str, memory, session_id: str, mode: str = "auto", **kwargs) -> str:
         clear_logs()
-        if mode == "fast_ans":
+        is_resume = prompt.strip().lower() == "resume" or mode == "resume"
+
+        if mode == "fast_ans" and not is_resume:
             context = await memory.get_full_context(session_id, query=prompt)
             system_prompt = "You are ASHBORN. Give a concise, direct answer to the user's question."
             full_prompt = f"{system_prompt}\n\nContext:\n{context}\n\nUser: {prompt}"
@@ -152,8 +154,6 @@ class AshbornLoop(AgentLoop):
             return ans
 
         # 1. Think
-        is_resume = prompt.strip().lower() == "resume" or mode == "resume"
-        
         if is_resume:
             log_agent_action("loop", "resume_execution", {}, {"status": "resuming"}, "success")
             _reset_failed_tasks()
@@ -298,7 +298,9 @@ class AshbornLoop(AgentLoop):
 
     async def run_stream(self, prompt: str, memory, session_id: str, mode: str = "auto", **kwargs):
         clear_logs()
-        if mode == "fast_ans":
+        is_resume = prompt.strip().lower() == "resume" or mode == "resume"
+
+        if mode == "fast_ans" and not is_resume:
             yield {"type": "status", "role": "analyzer", "content": "⚡ Fast Answer mode active..."}
             context = await memory.get_full_context(session_id, query=prompt)
             system_prompt = "You are ASHBORN. Give a concise, direct answer to the user's question."
@@ -308,8 +310,6 @@ class AshbornLoop(AgentLoop):
             await memory.add_interaction(session_id, "assistant", "Fast answer generated.")
             return
 
-        is_resume = prompt.strip().lower() == "resume" or mode == "resume"
-        
         if is_resume:
             yield {"type": "status", "role": "system", "content": "🔄 Resuming previous execution state..."}
             _reset_failed_tasks()
