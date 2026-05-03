@@ -2,7 +2,7 @@
   "context_id": "dff861e3-c4ff-4333-b33c-7d05124a05a9",
   "metadata": {
     "created_at": "2026-05-03T20:23:05.150931",
-    "updated_at": "2026-05-03T20:23:54.525479",
+    "updated_at": "2026-05-03T20:24:04.764796",
     "original_prompt": "Create a new python package called 'math_utils'. It must contain an __init__.py, a calc.py with a factorial function, and a test_calc.py that asserts factorial(5) == 120. Please generate them together in one pass."
   },
   "tasks": [
@@ -120,7 +120,7 @@
         "complexity": "O(1)"
       },
       "dependencies": [],
-      "status": "pending"
+      "status": "done"
     },
     {
       "plan_step_id": 7,
