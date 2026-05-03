@@ -1,0 +1,45 @@
+{
+  "original_prompt": "Perform a security audit on test_ash.py, identify potential vulnerabilities, and suggest/apply fixes.",
+  "tasks": [
+    {
+      "id": 1,
+      "priority": 1,
+      "type": "read",
+      "title": "Read test_ash.py to analyze code for vulnerabilities",
+      "description": "Inspect scratch/test_ash.py to identify security issues such as hardcoded secrets, unsafe URL usage, improper error handling, or missing input validation.",
+      "status": "done"
+    },
+    {
+      "id": 2,
+      "priority": 2,
+      "type": "modify_file",
+      "title": "Replace hardcoded API key with environment variable",
+      "description": "Update the test script to load the Authorization header value from an environment variable (e.g., ASHBORN_API_KEY) instead of using 'your-api-key-here'. Use os.getenv() to retrieve it.",
+      "status": "pending"
+    },
+    {
+      "id": 3,
+      "priority": 3,
+      "type": "modify_file",
+      "title": "Add input validation for URL and payload",
+      "description": "In send_completion_request(), validate that url is a non-empty string and uses https:// scheme. Validate payload is a dict and contains expected keys like 'prompt' and 'max_tokens'.",
+      "status": "pending"
+    },
+    {
+      "id": 4,
+      "priority": 4,
+      "type": "modify_file",
+      "title": "Improve error handling to avoid information leakage",
+      "description": "Replace print() statements in exception handlers with logging or generic error messages to prevent leaking sensitive info. Ensure exceptions are re-raised appropriately.",
+      "status": "pending"
+    },
+    {
+      "id": 5,
+      "priority": 5,
+      "type": "new_file",
+      "title": "Create .env file with placeholder API key",
+      "description": "Create a .env file in the project root containing ASHBORN_API_KEY=your-api-key-here (do not commit real keys). This serves as documentation for required environment variables.",
+      "status": "pending"
+    }
+  ]
+}
