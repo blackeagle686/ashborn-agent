@@ -68,19 +68,30 @@ class AshbornLoop(AgentLoop):
                     else:
                         actions.append({"tool": "file_write", "kwargs": {"file_path": art.get("path", ""), "content": art.get("code", "")}})
                 elif art["type"] == "file_update_multi":
-                    try:
-                        chunks = json.loads(art.get("code", "[]")) if isinstance(art.get("code"), str) else art.get("code", [])
-                    except:
-                        chunks = []
+                    # Use the direct 'edits' list if provided, fallback to 'code' if it happens to be valid JSON
+                    chunks = art.get("edits")
+                    if not chunks and "code" in art:
+                        try:
+                            if isinstance(art["code"], str):
+                                chunks = json.loads(art["code"])
+                            else:
+                                chunks = art["code"]
+                        except:
+                            chunks = []
+                    
+                    if not chunks:
+                        continue # Skip empty updates
                     
                     if is_vscode:
-                        # VS Code extension currently handles full file edits via "edit_file" 
-                        # We might need to map chunks back to full string or just pass the chunks if the extension supports it.
-                        # Wait, vscode_edit_file_tool takes `content`. 
-                        # If we have chunks, we should probably apply them locally or use the local tool.
-                        # Actually, let's use the local file_update_multi for surgical precision even in VS Code, 
-                        # since the VS Code extension file watcher will pick up the local file changes immediately!
-                        # The only downside is no "diff review" popup.
+                        # surgical local update still best for VS Code
+                        actions.append({
+                            "tool": "file_update_multi", 
+                            "kwargs": {
+                                "file_path": art.get("path", ""), 
+                                "edits": chunks
+                            }
+                        })
+                    else:
                         actions.append({
                             "tool": "file_update_multi", 
                             "kwargs": {
