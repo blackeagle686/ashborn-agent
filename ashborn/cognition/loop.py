@@ -298,11 +298,14 @@ class AshbornLoop(AgentLoop):
         task_number = 0
 
         while self._has_task_file() and total_actions < self.MAX_TOTAL_ACTIONS:
-            pending_tasks = self._get_pending_tasks()
-            if not pending_tasks:
+            executable_tasks = self._get_executable_tasks()
+            if not executable_tasks:
+                pending = self._get_pending_tasks()
+                if pending:
+                    yield {"type": "chunk", "role": "system", "content": "\n⚠ Deadlock: Tasks are pending but dependencies are not met.\n"}
                 break
                 
-            task = pending_tasks[0]
+            task = executable_tasks[0]
             task_id = task.get("id")
             task_number += 1
             
@@ -312,7 +315,6 @@ class AshbornLoop(AgentLoop):
             yield {"type": "status", "role": "planner", "content": f"⚙ Task {task_number}/{all_tasks_count}: {task.get('title')}"}
             yield {"type": "chunk", "role": "planner", "content": f"\n**[P{task.get('priority')}] {task.get('title')}**\n"}
 
-            # Planner phase
             pending_steps = _get_pending_plan_steps(task_id)
             if not pending_steps:
                 yield {"type": "status", "role": "planner", "content": f"  ↳ Generating Plan Steps..."}
@@ -326,17 +328,46 @@ class AshbornLoop(AgentLoop):
                 continue
                 
             task_failed = False
+            step_attempts = {} # plan_step_id -> attempt_count
             
-            for step in pending_steps:
-                step_id = step.get("plan_step_id")
-                yield {"type": "chunk", "role": "planner", "content": f"  ↳ Step {step.get('step_index', '?')} ({step.get('type')}): {step.get('solution', {}).get('approach', '')[:60]}...\n"}
-                
-                step_success = False
-                for attempt in range(self.MAX_RETRIES_PER_TASK):
-                    yield {"type": "status", "role": "actor", "content": f"  ↳ Generating Code (Attempt {attempt+1})..."}
-                    gen_data = await self.generator.generate_step(step, task)
-                    blocks = gen_data.get("generation_blocks", [])
+            while True:
+                executable_steps = _get_executable_plan_steps(task_id)
+                if not executable_steps:
+                    pending = _get_pending_plan_steps(task_id)
+                    if pending:
+                        task_failed = True # Deadlock or failed deps
+                    break
                     
+                to_run = []
+                for s in executable_steps:
+                    sid = s.get("plan_step_id")
+                    step_attempts[sid] = step_attempts.get(sid, 0) + 1
+                    if step_attempts[sid] > self.MAX_RETRIES_PER_TASK:
+                        _mark_plan_step(sid, "failed")
+                        task_failed = True
+                    else:
+                        to_run.append(s)
+                        
+                if task_failed or not to_run:
+                    break
+                    
+                yield {"type": "status", "role": "actor", "content": f"  ↳ Generating Code ({len(to_run)} step(s) in parallel)..."}
+                
+                # Parallel Generation
+                gen_coroutines = [self.generator.generate_step(s, task) for s in to_run]
+                gen_results = await asyncio.gather(*gen_coroutines, return_exceptions=True)
+                
+                # Sequential Execution
+                for step, gen_data in zip(to_run, gen_results):
+                    step_id = step.get("plan_step_id")
+                    
+                    if isinstance(gen_data, Exception):
+                        yield {"type": "chunk", "role": "system", "content": f"    ↳ ⚠ Generator error: {gen_data}\n"}
+                        continue
+                        
+                    yield {"type": "chunk", "role": "planner", "content": f"  ↳ Step {step.get('step_index', '?')} ({step.get('type')}): {step.get('solution', {}).get('approach', '')[:60]}...\n"}
+                        
+                    blocks = gen_data.get("generation_blocks", [])
                     if any(b.get("status") == "syntax_error" for b in blocks):
                         error_msg = next((b.get("error") for b in blocks if b.get("status") == "syntax_error"), "Syntax validation failed")
                         log_agent_action("generator", "generate_step", {"step": step, "task": task}, {"error": error_msg}, "failed")
@@ -353,9 +384,8 @@ class AshbornLoop(AgentLoop):
                     
                     if not actions:
                         _mark_plan_step(step_id, "done")
-                        step_success = True
                         yield {"type": "chunk", "role": "actor", "content": f"    ↳ Done (No actions needed)\n"}
-                        break
+                        continue
                         
                     yield {"type": "status", "role": "actor", "content": f"  ↳ Executing {len(actions)} actions..."}
                     action_result = await self.actor.execute({"actions": actions})
@@ -370,16 +400,9 @@ class AshbornLoop(AgentLoop):
                     
                     if reflection["is_complete"]:
                         _mark_plan_step(step_id, "done")
-                        step_success = True
                         yield {"type": "chunk", "role": "reflector", "content": f"    ↳ ✓ {reflection['reflection']}\n"}
-                        break
                     else:
                         yield {"type": "chunk", "role": "reflector", "content": f"    ↳ ⚠ Retry: {reflection['reflection']}\n"}
-                        
-                if not step_success:
-                    _mark_plan_step(step_id, "failed")
-                    task_failed = True
-                    break
 
             if task_failed:
                 _mark_task(task_id, "failed")
