@@ -61,7 +61,7 @@ class LoopController {
         this._stepCount = 0;
         // Prepend workspace context and resolve @mentions
         const mentionCtx = await this._resolveMentions(task);
-        const workspaceCtx = this._context.collect();
+        const workspaceCtx = this._context.serialize();
         let fullTask = task;
         if (mentionCtx) {
             fullTask += `\n\n---\n[Attached Files Content]\n${mentionCtx}`;

@@ -41,7 +41,7 @@ const cp = __importStar(require("child_process"));
 const http = __importStar(require("http"));
 const agentClient_1 = require("./agentClient");
 const panel_1 = require("./panel");
-const contextCollector_1 = require("./contextCollector");
+const contextManager_1 = require("./contextManager");
 const completionProvider_1 = require("./completionProvider");
 const codeActionProvider_1 = require("./codeActionProvider");
 let _serverProcess;
@@ -58,8 +58,13 @@ async function activate(ctx) {
     ctx.subscriptions.push(_statusBar);
     // Core services
     const client = new agentClient_1.AgentClient(port);
-    const collector = new contextCollector_1.ContextCollector();
-    _provider = new panel_1.AshbornViewProvider(ctx.extensionUri, client, collector);
+    const contextManager = new contextManager_1.ContextManager();
+    _provider = new panel_1.AshbornViewProvider(ctx.extensionUri, client, contextManager);
+    // ── Context Listeners ─────────────────────────────────────────────────────
+    const debounceRefresh = () => {
+        contextManager.refresh();
+    };
+    ctx.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(debounceRefresh), vscode.window.onDidChangeVisibleTextEditors(debounceRefresh), vscode.workspace.onDidChangeTextDocument(debounceRefresh), vscode.languages.onDidChangeDiagnostics(debounceRefresh));
     // Register sidebar WebView
     ctx.subscriptions.push(vscode.window.registerWebviewViewProvider(panel_1.AshbornViewProvider.viewType, _provider, { webviewOptions: { retainContextWhenHidden: true } }));
     // Register Inline Completion Provider
