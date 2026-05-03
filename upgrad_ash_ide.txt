@@ -241,7 +241,7 @@ The system shall capture terminal output when needed.
 
 -------------------------------------
 
-7. Multi-Agent Visualization Interface
+7. Multi-Agent Visualization Interface 
 
 Description:
 The system shall visualize internal agent roles and processes.
