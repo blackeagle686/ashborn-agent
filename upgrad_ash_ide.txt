@@ -32,6 +32,8 @@ Fix bugs
 The system shall send selected code + context to the agent.
 The system shall apply returned modifications to the editor.
 
+-------------------------------------
+
 3. Context Awareness Engine
 
 Description:
