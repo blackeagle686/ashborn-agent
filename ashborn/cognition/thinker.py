@@ -2,7 +2,7 @@ from phoenix.framework.agent.cognition import Thinker
 import json
 import re
 
-from .tasks import TASK_FILE, _save_tasks, _clean_json
+from .helpers.tasks import TASK_FILE, _save_tasks, _clean_json
 
 class AshbornThinker(Thinker):
     """
