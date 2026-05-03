@@ -17,7 +17,7 @@
       "title": "Create math_utils/calc.py with factorial function",
       "description": "Create calc.py inside the math_utils directory containing a function named factorial(n) that computes the factorial of n using a simple iterative approach.",
       "dependencies": [],
-      "status": "pending"
+      "status": "failed"
     },
     {
       "id": 3,

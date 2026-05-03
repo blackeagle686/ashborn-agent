@@ -123,6 +123,26 @@
       "metadata": {
         "model": "ashborn-generator"
       }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 7,
+      "artifacts": [
+        {
+          "type": "file_update_multi",
+          "path": "math_utils/calc.py",
+          "language": "python",
+          "edits": [
+            {
+              "AllowMultiple": false,
+              "StartLine": 19,
+              "EndLine": 20,
+              "TargetContent": "    for i in range(2, n + 1):\n        result *= i",
+              "ReplacementContent": "    if n == 0 or n == 1:\n        return 1\n    for i in range(2, n + 1):\n        result *= i"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
