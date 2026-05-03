@@ -1,0 +1,13 @@
+{
+  "original_prompt": "install numpy in thsi directory",
+  "tasks": [
+    {
+      "id": 1,
+      "priority": 1,
+      "type": "command",
+      "title": "Install numpy using pip in the current virtual environment",
+      "description": "Execute 'pip install numpy' to install the numpy package into the active Python environment. This will make numpy available for import in the current directory and its subdirectories.",
+      "status": "pending"
+    }
+  ]
+}
