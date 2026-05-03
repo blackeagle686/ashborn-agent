@@ -54,7 +54,16 @@ Your output MUST be a JSON object conforming to this exact schema:
           "type": "file_write" | "file_update_multi" | "terminal",
           "path": "<file path or working directory>",
           "language": "<python|bash|json|etc>",
-          "code": "<EXACT code or command to run/write. For file_update_multi, provide chunks JSON!>"
+          "code": "<full file content for file_write, or bash command for terminal>",
+          "edits": [
+            {{
+              "AllowMultiple": false,
+              "StartLine": <INT>,
+              "EndLine": <INT>,
+              "TargetContent": "<exact string to match>",
+              "ReplacementContent": "<new string>"
+            }}
+          ]
         }}
       ],
       "status": "success",
@@ -66,9 +75,8 @@ Your output MUST be a JSON object conforming to this exact schema:
 }}
 
 === FILE OPERATION RULES ===
-- type "file_write": Use for NEW files. Will overwrite if existing. "code" is the full file content.
-- type "file_update_multi": Use for EXISTING files. "code" MUST BE a valid JSON array of chunks.
-  Example stringified code: '[{{"AllowMultiple": false, "StartLine": 1, "EndLine": 3, "TargetContent": "old", "ReplacementContent": "new"}}]'
+- type "file_write": Use for NEW files. "code" is the full file content.
+- type "file_update_multi": Use for EXISTING files. Use the "edits" field (JSON array of chunks). Do NOT use "code".
 - type "terminal": "code" is the bash command to run.
 
 Plan Step Details:
