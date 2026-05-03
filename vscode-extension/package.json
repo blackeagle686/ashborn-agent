@@ -72,6 +72,22 @@
       {
         "command": "ashborn.action.fix",
         "title": "Ashborn: Fix Bugs"
+      },
+      {
+        "command": "ashborn.runTaskWithInput",
+        "title": "Ashborn: ▶ Run New Task..."
+      },
+      {
+        "command": "ashborn.action.fixError",
+        "title": "Ashborn: 🛠 Fix Error at Cursor"
+      },
+      {
+        "command": "ashborn.action.generateTests",
+        "title": "Ashborn: 🧪 Generate Tests for Current File"
+      },
+      {
+        "command": "ashborn.action.secureCode",
+        "title": "Ashborn: 🛡 Secure Code (Audit & Fix)"
       }
     ],
     "submenus": [
