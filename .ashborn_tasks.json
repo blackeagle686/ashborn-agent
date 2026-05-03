@@ -1,12 +1,12 @@
 {
-  "original_prompt": "create file called simple2.txt containig on hello ashborn",
+  "original_prompt": "is there any problem in file @scratch/test_completion.py",
   "tasks": [
     {
       "id": 1,
       "priority": 1,
-      "type": "new_file",
-      "title": "Create simple2.txt with content 'hello ashborn'",
-      "description": "Create a new file named 'simple2.txt' in the workspace root (liberay-app) and write the exact string 'hello ashborn' into it.",
+      "type": "read",
+      "title": "Inspect scratch/test_completion.py for issues",
+      "description": "Read and analyze the content of scratch/test_completion.py to identify syntax errors, logical flaws, missing imports, or other potential problems.",
       "status": "pending"
     }
   ]
