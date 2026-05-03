@@ -78,7 +78,6 @@ async function activate(ctx) {
         let editor = vscode.window.activeTextEditor;
         if (!editor)
             return;
-        // Handle cases where VS Code passes a Uri instead of TextDocument (Context Menu)
         const doc = (document && "getText" in document) ? document : editor.document;
         const sel = (range && "start" in range) ? range : editor.selection;
         if (sel.isEmpty) {
@@ -94,10 +93,8 @@ async function activate(ctx) {
         }, async (progress) => {
             try {
                 if (actionStr === "explain") {
-                    // Ensure sidebar is visible
                     await vscode.commands.executeCommand('workbench.view.extension.ashborn-sidebar');
                     await vscode.commands.executeCommand('ashborn.chatView.focus');
-                    // Show the user message and thinking state immediately
                     _provider.postMessage({ type: "user_message", content: `Explain selected code in ${path.basename(doc.uri.fsPath)}:` });
                     _provider.postMessage({ type: "status", state: "thinking", content: "Ashborn is analyzing your code..." });
                 }
@@ -166,22 +163,14 @@ async function activate(ctx) {
         _provider.runAgent(task, "plan");
     }));
     // ── Layout Enforcement ───────────────────────────────────────────────────
-    // We force the Ashborn view to the secondary sidebar (right) on startup
-    // This overrides VS Code's tendency to merge views or hide the bar.
     const enforceLayout = async () => {
         try {
-            // 1. Focus the view (this opens the panel if hidden)
             await vscode.commands.executeCommand("ashborn.chatView.focus");
-            // 2. Ensure the sidebar is visible
             await vscode.commands.executeCommand('workbench.view.extension.ashborn-sidebar');
         }
-        catch (e) {
-            // Ignore if commands aren't supported in this version
-        }
+        catch (e) { }
     };
-    // Run layout enforcement shortly after activation
     setTimeout(enforceLayout, 2000);
-    // Watch for .ashborn-focus file to pop open the sidebar reliably
     const focusWatcher = vscode.workspace.createFileSystemWatcher("**/.ashborn-focus");
     const handleFocus = async (uri) => {
         await enforceLayout();
@@ -193,11 +182,6 @@ async function activate(ctx) {
     focusWatcher.onDidCreate(handleFocus);
     focusWatcher.onDidChange(handleFocus);
     ctx.subscriptions.push(focusWatcher);
-    // Check if file already exists on startup
-    vscode.workspace.findFiles(".ashborn-focus", null, 1).then(files => {
-        if (files.length > 0)
-            handleFocus(files[0]);
-    });
     // Auto-start server
     if (autoStart) {
         const ready = await client.healthCheck();
@@ -219,6 +203,7 @@ async function activate(ctx) {
 function showDashboard(ctx) {
     const panel = vscode.window.createWebviewPanel("ashborn.dashboard", "Ashborn", vscode.ViewColumn.One, { enableScripts: true, localResourceRoots: [vscode.Uri.joinPath(ctx.extensionUri, "media")] });
     const iconUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(ctx.extensionUri, "media", "ashborn.png"));
+    const phxIconUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(ctx.extensionUri, "media", "phx-nobg.png"));
     panel.webview.html = `
     <!DOCTYPE html>
     <html>
@@ -227,6 +212,10 @@ function showDashboard(ctx) {
         :root {
           --bg-dark: radial-gradient(circle at 50% 50%, #1a0f2e 0%, #08080c 100%);
           --bg-light: radial-gradient(circle at 50% 50%, #f7f7fa 0%, #e2e2e8 100%);
+          --primary: #b830ff;
+          --accent: #ff4020;
+          --surface-glass: rgba(28, 8, 40, 0.45);
+          --surface-border: rgba(255, 80, 40, 0.12);
         }
         body {
           background: var(--bg-dark);
@@ -236,7 +225,7 @@ function showDashboard(ctx) {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          font-family: sans-serif;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           margin: 0;
           overflow: hidden;
           transition: all 0.5s ease;
@@ -244,87 +233,122 @@ function showDashboard(ctx) {
         body.vscode-light {
           background: var(--bg-light);
           color: #1a1a1a;
+          --surface-glass: rgba(255, 252, 255, 0.6);
         }
         .logo { 
-          width: 200px; 
-          height: 200px; 
+          width: 180px; 
+          height: 180px; 
           animation: pulse 4s infinite ease-in-out; 
           filter: drop-shadow(0 0 30px rgba(157, 56, 198, 0.4));
         }
         body.vscode-light .logo {
           filter: drop-shadow(0 0 30px rgba(157, 56, 198, 0.2));
         }
-        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
-        h1 { margin-top: 20px; font-weight: 200; letter-spacing: 4px; color: #9d38c6; }
-        .hint { margin-top: 40px; color: #6b6b80; font-size: 0.9em; }
-        kbd { background: rgba(128,128,128,0.2); padding: 2px 6px; border-radius: 4px; color: inherit; border: 1px solid rgba(128,128,128,0.3); }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
+        h1 { margin-top: 20px; font-weight: 800; letter-spacing: 6px; color: #b830ff; font-size: 2.5em; text-shadow: 0 0 20px rgba(184, 48, 255, 0.3); }
+        .hint { margin-top: 30px; color: #6b6b80; font-size: 0.95em; letter-spacing: 1px; }
+        kbd { background: rgba(128,128,128,0.15); padding: 3px 8px; border-radius: 6px; color: inherit; border: 1px solid rgba(128,128,128,0.2); font-family: monospace; }
+        
+        .phx-ad-card {
+          margin-top: 50px;
+          background: var(--surface-glass);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid var(--surface-border);
+          border-radius: 16px;
+          padding: 20px;
+          max-width: 400px;
+          text-align: left;
+          position: relative;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+          animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .phx-ad-badge {
+          display: inline-block;
+          font-size: 9px;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 1.5px;
+          color: #fff;
+          background: linear-gradient(135deg, var(--primary), var(--accent));
+          padding: 2px 10px;
+          border-radius: 20px;
+          margin-bottom: 15px;
+        }
+        .phx-ad-main { display: flex; align-items: center; gap: 20px; }
+        .phx-ad-logo { width: 64px; height: auto; filter: drop-shadow(0 0 10px var(--primary)); }
+        .phx-ad-title { font-size: 18px; font-weight: 700; color: #f5eeff; margin-bottom: 6px; letter-spacing: -0.2px; }
+        .phx-ad-desc { font-size: 13px; line-height: 1.6; color: #b89acc; }
+        body.vscode-light .phx-ad-title { color: #1a0f2e; }
+        body.vscode-light .phx-ad-desc { color: #5c3070; }
       </style>
     </head>
-    <body>
+    <body class="${vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Light ? 'vscode-light' : ''}">
       <img src="${iconUri}" class="logo">
       <h1>ASHBORN</h1>
       <div class="hint">Press <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>I</kbd> to open Chat</div>
+
+      <div class="phx-ad-card">
+        <div class="phx-ad-badge">Powered By</div>
+        <div class="phx-ad-main">
+          <img src="${phxIconUri}" class="phx-ad-logo" />
+          <div class="phx-ad-content">
+            <div class="phx-ad-title">Phoenix AI Framework</div>
+            <div class="phx-ad-desc">
+              🔥 A production-ready, modular backend infrastructure SDK designed for AI-powered Python backend services.
+            </div>
+          </div>
+        </div>
+      </div>
     </body>
     </html>
   `;
 }
-// ── Deactivate ────────────────────────────────────────────────────────────────
 function deactivate() {
     if (_serverProcess) {
         _serverProcess.kill();
         _serverProcess = undefined;
     }
 }
-// ── Server lifecycle ──────────────────────────────────────────────────────────
 async function startServer(ctx, port) {
     if (_serverProcess) {
         vscode.window.showInformationMessage("Ashborn server is already running.");
         return;
     }
     const ws = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-    // The global installation path of Ashborn Agent
     const ASHBORN_DIR = "/home/tlk/Documents/Projects/my_AItools/ashborn-agent";
     const config = vscode.workspace.getConfiguration("ashborn");
     const venvRel = config.get("venvPath") ?? "venv";
-    const venvPath = path.isAbsolute(venvRel)
-        ? venvRel
-        : path.join(ASHBORN_DIR, venvRel);
+    const venvPath = path.isAbsolute(venvRel) ? venvRel : path.join(ASHBORN_DIR, venvRel);
     const python = path.join(venvPath, "bin", "python3");
     setStatus("starting", port);
     vscode.window.showInformationMessage("🔥 Starting Ashborn Agent server…");
     _serverProcess = cp.spawn(python, ["-m", "uvicorn", "ashborn.server:app", "--host", "127.0.0.1", "--port", String(port), "--log-level", "warning"], {
         cwd: ws || ASHBORN_DIR,
-        env: {
-            ...process.env,
-            PYTHONPATH: ASHBORN_DIR
-        },
+        env: { ...process.env, PYTHONPATH: ASHBORN_DIR },
         stdio: ["ignore", "pipe", "pipe"]
     });
     _serverProcess.stdout?.on("data", (d) => console.log("[ashborn-server]", d.toString().trim()));
     _serverProcess.stderr?.on("data", (d) => console.error("[ashborn-server]", d.toString().trim()));
     _serverProcess.on("exit", (code) => {
-        console.log(`[ashborn-server] exited with code ${code}`);
         _serverProcess = undefined;
         setStatus("stopped", port);
     });
-    // Poll until ready (max 30 s)
     const client = new agentClient_1.AgentClient(port);
     let attempts = 0;
     const poll = setInterval(async () => {
         attempts++;
-        // Check health
         const status = await new Promise(resolve => {
             const req = http.get(`http://127.0.0.1:${port}/health`, (res) => {
                 let data = "";
                 res.on("data", (c) => (data += c));
-                res.on("end", () => {
-                    try {
-                        resolve(JSON.parse(data));
-                    }
-                    catch {
-                        resolve(null);
-                    }
-                });
+                res.on("end", () => { try {
+                    resolve(JSON.parse(data));
+                }
+                catch {
+                    resolve(null);
+                } });
             });
             req.on("error", () => resolve(null));
         });
@@ -342,23 +366,13 @@ async function startServer(ctx, port) {
         else if (attempts > 120) {
             clearInterval(poll);
             setStatus("error", port);
-            vscode.window.showErrorMessage("❌ Ashborn server failed to start (timed out after 120s). Check the Output panel.");
+            vscode.window.showErrorMessage("❌ Ashborn server failed to start (timed out).");
         }
     }, 1000);
 }
 function setStatus(state, port) {
-    const icons = {
-        starting: "$(loading~spin)",
-        ready: "$(flame)",
-        stopped: "$(circle-slash)",
-        error: "$(error)",
-    };
-    const labels = {
-        starting: "Ashborn: starting…",
-        ready: `Ashborn :${port}`,
-        stopped: "Ashborn: offline",
-        error: "Ashborn: error",
-    };
+    const icons = { starting: "$(loading~spin)", ready: "$(flame)", stopped: "$(circle-slash)", error: "$(error)" };
+    const labels = { starting: "Ashborn: starting…", ready: `Ashborn :${port}`, stopped: "Ashborn: offline", error: "Ashborn: error" };
     _statusBar.text = `${icons[state]} ${labels[state]}`;
     _statusBar.tooltip = `Ashborn Agent Server — port ${port} — ${state}`;
     _statusBar.show();
