@@ -9,6 +9,8 @@ export interface Context {
     language: string;
     content: string;
     selection?: string;
+    cursorLine: number;
+    cursorCharacter: number;
   };
   fileTree?: string[];
   diagnostics?: {
@@ -64,7 +66,10 @@ export class ContextManager {
     const ctx = this._context;
 
     if (ctx.activeFile) {
-      parts.push(`[Active File] ${ctx.activeFile.path} (${ctx.activeFile.language})\nContent Preview:\n${ctx.activeFile.content.slice(0, 2000)}`);
+      parts.push(`[Active File] ${ctx.activeFile.path} (${ctx.activeFile.language})
+Cursor: Line ${ctx.activeFile.cursorLine}, Column ${ctx.activeFile.cursorCharacter}
+Content Preview:
+${ctx.activeFile.content.slice(0, 2000)}`);
       if (ctx.activeFile.selection) {
         parts.push(`[Selection]\n${ctx.activeFile.selection}`);
       }
@@ -105,7 +110,9 @@ export class ContextManager {
       path: vscode.workspace.asRelativePath(editor.document.uri),
       language: editor.document.languageId,
       content: editor.document.getText(),
-      selection: editor.selection.isEmpty ? undefined : editor.document.getText(editor.selection)
+      selection: editor.selection.isEmpty ? undefined : editor.document.getText(editor.selection),
+      cursorLine: editor.selection.active.line + 1,
+      cursorCharacter: editor.selection.active.character + 1
     };
   }
 
