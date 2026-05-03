@@ -7,7 +7,7 @@
       "type": "read",
       "title": "Read full test file to identify syntax errors",
       "description": "Read scratch/test_ash_unit.py completely to detect truncated code, syntax issues, or incomplete methods that prevent execution.",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 2,
