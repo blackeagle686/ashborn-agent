@@ -60,10 +60,15 @@ Respond ONLY with valid JSON.
         
         try:
             plan_data = json.loads(clean)
-        except Exception:
+        except Exception as e:
             m = re.search(r'\{.*\}', clean, re.DOTALL)
             if m:
-                plan_data = json.loads(m.group(0))
+                try:
+                    plan_data = json.loads(m.group(0))
+                except Exception:
+                    print(f"[ERROR] Planner failed to parse JSON: {e}")
+                    print(f"[DEBUG] Raw response was: {response[:500]}...")
+                    plan_data = {"plan_steps": []}
             else:
                 plan_data = {"plan_steps": []}
                 
