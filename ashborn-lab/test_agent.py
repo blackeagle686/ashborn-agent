@@ -1,6 +1,10 @@
 import asyncio
 import os
+import sys
 from dotenv import load_dotenv
+
+# Add parent dir to sys path so it can import ashborn
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Load API keys from .env
 load_dotenv()
