@@ -18,7 +18,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/python-%3E%3D3.10-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python">
-  <img src="vscode-extension/media/phx-nobg.png" alt="Phoenix AI">
+  <img src="vscode-extension/media/phx-nobg.png" width="100" alt="Phoenix AI">
   <img src="https://img.shields.io/badge/backend-FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI">
   <img src="https://img.shields.io/badge/IDE-VSCodium-2F80ED?style=flat-square&logo=vscodium&logoColor=white" alt="VSCodium">
   <img src="https://img.shields.io/badge/license-MIT-22C55E?style=flat-square" alt="MIT License">
