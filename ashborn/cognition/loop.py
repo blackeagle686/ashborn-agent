@@ -4,8 +4,8 @@ import asyncio
 from .helpers.tasks import _load_tasks, _mark_task
 from .helpers.plan import _get_pending_plan_steps, _mark_plan_step
 from .helpers.observability import clear_logs
-from .generator import AshbornGenerator
-from .utils import (
+from .brains.generator import AshbornGenerator
+from .core.utils import (
     get_pending_tasks, get_executable_tasks, has_task_file,
     cleanup_state_files, is_all_done,
     init_phase, ensure_plan_steps, execute_step,
