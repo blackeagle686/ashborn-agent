@@ -1,0 +1,60 @@
+{
+  "context_id": "47f31c26-2a14-45e7-8766-a1a8f06d2e3e",
+  "metadata": {
+    "created_at": "2026-05-05T17:25:24.761258",
+    "updated_at": "2026-05-05T17:25:24.762310",
+    "original_prompt": "Create a new python package called 'math_utils'. It must contain an __init__.py, a calc.py with a factorial function, and a test_calc.py that asserts factorial(5) == 120. Please generate them together in one pass."
+  },
+  "tasks": [
+    {
+      "id": 1,
+      "priority": 1,
+      "type": "new_file",
+      "title": "Create math_utils/__init__.py",
+      "description": "Generate the __init__.py file in the math_utils directory to initialize the package.",
+      "dependencies": [],
+      "status": "pending"
+    },
+    {
+      "id": 2,
+      "priority": 2,
+      "type": "new_file",
+      "title": "Create math_utils/calc.py with factorial function",
+      "description": "Implement a factorial function in calc.py using iterative or recursive logic.",
+      "dependencies": [],
+      "status": "pending"
+    },
+    {
+      "id": 3,
+      "priority": 3,
+      "type": "new_file",
+      "title": "Create math_utils/test_calc.py",
+      "description": "Write a test that imports factorial from calc and asserts factorial(5) == 120.",
+      "dependencies": [
+        "2"
+      ],
+      "status": "pending"
+    }
+  ],
+  "plans": [],
+  "generations": [],
+  "execution_state": {
+    "completed_steps": [],
+    "pending_steps": [
+      {
+        "id": 1,
+        "title": "Create math_utils/__init__.py"
+      },
+      {
+        "id": 2,
+        "title": "Create math_utils/calc.py with factorial function"
+      },
+      {
+        "id": 3,
+        "title": "Create math_utils/test_calc.py"
+      }
+    ],
+    "failed_steps": []
+  },
+  "memory": {}
+}
