@@ -399,6 +399,7 @@ bash install.sh
 
 <p align="center">
   <em>🔥 A production-ready, modular backend infrastructure SDK<br>designed for AI-powered Python services.</em>
+  br
 </p>
 
 <br>
