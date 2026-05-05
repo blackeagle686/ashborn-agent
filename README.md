@@ -394,7 +394,7 @@ bash install.sh
 </p>
 
 <h2 align="center">
-  &nbsp;&nbsp;Phoenix AI Framework
+  Phoenix AI Framework
 </h2>
 
 <p align="center">
