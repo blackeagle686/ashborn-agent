@@ -6,6 +6,7 @@ import subprocess
 
 from .helpers.tasks import _clean_json
 from .helpers.generation import _add_generation_block
+from .prompts import GENERATION_PROMPT
 
 class AshbornGenerator:
     """
@@ -91,46 +92,7 @@ class AshbornGenerator:
         except Exception as ex:
             return f"Could not read {file_path}: {ex}"
 
-    GENERATION_PROMPT = """\
-You are the ASHBORN Code Generator. You receive ONE plan_step and must generate the exact code/files required.
 
-=== GENERATOR RULEBOOK ===
-1. Respond ONLY with valid JSON.
-2. Multi-file Generation: You SHOULD generate multiple artifacts simultaneously if they belong together logically (e.g., creating a module, an `__init__.py`, and a test file in one pass).
-3. type "file_write": Use for NEW files. "code" is full content.
-4. type "file_update_multi": Use for EXISTING files. Use "edits" field.
-5. type "terminal": "code" is the bash command.
-6. DIRECTORY AWARENESS: Always ensure directories exist before writing files.
-
-Plan Step Details:
-Step ID: {step_id} | Type: {type}
-Approach: {approach}
-Algorithm: {algorithm}
-
-=== RESPONSE SCHEMA ===
-{{
-  "generation_blocks": [
-    {{
-      "generate_block_id": <INT>,
-      "plan_step_id": {step_id},
-      "artifacts": [
-        {{
-          "type": "file_write | file_update_multi | terminal",
-          "path": "<path>",
-          "language": "<python|bash|json|etc>",
-          "code": "...",
-          "edits": []
-        }}
-      ],
-      "status": "success",
-      "metadata": {{ "model": "ashborn-generator" }}
-    }}
-  ]
-}}
-
-Existing File Context:
-{file_context}
-"""
 
     async def generate_step(self, step: dict, task: dict) -> dict:
         from .helpers.schemas import validate_schema, GENERATION_SCHEMA
@@ -148,7 +110,7 @@ Existing File Context:
                 )
             file_context = "\n".join(sections)
             
-        base_prompt = self.GENERATION_PROMPT.format(
+        base_prompt = GENERATION_PROMPT.format(
             step_id=step.get("plan_step_id", 1),
             type=step.get("type", ""),
             approach=step.get("solution", {}).get("approach", ""),
