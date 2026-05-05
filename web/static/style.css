@@ -226,24 +226,24 @@ ul { list-style: none; }
 
 .hero-badge {
   display: inline-block;
-  padding: 6px 20px;
-  background: rgba(184,48,255,0.12);
-  border: 1px solid rgba(184,48,255,0.25);
+  padding: 5px 16px;
+  background: rgba(184,48,255,0.1);
+  border: 1px solid rgba(184,48,255,0.2);
   border-radius: 50px;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--purple);
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
   animation: fadeInDown 0.8s ease backwards;
 }
 
 .hero-logo {
-  width: 120px;
-  height: 120px;
-  margin: 0 auto 32px;
-  filter: drop-shadow(0 0 40px rgba(184,48,255,0.35));
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  filter: drop-shadow(0 0 30px rgba(184,48,255,0.3));
   animation: heroFloat 4s infinite ease-in-out, fadeIn 1s ease backwards 0.2s;
 }
 
@@ -263,11 +263,11 @@ ul { list-style: none; }
 }
 
 .hero h1 {
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 900;
-  letter-spacing: -1px;
+  letter-spacing: -1.5px;
   line-height: 1.1;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   animation: fadeIn 1s ease backwards 0.4s;
 }
 
@@ -279,11 +279,11 @@ ul { list-style: none; }
 }
 
 .hero-subtitle {
-  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-size: clamp(0.95rem, 1.5vw, 1.1rem);
   color: var(--text-secondary);
-  max-width: 600px;
-  margin: 0 auto 48px;
-  line-height: 1.7;
+  max-width: 540px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
   animation: fadeIn 1s ease backwards 0.6s;
 }
 
@@ -335,8 +335,8 @@ ul { list-style: none; }
 .hero-stats {
   display: flex;
   justify-content: center;
-  gap: 48px;
-  margin-top: 64px;
+  gap: 32px;
+  margin-top: 48px;
   animation: fadeIn 1s ease backwards 1s;
 }
 
@@ -345,7 +345,7 @@ ul { list-style: none; }
 }
 
 .stat-value {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 800;
   background: var(--grad-hero);
   -webkit-background-clip: text;
