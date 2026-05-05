@@ -1,16 +1,19 @@
 from phoenix.framework.agent.core.loop import AgentLoop
-import json
-import os
 import asyncio
 
-from .helpers.tasks import TASK_FILE, _load_tasks, _mark_task, _reset_failed_tasks
-from .helpers.plan import _get_pending_plan_steps, _get_executable_plan_steps, _mark_plan_step, _reset_failed_plan_steps, PLAN_FILE
-from .helpers.state import _load_state, _save_state, _init_state_from_tasks, _update_state, _clear_state, STATE_FILE
-
-# ... (omitting top part since I need to use multi_replace to be precise)
-from .helpers.generation import GENERATION_FILE
+from .helpers.tasks import _load_tasks, _mark_task, _reset_failed_tasks
+from .helpers.plan import _get_pending_plan_steps, _get_executable_plan_steps, _mark_plan_step, _reset_failed_plan_steps
+from .helpers.state import _init_state_from_tasks, _update_state, _clear_state
 from .helpers.observability import log_agent_action, clear_logs
 from .generator import AshbornGenerator
+from .prompts import build_fast_answer_prompt
+from .utils import (
+    get_pending_tasks, get_executable_tasks, has_task_file,
+    map_artifacts_to_actions, pre_execution_validate,
+    is_sensitive_action, check_and_ask_approval,
+    cleanup_state_files, is_all_done, schedule_background,
+)
+
 
 class AshbornLoop(AgentLoop):
     """
@@ -32,379 +35,88 @@ class AshbornLoop(AgentLoop):
         else:
             self.generator = AshbornGenerator(self.planner.llm)
 
-    def _schedule_background(self, coro):
-        task = asyncio.create_task(coro)
-        self._background_tasks.add(task)
-        def _on_done(t):
-            self._background_tasks.discard(t)
-            try:
-                _ = t.exception()
-            except Exception:
-                pass
-        task.add_done_callback(_on_done)
-
-    def _get_pending_tasks(self) -> list:
-        try:
-            data = _load_tasks()
-            return sorted(
-                [t for t in data.get("tasks", []) if t.get("status") == "pending"],
-                key=lambda t: t.get("priority", 99)
-            )
-        except Exception:
-            return []
-
-    def _get_executable_tasks(self) -> list:
-        try:
-            data = _load_tasks()
-            all_tasks = data.get("tasks", [])
-            task_status_map = {t.get("id"): t.get("status") for t in all_tasks}
-            
-            executable = []
-            for t in all_tasks:
-                if t.get("status") != "pending":
-                    continue
-                deps = t.get("dependencies", [])
-                deps_met = True
-                deps_failed = False
-                for d in deps:
-                    s = task_status_map.get(d, "done")
-                    if s == "failed":
-                        deps_failed = True
-                    elif s != "done":
-                        deps_met = False
-                
-                if deps_failed:
-                    _mark_task(t.get("id"), "failed")
-                    continue
-                
-                if deps_met:
-                    executable.append(t)
-                    
-            return sorted(executable, key=lambda t: t.get("priority", 99))
-        except Exception:
-            return []
-
-    def _has_task_file(self) -> bool:
-        return os.path.exists(TASK_FILE)
-
-    def _map_artifacts_to_actions(self, generation_blocks: list) -> list:
-        try:
-            from ashborn.server import vscode_ipc_context
-            is_vscode = vscode_ipc_context.get() is not None
-        except ImportError:
-            is_vscode = False
-            
-        actions = []
-        for block in generation_blocks:
-            for art in block.get("artifacts", []):
-                if art["type"] == "file_write":
-                    if is_vscode:
-                        actions.append({"tool": "vscode_create_file", "kwargs": {"path": art.get("path", ""), "content": art.get("code", "")}})
-                    else:
-                        actions.append({"tool": "file_write", "kwargs": {"file_path": art.get("path", ""), "content": art.get("code", "")}})
-                elif art["type"] == "file_update_multi":
-                    # Use the direct 'edits' list if provided, fallback to 'code' if it happens to be valid JSON
-                    chunks = art.get("edits")
-                    if not chunks and "code" in art:
-                        try:
-                            if isinstance(art["code"], str):
-                                chunks = json.loads(art["code"])
-                            else:
-                                chunks = art["code"]
-                        except:
-                            chunks = []
-                    
-                    if not chunks:
-                        continue # Skip empty updates
-                    
-                    if is_vscode:
-                        # surgical local update still best for VS Code
-                        actions.append({
-                            "tool": "file_update_multi", 
-                            "kwargs": {
-                                "file_path": art.get("path", ""), 
-                                "edits": chunks
-                            }
-                        })
-                    else:
-                        actions.append({
-                            "tool": "file_update_multi", 
-                            "kwargs": {
-                                "file_path": art.get("path", ""), 
-                                "edits": chunks
-                            }
-                        })
-                elif art["type"] == "terminal":
-                    if is_vscode:
-                        actions.append({"tool": "vscode_terminal_run", "kwargs": {"command": art.get("code", "")}})
-                    else:
-                        actions.append({"tool": "terminal", "kwargs": {"command": art.get("code", "")}})
-        return actions
-
-    def _pre_execution_validate(self, actions: list) -> list:
-        """Checks for dangerous or malformed actions before execution."""
-        errors = []
-        for act in actions:
-            tool = act.get("tool")
-            kwargs = act.get("kwargs", {})
-            
-            # 1. Path Safety
-            path = kwargs.get("path") or kwargs.get("file_path")
-            if path:
-                if path.startswith("/") or ".." in path:
-                    errors.append(f"Safety Violation: Path '{path}' is absolute or contains '..'")
-            
-            # 2. Command Safety
-            if tool in ["terminal", "vscode_terminal_run"]:
-                cmd = kwargs.get("command", "")
-                forbidden = ["rm -rf /", "mkfs", "dd if="] # Simple examples
-                for f in forbidden:
-                    if f in cmd:
-                        errors.append(f"Safety Violation: Command '{cmd}' contains forbidden pattern '{f}'")
-        return errors
-
-    def _is_sensitive_action(self, actions: list) -> bool:
-        """Returns True if any action is considered sensitive and needs approval."""
-        sensitive_tools = ["terminal", "vscode_terminal_run"]
-        safe_commands = ["ls", "pwd", "mkdir -p", "touch", "cat", "git status"]
-        
-        for act in actions:
-            if act.get("tool") in sensitive_tools:
-                cmd = act.get("kwargs", {}).get("command", "").strip()
-                # Check if command is safe
-                if not any(cmd.startswith(s) for s in safe_commands):
-                    return True
-        return False
-
-    async def _check_and_ask_approval(self, actions: list) -> tuple[bool, list]:
-        """Requests approval via VS Code IPC if sensitive. Returns (is_approved, final_actions)."""
-        if not self._is_sensitive_action(actions):
-            return True, actions
-            
-        from ashborn.server import vscode_ipc_context
-        ipc_call = vscode_ipc_context.get()
-        if not ipc_call:
-            return True, actions # Fallback: assume approved if not in VS Code context
-            
-        try:
-            raw_res = await ipc_call("ask_approval", {"actions": actions})
-            res = json.loads(raw_res)
-            
-            if res.get("decision") == "approved":
-                # User might have modified actions
-                final_actions = res.get("modified_actions", actions)
-                return True, final_actions
-            else:
-                return False, actions
-        except Exception as e:
-            print(f"[LOOP ERROR] Approval request failed: {e}")
-            return False, actions
+    # ------------------------------------------------------------------
+    # Non-streaming entry point
+    # ------------------------------------------------------------------
 
     async def run(self, prompt: str, memory, session_id: str, mode: str = "auto", **kwargs) -> str:
         clear_logs()
         is_resume = prompt.strip().lower() == "resume" or mode == "resume"
 
+        # Fast-answer shortcut
         if mode == "fast_ans" and not is_resume:
-            context = await memory.get_full_context(session_id, query=prompt)
-            system_prompt = "You are ASHBORN. Give a concise, direct answer to the user's question."
-            full_prompt = f"{system_prompt}\n\nContext:\n{context}\n\nUser: {prompt}"
-            ans = await self.planner.llm.generate(full_prompt, session_id=session_id)
-            await memory.add_interaction(session_id, "assistant", ans)
-            return ans
+            return await self._fast_answer(prompt, memory, session_id)
 
-        # 1. Think
-        if is_resume:
-            log_agent_action("loop", "resume_execution", {}, {"status": "resuming"}, "success")
-            _reset_failed_tasks()
-            _reset_failed_plan_steps()
-            objective_meta = "Resuming previous task list..."
-        else:
-            _clear_state()
-            objective_meta = await self.thinker.analyze(prompt, memory, session_id)
-            log_agent_action("thinker", "analyze_prompt", {"prompt": prompt}, objective_meta, "success")
-            
-            # Initialize execution state from new tasks
-            try:
-                tasks_data = _load_tasks()
-                _init_state_from_tasks(tasks_data.get("tasks", []))
-            except Exception:
-                pass
-
-        memory.session.set("current_objective", objective_meta)
-
-        if not is_resume:
-            try:
-                analysis = await self.analyzer.analyze_workspace(prompt)
-                memory.session.set("project_analysis", analysis)
-            except Exception:
-                pass
-
+        # 1. Think / Resume
+        objective_meta = await self._init_phase(prompt, memory, session_id, is_resume)
         await memory.add_interaction(session_id, "system", f"Task breakdown: {objective_meta}")
-        
+
         accumulated_results = ""
         task_summaries = []
         total_actions = 0
 
-        # Loop Tasks
-        while self._has_task_file() and total_actions < self.MAX_TOTAL_ACTIONS:
-            pending_tasks = self._get_pending_tasks()
-            if not pending_tasks:
+        while has_task_file() and total_actions < self.MAX_TOTAL_ACTIONS:
+            pending = get_pending_tasks()
+            if not pending:
                 break
-            
-            task = pending_tasks[0]
+
+            task = pending[0]
             task_id = task.get("id")
-            
-            # 2. Plan (Generate plan_steps if none exist for this task)
-            pending_steps = _get_pending_plan_steps(task_id)
+
+            # 2. Plan
+            pending_steps = await self._ensure_plan_steps(task, task_id)
             if not pending_steps:
-                await self.planner.generate_plan_steps(task)
-                pending_steps = _get_pending_plan_steps(task_id)
-                log_agent_action("planner", "generate_plan_steps", {"task": task}, {"plan_steps": pending_steps}, "success")
-                
-            if not pending_steps:
-                # No steps generated, mark task done
                 _mark_task(task_id, "done")
                 continue
-                
+
             task_failed = False
-            
-            # Loop Plan Steps
+
+            # 3-5. Generate → Execute → Reflect (per step)
             for step in pending_steps:
                 step_id = step.get("plan_step_id")
-                step_success = False
-                
-                for attempt in range(self.MAX_RETRIES_PER_TASK):
-                    # 3. Generate Code Iteratively
-                    gen_data = await self.generator.generate_step(step, task)
-                    blocks = gen_data.get("generation_blocks", [])
-                    
-                    if any(b.get("status") == "syntax_error" for b in blocks):
-                        error_msg = next((b.get("error") for b in blocks if b.get("status") == "syntax_error"), "Syntax validation failed")
-                        log_agent_action("generator", "generate_step", {"step": step, "task": task}, {"error": error_msg}, "failed")
-                        reflection = await self.reflector.reflect(step.get("solution", {}).get("approach", ""), {"actions": []}, f"Generation failed: {error_msg}")
-                        log_agent_action("reflector", "reflect", {"approach": step.get("solution", {}).get("approach", "")}, reflection, "success")
-                        
-                        accumulated_results += f"\nStep '{step.get('type')}' (attempt {attempt + 1}):\n  Result: Syntax Error\n  Reflection: {reflection['reflection']}\n"
-                        self._schedule_background(memory.add_interaction(session_id, "system", f"Step: {step.get('type')} | Result: Syntax Error | Reflection: {reflection['reflection']}"))
-                        continue
-                        
-                    log_agent_action("generator", "generate_step", {"step": step, "task": task}, gen_data, "success")
-                    
-                    # 4. Map to Actions & Execute
-                    actions = self._map_artifacts_to_actions(blocks)
-                    if not actions:
-                        _mark_plan_step(step_id, "done")
-                        step_success = True
-                        break
-                        
-                    action_errors = self._pre_execution_validate(actions)
-                    if action_errors:
-                        action_result = "Pre-execution validation failed: " + "; ".join(action_errors)
-                        log_agent_action("loop", "pre_execution_validate", {"actions": actions}, {"errors": action_errors}, "failed")
-                    else:
-                        # --- Human-in-the-Loop Approval ---
-                        approved, actions = await self._check_and_ask_approval(actions)
-                        if not approved:
-                            action_result = "Execution denied by user."
-                            log_agent_action("loop", "ask_approval", {"actions": actions}, {"result": "denied"}, "failed")
-                        else:
-                            action_result = await self.actor.execute({"actions": actions})
-                            log_agent_action("actor", "execute_actions", {"actions": actions}, {"result": action_result}, "success")
-                            total_actions += len(actions)
-                    
-                    # 5. Reflect
-                    reflection = await self.reflector.reflect(step.get("solution", {}).get("approach", ""), {"actions": actions}, action_result)
-                    log_agent_action("reflector", "reflect", {"approach": step.get("solution", {}).get("approach", ""), "actions": actions, "result": action_result}, reflection, "success")
-                    
-                    accumulated_results += (
-                        f"\nStep '{step.get('type')}' (attempt {attempt + 1}):\n"
-                        f"  Result: {action_result}\n"
-                        f"  Reflection: {reflection['reflection']}\n"
-                    )
-                    
-                    self._schedule_background(memory.add_interaction(
-                        session_id, "system",
-                        f"Step: {step.get('type')} | Result: {action_result} | Reflection: {reflection['reflection']}"
-                    ))
-                    
-                    if reflection["is_complete"]:
-                        _mark_plan_step(step_id, "done")
-                        step_success = True
-                        break
-                
-                if not step_success:
+                step_ok, result_text, action_count = await self._execute_step(step, task, memory, session_id)
+                total_actions += action_count
+                accumulated_results += result_text
+
+                if step_ok:
+                    _mark_plan_step(step_id, "done")
+                else:
                     _mark_plan_step(step_id, "failed")
                     task_failed = True
-                    break # Stop step execution for this task
-                    
-            if task_failed:
-                _mark_task(task_id, "failed")
-                _update_state(task_id, "failed", task.get('title'))
-                task_summaries.append(f"✗ [{task.get('priority')}] {task.get('title')}: failed at step {step_id}")
-            else:
-                _mark_task(task_id, "done")
-                _update_state(task_id, "done", task.get('title'))
-                task_summaries.append(f"✓ [{task.get('priority')}] {task.get('title')}")
+                    break
 
-        # Cleanup only on full success
-        all_done = True
-        try:
-            tasks_data = _load_tasks()
-            if any(t.get("status") != "done" for t in tasks_data.get("tasks", [])):
-                all_done = False
-        except:
-            all_done = False
+            self._finalize_task(task_id, task, task_failed, task_summaries)
 
-        if all_done:
-            for file in [TASK_FILE, PLAN_FILE, GENERATION_FILE, STATE_FILE]:
-                if os.path.exists(file):
-                    try: os.remove(file)
-                    except Exception: pass
+        # Cleanup on full success
+        if is_all_done():
+            cleanup_state_files()
 
-        summary = "\n".join(task_summaries) if task_summaries else "No tasks were executed."
+        summary = "\n".join(task_summaries) or "No tasks were executed."
         final_answer = f"**Ashborn Task Execution Complete**\n\n{summary}\n\n---\n{accumulated_results.strip()}"
         await memory.add_interaction(session_id, "assistant", final_answer)
         return final_answer
+
+    # ------------------------------------------------------------------
+    # Streaming entry point
+    # ------------------------------------------------------------------
 
     async def run_stream(self, prompt: str, memory, session_id: str, mode: str = "auto", **kwargs):
         clear_logs()
         is_resume = prompt.strip().lower() == "resume" or mode == "resume"
 
+        # Fast-answer shortcut
         if mode == "fast_ans" and not is_resume:
-            yield {"type": "status", "role": "analyzer", "content": "⚡ Fast Answer mode active..."}
-            context = await memory.get_full_context(session_id, query=prompt)
-            system_prompt = "You are ASHBORN. Give a concise, direct answer to the user's question."
-            full_prompt = f"{system_prompt}\n\nContext:\n{context}\n\nUser: {prompt}"
-            async for chunk in self.planner.llm.generate_stream(full_prompt, session_id=session_id):
-                yield {"type": "chunk", "content": chunk}
-            await memory.add_interaction(session_id, "assistant", "Fast answer generated.")
+            async for event in self._fast_answer_stream(prompt, memory, session_id):
+                yield event
             return
 
+        # 1. Think / Resume
         if is_resume:
             yield {"type": "status", "role": "system", "content": "🔄 Resuming previous execution state..."}
-            _reset_failed_tasks()
-            _reset_failed_plan_steps()
-            objective_meta = "Resuming previous task list..."
         else:
             yield {"type": "status", "role": "thinker", "content": "🧠 Decomposing your request into tasks..."}
-            _clear_state()
-            analyze_task = asyncio.create_task(self.analyzer.analyze_workspace(prompt))
-            objective_meta = await self.thinker.analyze(prompt, memory, session_id)
-            log_agent_action("thinker", "analyze_prompt", {"prompt": prompt}, objective_meta, "success")
-            
-            # Initialize execution state from new tasks
-            try:
-                tasks_data = _load_tasks()
-                _init_state_from_tasks(tasks_data.get("tasks", []))
-            except Exception:
-                pass
-                
-            try:
-                analysis = await asyncio.wait_for(analyze_task, timeout=5.0)
-                memory.session.set("project_analysis", analysis)
-            except Exception:
-                pass
 
+        objective_meta = await self._init_phase(prompt, memory, session_id, is_resume)
         memory.session.set("current_objective", objective_meta)
         yield {"type": "status", "role": "thinker", "content": "📋 Tasks Breakdown Complete"}
         await memory.add_interaction(session_id, "system", f"Task breakdown: {objective_meta}")
@@ -414,49 +126,51 @@ class AshbornLoop(AgentLoop):
         total_actions = 0
         task_number = 0
 
-        while self._has_task_file() and total_actions < self.MAX_TOTAL_ACTIONS:
-            executable_tasks = self._get_executable_tasks()
-            if not executable_tasks:
-                pending = self._get_pending_tasks()
-                if pending:
+        while has_task_file() and total_actions < self.MAX_TOTAL_ACTIONS:
+            executable = get_executable_tasks()
+            if not executable:
+                if get_pending_tasks():
                     yield {"type": "chunk", "role": "system", "content": "\n⚠ Deadlock: Tasks are pending but dependencies are not met.\n"}
                 break
-                
-            task = executable_tasks[0]
+
+            task = executable[0]
             task_id = task.get("id")
             task_number += 1
-            
-            try: all_tasks_count = len(_load_tasks().get("tasks", []))
-            except Exception: all_tasks_count = "?"
+
+            try:
+                all_tasks_count = len(_load_tasks().get("tasks", []))
+            except Exception:
+                all_tasks_count = "?"
 
             yield {"type": "status", "role": "planner", "content": f"⚙ Task {task_number}/{all_tasks_count}: {task.get('title')}"}
             yield {"type": "chunk", "role": "planner", "content": f"\n**[P{task.get('priority')}] {task.get('title')}**\n"}
 
+            # 2. Plan
             pending_steps = _get_pending_plan_steps(task_id)
             if not pending_steps:
-                yield {"type": "status", "role": "planner", "content": f"  ↳ Generating Plan Steps..."}
+                yield {"type": "status", "role": "planner", "content": "  ↳ Generating Plan Steps..."}
                 await self.planner.generate_plan_steps(task)
                 pending_steps = _get_pending_plan_steps(task_id)
                 log_agent_action("planner", "generate_plan_steps", {"task": task}, {"plan_steps": pending_steps}, "success")
-                
+
             if not pending_steps:
                 _mark_task(task_id, "done")
                 yield {"type": "chunk", "role": "planner", "content": "  ↳ No steps required.\n"}
                 continue
-                
+
             task_failed = False
-            step_attempts = {} # plan_step_id -> attempt_count
-            
+            step_attempts = {}
+
+            # 3-5. Step execution loop
             while True:
-                executable_steps = _get_executable_plan_steps(task_id)
-                if not executable_steps:
-                    pending = _get_pending_plan_steps(task_id)
-                    if pending:
-                        task_failed = True # Deadlock or failed deps
+                exec_steps = _get_executable_plan_steps(task_id)
+                if not exec_steps:
+                    if _get_pending_plan_steps(task_id):
+                        task_failed = True
                     break
-                    
+
                 to_run = []
-                for s in executable_steps:
+                for s in exec_steps:
                     sid = s.get("plan_step_id")
                     step_attempts[sid] = step_attempts.get(sid, 0) + 1
                     if step_attempts[sid] > self.MAX_RETRIES_PER_TASK:
@@ -464,107 +178,241 @@ class AshbornLoop(AgentLoop):
                         task_failed = True
                     else:
                         to_run.append(s)
-                        
+
                 if task_failed or not to_run:
                     break
-                    
+
                 yield {"type": "status", "role": "actor", "content": f"  ↳ Generating Code ({len(to_run)} step(s) in parallel)..."}
-                
-                # Parallel Generation
-                gen_coroutines = [self.generator.generate_step(s, task) for s in to_run]
-                gen_results = await asyncio.gather(*gen_coroutines, return_exceptions=True)
-                
-                # Sequential Execution
+
+                gen_results = await asyncio.gather(
+                    *[self.generator.generate_step(s, task) for s in to_run],
+                    return_exceptions=True,
+                )
+
                 for step, gen_data in zip(to_run, gen_results):
                     step_id = step.get("plan_step_id")
-                    
+
                     if isinstance(gen_data, Exception):
                         yield {"type": "chunk", "role": "system", "content": f"    ↳ ⚠ Generator error: {gen_data}\n"}
                         continue
-                        
+
                     yield {"type": "chunk", "role": "planner", "content": f"  ↳ Step {step.get('step_index', '?')} ({step.get('type')}): {step.get('solution', {}).get('approach', '')[:60]}...\n"}
-                        
+
                     blocks = gen_data.get("generation_blocks", [])
+
+                    # Syntax-error retry
                     if any(b.get("status") == "syntax_error" for b in blocks):
-                        error_msg = next((b.get("error") for b in blocks if b.get("status") == "syntax_error"), "Syntax validation failed")
-                        log_agent_action("generator", "generate_step", {"step": step, "task": task}, {"error": error_msg}, "failed")
-                        reflection = await self.reflector.reflect(step.get("solution", {}).get("approach", ""), {"actions": []}, f"Generation failed: {error_msg}")
-                        log_agent_action("reflector", "reflect", {"approach": step.get("solution", {}).get("approach", "")}, reflection, "success")
-                        
-                        accumulated_results += f"\nStep '{step.get('type')}':\nResult: Syntax Error\nReflection: {reflection['reflection']}\n"
-                        self._schedule_background(memory.add_interaction(session_id, "system", f"Step: {step.get('type')} | Result: Syntax Error | Reflection: {reflection['reflection']}"))
+                        result_text, reflection = await self._handle_syntax_error(step, task, blocks, memory, session_id)
+                        accumulated_results += result_text
                         yield {"type": "chunk", "role": "reflector", "content": f"    ↳ ⚠ Retry: Syntax error detected before execution: {reflection['reflection']}\n"}
                         continue
-                        
+
                     log_agent_action("generator", "generate_step", {"step": step, "task": task}, gen_data, "success")
-                    actions = self._map_artifacts_to_actions(blocks)
-                    
+                    actions = map_artifacts_to_actions(blocks)
+
                     if not actions:
                         _mark_plan_step(step_id, "done")
-                        yield {"type": "chunk", "role": "actor", "content": f"    ↳ Done (No actions needed)\n"}
+                        yield {"type": "chunk", "role": "actor", "content": "    ↳ Done (No actions needed)\n"}
                         continue
-                        
+
                     yield {"type": "status", "role": "actor", "content": f"  ↳ Executing {len(actions)} actions..."}
-                    
-                    action_errors = self._pre_execution_validate(actions)
-                    if action_errors:
-                        action_result = "Pre-execution validation failed: " + "; ".join(action_errors)
+
+                    action_result, actions, executed = await self._validate_and_execute(actions)
+                    if executed:
+                        total_actions += len(actions)
+
+                    if not executed and is_sensitive_action(actions):
+                        yield {"type": "chunk", "role": "system", "content": f"    ↳ ⛔ {action_result}\n"}
+                    elif not executed:
                         yield {"type": "chunk", "role": "system", "content": f"    ↳ ⚠ Safety Warning: {action_result}\n"}
-                    else:
-                        # --- Human-in-the-Loop Approval ---
-                        if self._is_sensitive_action(actions):
-                            yield {"type": "status", "role": "actor", "content": "  ↳ Waiting for user approval..."}
-                            
-                        approved, actions = await self._check_and_ask_approval(actions)
-                        if not approved:
-                            action_result = "Execution denied by user."
-                            yield {"type": "chunk", "role": "system", "content": f"    ↳ ⛔ {action_result}\n"}
-                        else:
-                            action_result = await self.actor.execute({"actions": actions})
-                            log_agent_action("actor", "execute_actions", {"actions": actions}, {"result": action_result}, "success")
-                            total_actions += len(actions)
-                    
-                    reflection = await self.reflector.reflect(step.get("solution", {}).get("approach", ""), {"actions": actions}, action_result)
+
+                    reflection = await self.reflector.reflect(
+                        step.get("solution", {}).get("approach", ""), {"actions": actions}, action_result,
+                    )
                     log_agent_action("reflector", "reflect", {"approach": step.get("solution", {}).get("approach", ""), "actions": actions, "result": action_result}, reflection, "success")
-                    
-                    accumulated_results += (f"\nStep '{step.get('type')}':\nResult: {action_result}\nReflection: {reflection['reflection']}\n")
-                    self._schedule_background(memory.add_interaction(session_id, "system", f"Step: {step.get('type')} | Result: {action_result} | Reflection: {reflection['reflection']}"))
-                    
+
+                    accumulated_results += f"\nStep '{step.get('type')}':\nResult: {action_result}\nReflection: {reflection['reflection']}\n"
+                    schedule_background(self._background_tasks, memory.add_interaction(
+                        session_id, "system",
+                        f"Step: {step.get('type')} | Result: {action_result} | Reflection: {reflection['reflection']}",
+                    ))
+
                     if reflection["is_complete"]:
                         _mark_plan_step(step_id, "done")
                         yield {"type": "chunk", "role": "reflector", "content": f"    ↳ ✓ {reflection['reflection']}\n"}
                     else:
                         yield {"type": "chunk", "role": "reflector", "content": f"    ↳ ⚠ Retry: {reflection['reflection']}\n"}
 
-            if task_failed:
-                _mark_task(task_id, "failed")
-                _update_state(task_id, "failed", task.get('title'))
-                task_summaries.append(f"✗ {task.get('title')}")
-                yield {"type": "chunk", "role": "reflector", "content": f"  ↳ ✗ Task failed.\n"}
-            else:
-                _mark_task(task_id, "done")
-                _update_state(task_id, "done", task.get('title'))
-                task_summaries.append(f"✓ {task.get('title')}")
-                yield {"type": "chunk", "role": "reflector", "content": f"  ↳ ✓ Task complete.\n"}
+            # Finalize task
+            self._finalize_task(task_id, task, task_failed, task_summaries)
+            icon = "✗" if task_failed else "✓"
+            msg = "Task failed." if task_failed else "Task complete."
+            yield {"type": "chunk", "role": "reflector", "content": f"  ↳ {icon} {msg}\n"}
 
-        # Cleanup only on full success
-        all_done = True
-        try:
-            tasks_data = _load_tasks()
-            if any(t.get("status") != "done" for t in tasks_data.get("tasks", [])):
-                all_done = False
-        except:
-            all_done = False
-
-        if all_done:
+        # Cleanup on full success
+        if is_all_done():
             yield {"type": "status", "content": "🗑 Cleaning up files..."}
-            for file in [TASK_FILE, PLAN_FILE, GENERATION_FILE, STATE_FILE]:
-                if os.path.exists(file):
-                    try: os.remove(file)
-                    except Exception: pass
+            cleanup_state_files()
 
-        summary_lines = "\n".join(task_summaries) if task_summaries else "No tasks were executed."
+        summary_lines = "\n".join(task_summaries) or "No tasks were executed."
         yield {"type": "chunk", "content": f"\n\n---\n**All tasks complete!**\n\n{summary_lines}\n"}
 
         final_answer = f"Tasks complete:\n{summary_lines}\n\n{accumulated_results.strip()}"
         await memory.add_interaction(session_id, "assistant", final_answer)
+
+    # ==================================================================
+    # Private helpers (shared by run / run_stream)
+    # ==================================================================
+
+    async def _fast_answer(self, prompt, memory, session_id) -> str:
+        """Handle fast_ans mode (non-streaming)."""
+        context = await memory.get_full_context(session_id, query=prompt)
+        full_prompt = build_fast_answer_prompt(context, prompt)
+        ans = await self.planner.llm.generate(full_prompt, session_id=session_id)
+        await memory.add_interaction(session_id, "assistant", ans)
+        return ans
+
+    async def _fast_answer_stream(self, prompt, memory, session_id):
+        """Handle fast_ans mode (streaming)."""
+        yield {"type": "status", "role": "analyzer", "content": "⚡ Fast Answer mode active..."}
+        context = await memory.get_full_context(session_id, query=prompt)
+        full_prompt = build_fast_answer_prompt(context, prompt)
+        async for chunk in self.planner.llm.generate_stream(full_prompt, session_id=session_id):
+            yield {"type": "chunk", "content": chunk}
+        await memory.add_interaction(session_id, "assistant", "Fast answer generated.")
+
+    async def _init_phase(self, prompt, memory, session_id, is_resume) -> str:
+        """Run the Think phase (or resume). Returns the objective metadata string."""
+        if is_resume:
+            log_agent_action("loop", "resume_execution", {}, {"status": "resuming"}, "success")
+            _reset_failed_tasks()
+            _reset_failed_plan_steps()
+            return "Resuming previous task list..."
+
+        _clear_state()
+
+        # Fire workspace analysis in the background (streaming uses wait_for)
+        analyze_coro = self.analyzer.analyze_workspace(prompt)
+        analyze_task = asyncio.create_task(analyze_coro)
+
+        objective_meta = await self.thinker.analyze(prompt, memory, session_id)
+        log_agent_action("thinker", "analyze_prompt", {"prompt": prompt}, objective_meta, "success")
+
+        # Initialize execution state from new tasks
+        try:
+            tasks_data = _load_tasks()
+            _init_state_from_tasks(tasks_data.get("tasks", []))
+        except Exception:
+            pass
+
+        # Wait for workspace analysis (best-effort)
+        try:
+            analysis = await asyncio.wait_for(analyze_task, timeout=5.0)
+            memory.session.set("project_analysis", analysis)
+        except Exception:
+            pass
+
+        memory.session.set("current_objective", objective_meta)
+        return objective_meta
+
+    async def _ensure_plan_steps(self, task, task_id) -> list:
+        """Generate plan steps for a task if they don't exist yet."""
+        steps = _get_pending_plan_steps(task_id)
+        if not steps:
+            await self.planner.generate_plan_steps(task)
+            steps = _get_pending_plan_steps(task_id)
+            log_agent_action("planner", "generate_plan_steps", {"task": task}, {"plan_steps": steps}, "success")
+        return steps
+
+    async def _execute_step(self, step, task, memory, session_id) -> tuple[bool, str, int]:
+        """
+        Run generate → execute → reflect for one step across all retry attempts.
+        Returns (success, accumulated_text, action_count).
+        """
+        result_text = ""
+        total_action_count = 0
+
+        for attempt in range(self.MAX_RETRIES_PER_TASK):
+            gen_data = await self.generator.generate_step(step, task)
+            blocks = gen_data.get("generation_blocks", [])
+
+            # Syntax-error → retry
+            if any(b.get("status") == "syntax_error" for b in blocks):
+                txt, _ = await self._handle_syntax_error(step, task, blocks, memory, session_id, attempt=attempt)
+                result_text += txt
+                continue
+
+            log_agent_action("generator", "generate_step", {"step": step, "task": task}, gen_data, "success")
+            actions = map_artifacts_to_actions(blocks)
+
+            if not actions:
+                return True, result_text, total_action_count
+
+            action_result, actions, executed = await self._validate_and_execute(actions)
+            if executed:
+                total_action_count += len(actions)
+
+            reflection = await self.reflector.reflect(
+                step.get("solution", {}).get("approach", ""), {"actions": actions}, action_result,
+            )
+            log_agent_action("reflector", "reflect", {"approach": step.get("solution", {}).get("approach", ""), "actions": actions, "result": action_result}, reflection, "success")
+
+            result_text += (
+                f"\nStep '{step.get('type')}' (attempt {attempt + 1}):\n"
+                f"  Result: {action_result}\n"
+                f"  Reflection: {reflection['reflection']}\n"
+            )
+            schedule_background(self._background_tasks, memory.add_interaction(
+                session_id, "system",
+                f"Step: {step.get('type')} | Result: {action_result} | Reflection: {reflection['reflection']}",
+            ))
+
+            if reflection["is_complete"]:
+                return True, result_text, total_action_count
+
+        return False, result_text, total_action_count
+
+    async def _handle_syntax_error(self, step, task, blocks, memory, session_id, attempt=0):
+        """Handle syntax-error blocks: log, reflect, return result text + reflection."""
+        error_msg = next(
+            (b.get("error") for b in blocks if b.get("status") == "syntax_error"),
+            "Syntax validation failed",
+        )
+        log_agent_action("generator", "generate_step", {"step": step, "task": task}, {"error": error_msg}, "failed")
+
+        reflection = await self.reflector.reflect(
+            step.get("solution", {}).get("approach", ""), {"actions": []}, f"Generation failed: {error_msg}",
+        )
+        log_agent_action("reflector", "reflect", {"approach": step.get("solution", {}).get("approach", "")}, reflection, "success")
+
+        result_text = f"\nStep '{step.get('type')}' (attempt {attempt + 1}):\n  Result: Syntax Error\n  Reflection: {reflection['reflection']}\n"
+        schedule_background(self._background_tasks, memory.add_interaction(
+            session_id, "system",
+            f"Step: {step.get('type')} | Result: Syntax Error | Reflection: {reflection['reflection']}",
+        ))
+        return result_text, reflection
+
+    async def _validate_and_execute(self, actions) -> tuple[str, list, bool]:
+        """Validate, get approval, execute. Returns (result_str, final_actions, was_executed)."""
+        errors = pre_execution_validate(actions)
+        if errors:
+            log_agent_action("loop", "pre_execution_validate", {"actions": actions}, {"errors": errors}, "failed")
+            return "Pre-execution validation failed: " + "; ".join(errors), actions, False
+
+        approved, actions = await check_and_ask_approval(actions)
+        if not approved:
+            log_agent_action("loop", "ask_approval", {"actions": actions}, {"result": "denied"}, "failed")
+            return "Execution denied by user.", actions, False
+
+        result = await self.actor.execute({"actions": actions})
+        log_agent_action("actor", "execute_actions", {"actions": actions}, {"result": result}, "success")
+        return result, actions, True
+
+    @staticmethod
+    def _finalize_task(task_id, task, failed, summaries):
+        """Mark task done/failed and append to summaries list."""
+        status = "failed" if failed else "done"
+        _mark_task(task_id, status)
+        _update_state(task_id, status, task.get("title"))
+        icon = "✗" if failed else "✓"
+        summaries.append(f"{icon} [{task.get('priority')}] {task.get('title')}")
