@@ -4,54 +4,20 @@ import re
 
 from .helpers.tasks import _clean_json
 from .helpers.plan import _load_plan, _save_plan
+from .prompts import PLAN_GENERATION_PROMPT
 
 class AshbornPlanner(Planner):
     """
-    Receives one task at a time and generates a sequence of plan_steps (analysis, design, implementation, validation).
-    It persists these to ashborn.plan.json and does NOT generate tool actions directly.
+    Receives one task at a time and generates a sequence of plan_steps.
+    Persists to ashborn.plan.json and does NOT generate tool actions directly.
     """
-
-    PLAN_GENERATION_PROMPT = """\
-You are the ASHBORN Planning Engine. You receive ONE task and must break it down into logical execution steps.
-
-=== STRICT DIRECTIVES ===
-1. Respond ONLY with valid JSON.
-2. No preambles or post-commentary.
-3. Use exactly four core types: analysis, design, implementation, validation.
-4. Each step must have a clear "solution" object.
-
-Task Info:
-Task ID: {task_id}
-Priority: {priority}
-Title: {title}
-Description: {description}
-
-=== RESPONSE SCHEMA ===
-{{
-  "plan_steps": [
-    {{
-      "plan_step_id": <INT>,
-      "task_id": {task_id},
-      "step_index": <INT>,
-      "type": "analysis | design | implementation | validation",
-      "solution": {{
-        "approach": "<detailed text explanation>",
-        "algorithm": "<optional>",
-        "complexity": "<optional>"
-      }},
-      "dependencies": [],
-      "status": "pending"
-    }}
-  ]
-}}
-"""
 
     async def generate_plan_steps(self, task: dict) -> list:
         """
         Ask LLM to generate plan steps for the given task and persist to the backbone.
         """
         from .helpers.schemas import validate_schema, PLAN_SCHEMA
-        prompt = self.PLAN_GENERATION_PROMPT.format(
+        prompt = PLAN_GENERATION_PROMPT.format(
             task_id=task.get("id", 1),
             priority=task.get("priority", 1),
             title=task.get("title", ""),
