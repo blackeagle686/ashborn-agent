@@ -2,7 +2,7 @@
   "context_id": "c19e933f-1421-423b-855c-ca2af6b58089",
   "metadata": {
     "created_at": "2026-05-05T17:52:11.142035",
-    "updated_at": "2026-05-05T17:53:34.465797",
+    "updated_at": "2026-05-05T17:53:37.390272",
     "original_prompt": "Create a new python package called 'math_utils'. It must contain an __init__.py, a calc.py with a factorial function, and a test_calc.py that asserts factorial(5) == 120. Please generate them together in one pass."
   },
   "tasks": [
@@ -22,7 +22,7 @@
       "title": "Create math_utils/calc.py with factorial function",
       "description": "Implement a factorial function in math_utils/calc.py that computes the factorial of a non-negative integer using recursion or iteration.",
       "dependencies": [],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 3,
@@ -103,7 +103,7 @@
         "approach": "Analyze requirements: create a factorial function in math_utils/calc.py. The function must accept a non-negative integer and return its factorial using either recursion or iteration. Handle edge cases such as 0! = 1."
       },
       "dependencies": [],
-      "status": "pending"
+      "status": "done"
     },
     {
       "plan_step_id": 6,
@@ -115,7 +115,7 @@
       },
       "algorithm": "Iterative multiplication loop: result = 1; for i in range(1, n+1): result *= i",
       "complexity": "Time: O(n), Space: O(1)",
-      "status": "pending",
+      "status": "done",
       "dependencies": []
     },
     {
@@ -126,7 +126,7 @@
       "solution": {
         "approach": "Implement the factorial function in math_utils/calc.py. Create directory math_utils if it doesn't exist. Write the function with proper docstring and error handling. Ensure file is saved correctly."
       },
-      "status": "pending",
+      "status": "done",
       "dependencies": []
     },
     {
@@ -137,7 +137,7 @@
       "solution": {
         "approach": "Test the factorial function with inputs: 0 (expect 1), 1 (expect 1), 5 (expect 120). Verify file exists at math_utils/calc.py and function can be imported and called successfully."
       },
-      "status": "pending",
+      "status": "done",
       "dependencies": []
     }
   ],
@@ -264,15 +264,33 @@
       "metadata": {
         "model": "ashborn-generator"
       }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 5,
+      "artifacts": [
+        {
+          "type": "file_write",
+          "path": "math_utils/calc.py",
+          "language": "python",
+          "code": "def factorial(n):\n    \"\"\"Compute the factorial of a non-negative integer n.\n\n    Args:\n        n (int): A non-negative integer.\n\n    Returns:\n        int: The factorial of n.\n\n    Raises:\n        ValueError: If n is negative.\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"Factorial is not defined for negative numbers.\")\n    if n == 0:\n        return 1\n    result = 1\n    for i in range(1, n + 1):\n        result *= i\n    return result",
+          "edits": []
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
     }
   ],
   "execution_state": {
-    "completed_steps": [],
-    "pending_steps": [
+    "completed_steps": [
       {
         "id": 2,
         "title": "Create math_utils/calc.py with factorial function"
-      },
+      }
+    ],
+    "pending_steps": [
       {
         "id": 3,
         "title": "Create math_utils/test_calc.py with assertion"
