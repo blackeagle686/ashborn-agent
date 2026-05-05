@@ -12,7 +12,6 @@
 
 <p align="center">
   <a href="#-quickstart"><img src="https://img.shields.io/badge/%E2%9A%A1-Quick_Start-FF7B00?style=for-the-badge&labelColor=0A0C10" alt="Quick Start"></a>&nbsp;
-  <a href="#-architecture"><img src="https://img.shields.io/badge/%F0%9F%8F%97%EF%B8%8F-Architecture-B830FF?style=for-the-badge&labelColor=0A0C10" alt="Architecture"></a>&nbsp;
   <a href="#-features"><img src="https://img.shields.io/badge/%E2%9C%A8-Features-D4AF37?style=for-the-badge&labelColor=0A0C10" alt="Features"></a>&nbsp;
   <a href="#-documentation"><img src="https://img.shields.io/badge/%F0%9F%93%96-Docs-39D353?style=for-the-badge&labelColor=0A0C10" alt="Docs"></a>
 </p>
