@@ -400,7 +400,7 @@ bash install.sh
 <p align="center">
   <em>🔥 A production-ready, modular backend infrastructure SDK<br>designed for AI-powered Python services.</em>
   <br>
-  <a href="https://github.com/blackeagle68phoenix-ai">View Phoenix AI Framework</a>
+  <a href="https://github.com/blackeagle686/phoenix-ai">View Phoenix AI Framework</a>
 </p>
 
 <br>
