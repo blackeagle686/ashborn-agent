@@ -289,7 +289,7 @@ ul { list-style: none; }
 
 .hero-actions {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   justify-content: center;
   flex-wrap: wrap;
   animation: fadeIn 1s ease backwards 0.8s;
@@ -298,11 +298,11 @@ ul { list-style: none; }
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 16px 36px;
+  gap: 8px;
+  padding: 12px 28px;
   border-radius: 50px;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   letter-spacing: 0.5px;
   cursor: pointer;
   border: none;
