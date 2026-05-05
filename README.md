@@ -390,7 +390,7 @@ bash install.sh
 <br>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/%E2%9A%A1-POWERED_BY-0A0C10?style=for-the-badge&labelColor=B830FF" alt="Powered By">
+  <img src="vscode-extension/media/phx-nobg.png" alt="Powered By">
 </p>
 
 <h2 align="center">
