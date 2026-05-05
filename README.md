@@ -394,7 +394,7 @@ bash install.sh
 </p>
 
 <h2 align="center">
-  <img src="vscode-extension/media/phx-nobg.png" width="42" align="center" alt="Phoenix">&nbsp;&nbsp;Phoenix AI Framework
+  <img src="vscode-extension/media/phx-nobgpng" width="42" align="center" alt="Phoenix">&nbsp;&nbsp;Phoenix AI Framework
 </h2>
 
 <p align="center">
