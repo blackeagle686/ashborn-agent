@@ -2,7 +2,7 @@
   "context_id": "47f31c26-2a14-45e7-8766-a1a8f06d2e3e",
   "metadata": {
     "created_at": "2026-05-05T17:25:24.761258",
-    "updated_at": "2026-05-05T17:26:53.494041",
+    "updated_at": "2026-05-05T17:27:09.350300",
     "original_prompt": "Create a new python package called 'math_utils'. It must contain an __init__.py, a calc.py with a factorial function, and a test_calc.py that asserts factorial(5) == 120. Please generate them together in one pass."
   },
   "tasks": [
@@ -22,7 +22,7 @@
       "title": "Create math_utils/calc.py with factorial function",
       "description": "Implement a factorial function in calc.py using iterative or recursive logic.",
       "dependencies": [],
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 3,
@@ -106,7 +106,7 @@
         "complexity": "Time: O(n), Space: O(1) for iterative; O(n) for recursive due to call stack"
       },
       "dependencies": [],
-      "status": "pending"
+      "status": "done"
     },
     {
       "plan_step_id": 6,
@@ -121,7 +121,7 @@
       "dependencies": [
         5
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "plan_step_id": 7,
@@ -136,7 +136,7 @@
       "dependencies": [
         6
       ],
-      "status": "pending"
+      "status": "done"
     },
     {
       "plan_step_id": 8,
@@ -151,7 +151,7 @@
       "dependencies": [
         7
       ],
-      "status": "pending"
+      "status": "done"
     }
   ],
   "generations": [
@@ -219,15 +219,109 @@
       "metadata": {
         "model": "ashborn-generator"
       }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 5,
+      "artifacts": [
+        {
+          "type": "file_write",
+          "path": "math_utils/calc.py",
+          "language": "python",
+          "code": "def factorial(n):\n    \"\"\"\n    Compute the factorial of a non-negative integer n.\n\n    Args:\n        n (int): A non-negative integer.\n\n    Returns:\n        int: The factorial of n (n!).\n\n    Raises:\n        TypeError: If n is not an integer.\n        ValueError: If n is negative.\n    \"\"\"\n    if not isinstance(n, int):\n        raise TypeError(\"Factorial is only defined for integers.\")\n    if n < 0:\n        raise ValueError(\"Factorial is not defined for negative numbers.\")\n    if n == 0:\n        return 1\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result"
+        },
+        {
+          "type": "file_write",
+          "path": "math_utils/__init__.py",
+          "language": "python",
+          "code": ""
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 6,
+      "artifacts": [
+        {
+          "type": "file_write",
+          "path": "math_utils/calc.py",
+          "language": "python",
+          "code": "def factorial(n: int) -> int:\n    \"\"\"Calculate the factorial of a non-negative integer.\n\n    Args:\n        n (int): A non-negative integer for which to compute the factorial.\n\n    Returns:\n        int: The factorial of n (n!).\n\n    Raises:\n        ValueError: If n is negative.\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"Factorial is not defined for negative numbers.\")\n    \n    result = 1\n    for i in range(1, n + 1):\n        result *= i\n    \n    return result",
+          "edits": []
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 7,
+      "artifacts": [
+        {
+          "type": "terminal",
+          "path": "./math_utils",
+          "language": "bash",
+          "code": "mkdir -p math_utils"
+        },
+        {
+          "type": "file_write",
+          "path": "./math_utils/calc.py",
+          "language": "python",
+          "code": "#!/usr/bin/env python3\n\"\"\"\nModule: calc.py\nDescription: Provides mathematical utility functions.\nAuthor: ASHBORN Code Generator\n\"\"\"\n\ndef factorial(n):\n    \"\"\"\n    Calculate the factorial of a non-negative integer using an iterative approach.\n\n    Args:\n        n (int): A non-negative integer for which to compute the factorial.\n\n    Returns:\n        int: The factorial of n.\n\n    Raises:\n        TypeError: If n is not an integer.\n        ValueError: If n is negative.\n\n    Example:\n        >>> factorial(5)\n        120\n    \"\"\"\n    if not isinstance(n, int):\n        raise TypeError(\"Input must be an integer.\")\n    if n < 0:\n        raise ValueError(\"Factorial is not defined for negative numbers.\")\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result\n\nif __name__ == \"__main__\":\n    # Example usage\n    print(factorial(5))  # Output: 120"
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    },
+    {
+      "generate_block_id": 1,
+      "plan_step_id": 8,
+      "artifacts": [
+        {
+          "type": "file_write",
+          "path": "math_utils/calc.py",
+          "language": "python",
+          "code": "def factorial(n):\n    \"\"\"\n    Calculate the factorial of a non-negative integer n.\n\n    Args:\n        n (int): A non-negative integer\n\n    Returns:\n        int: The factorial of n\n\n    Raises:\n        ValueError: If n is negative\n    \"\"\"\n    if not isinstance(n, int):\n        raise TypeError(\"Input must be an integer\")\n    if n < 0:\n        raise ValueError(\"Factorial is not defined for negative numbers\")\n    if n == 0 or n == 1:\n        return 1\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result"
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
+    },
+    {
+      "generate_block_id": 2,
+      "plan_step_id": 8,
+      "artifacts": [
+        {
+          "type": "file_write",
+          "path": "test_calc.py",
+          "language": "python",
+          "code": "# Unit tests for math_utils.calc.factorial function\nimport unittest\nfrom math_utils.calc import factorial\n\nclass TestFactorial(unittest.TestCase):\n\n    def test_factorial_zero(self):\n        \"\"\"Test factorial of 0\"\"\"\n        self.assertEqual(factorial(0), 1)\n\n    def test_factorial_one(self):\n        \"\"\"Test factorial of 1\"\"\"\n        self.assertEqual(factorial(1), 1)\n\n    def test_factorial_five(self):\n        \"\"\"Test factorial of 5\"\"\"\n        self.assertEqual(factorial(5), 120)\n\n    def test_factorial_ten(self):\n        \"\"\"Test factorial of 10\"\"\"\n        self.assertEqual(factorial(10), 3628800)\n\n    def test_factorial_negative_number(self):\n        \"\"\"Test that negative input raises ValueError\"\"\"\n        with self.assertRaises(ValueError) as context:\n            factorial(-1)\n        self.assertEqual(str(context.exception), \"Factorial is not defined for negative numbers\")\n\nif __name__ == '__main__':\n    unittest.main()"
+        }
+      ],
+      "status": "success",
+      "metadata": {
+        "model": "ashborn-generator"
+      }
     }
   ],
   "execution_state": {
-    "completed_steps": [],
-    "pending_steps": [
+    "completed_steps": [
       {
         "id": 2,
         "title": "Create math_utils/calc.py with factorial function"
-      },
+      }
+    ],
+    "pending_steps": [
       {
         "id": 3,
         "title": "Create math_utils/test_calc.py"
