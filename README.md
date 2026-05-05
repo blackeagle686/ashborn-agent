@@ -375,21 +375,66 @@ bash install.sh
 
 <br>
 
-## 🎨 Powered by Phoenix AI
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<!-- POWERED BY PHOENIX AI — Premium Announcement Card                       -->
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+
+<br>
+
+<div align="center">
+
+<table>
+<tr>
+<td>
+
+<br>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Phoenix_AI-Agent_Infrastructure_Framework-FF7B00?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xMiAyTDEgMjFoMjJMMTIgMnoiLz48L3N2Zz4=&labelColor=0A0C10" alt="Phoenix AI">
+  <img src="https://img.shields.io/badge/%E2%9A%A1-POWERED_BY-0A0C10?style=for-the-badge&labelColor=B830FF" alt="Powered By">
 </p>
 
-Ashborn is built exclusively on the **Phoenix AI Agent Infrastructure Framework** — a high-performance runtime for autonomous AI agents.
+<h2 align="center">
+  <img src="vscode-extension/media/phx-nobg.png" width="42" align="center" alt="Phoenix">&nbsp;&nbsp;Phoenix AI Framework
+</h2>
 
-| Module | Responsibility |
-| :--- | :--- |
-| `phoenix.agent` | Agent lifecycle, loop orchestration, tool dispatch |
-| `phoenix.cognition` | Thinker, Planner, and Reflector base classes |
-| `phoenix.llm` | Streaming LLM interface (OpenAI-compatible) |
-| `phoenix.memory` | Semantic memory & vector storage |
-| `phoenix.tools` | Built-in FileRead, FileEdit, and extensible tool base |
+<p align="center">
+  <em>🔥 A production-ready, modular backend infrastructure SDK<br>designed for AI-powered Python services.</em>
+</p>
+
+<br>
+
+<table align="center">
+<thead>
+<tr>
+<th align="center">🧩 Module</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr><td align="center"><code>phoenix.agent</code></td><td>Agent lifecycle, autonomous loop orchestration & tool dispatch</td></tr>
+<tr><td align="center"><code>phoenix.cognition</code></td><td>Thinker, Planner & Reflector — modular reasoning base classes</td></tr>
+<tr><td align="center"><code>phoenix.llm</code></td><td>High-performance streaming LLM interface (OpenAI-compatible)</td></tr>
+<tr><td align="center"><code>phoenix.memory</code></td><td>Semantic memory, vector storage & context management</td></tr>
+<tr><td align="center"><code>phoenix.tools</code></td><td>Extensible tool system with built-in FileRead, FileEdit & more</td></tr>
+</tbody>
+</table>
+
+<br>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/High_Performance-Runtime-FF7B00?style=flat-square&labelColor=1a0f2e" alt="Runtime">
+  <img src="https://img.shields.io/badge/Modular-Architecture-B830FF?style=flat-square&labelColor=1a0f2e" alt="Modular">
+  <img src="https://img.shields.io/badge/Production-Ready-22C55E?style=flat-square&labelColor=1a0f2e" alt="Production">
+  <img src="https://img.shields.io/badge/OpenAI-Compatible-3776AB?style=flat-square&labelColor=1a0f2e" alt="OpenAI">
+</p>
+
+<br>
+
+</td>
+</tr>
+</table>
+
+</div>
 
 <br>
 
@@ -402,7 +447,6 @@ Ashborn is built exclusively on the **Phoenix AI Agent Infrastructure Framework*
 | Resource | Description |
 | :--- | :--- |
 | [🚀 Quickstart](#-quickstart) | Get up and running in 2 minutes |
-| [🏗️ Architecture](#️-architecture) | System design & module map |
 | [🌐 API Reference](#-api-reference) | All REST endpoints documented |
 | [🔧 Tools](#-agent-tools) | Agent tool capabilities |
 | [📦 Distribution](#-distribution) | Build & ship packages |
