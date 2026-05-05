@@ -2,11 +2,11 @@
 Ashborn Cognition Module — Task-File Driven Architecture.
 """
 
-from .thinker import AshbornThinker
-from .planner import AshbornPlanner
-from .reflector import AshbornReflector
+from .brains.thinker import AshbornThinker
+from .brains.planner import AshbornPlanner
+from .brains.reflector import AshbornReflector
+from .brains.generator import AshbornGenerator
 from .loop import AshbornLoop
-from .generator import AshbornGenerator
 
 __all__ = [
     "AshbornThinker",
