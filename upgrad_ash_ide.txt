@@ -588,7 +588,8 @@ planner:
       "title": "task_title",
       "description": "task_description",
       "the_problem": "problem_description", 
-      "tech_meta":{ # No code just 
+      
+      "tech_meta":{ # No code just description how the solution should be.
         "best_approach": "best_approach_description", 
         "why_best_approach": "why_best_approach_description", 
         "best_algorithm": "best_algorithm_description", 
