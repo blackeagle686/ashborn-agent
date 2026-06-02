@@ -626,7 +626,7 @@ planner:
     }, 
     ...
   }, 
-  flow:{ 
+  "flow":{ 
     blok_id: {
       task_id: "task_id", 
       
