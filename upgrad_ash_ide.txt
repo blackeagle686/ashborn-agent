@@ -609,7 +609,6 @@ planner:
       "priority": ["high", "medium", "low"],
       "status":["pending", "in_progress", "completed", "failed"],
       "dependencies": ["task_id1", "task_id2", ...],
-      
     }
   }
 
@@ -631,7 +630,7 @@ planner:
       "content": "content_to_write_or_append_optional",
       "search_query": "search_query_optional",
       "replace_query": "replace_query_optional",
-      "dependencies": ["file_task_id1", "file_task_id2", ...], # based on problem_id.tech_meta.dependencies 
+      "dependencies": ["file_task_id1", "file_task_id2", ...], 
     }
   }
 
