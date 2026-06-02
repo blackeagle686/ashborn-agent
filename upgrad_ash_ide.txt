@@ -637,7 +637,7 @@ planner:
   "code_tasks":{
     "block_id":{
       "code_location":{
-        "file_path": "file_path", # based on file tasks. 
+        "file_path": "file_path",  
         "from_line": "from_line", # 1-indexed
         "to_line": "to_line", # 1-indexed
       },
