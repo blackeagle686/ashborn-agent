@@ -637,7 +637,11 @@ planner:
     }
   }
 
-  tas
+  tasks_problems:{
+    task_id:{
+      problem:
+    }
+  }
   
   tasks_solutions:{
     task_id:{
