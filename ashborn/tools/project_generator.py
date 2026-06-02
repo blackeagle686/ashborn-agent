@@ -50,6 +50,13 @@ def terminal_tool(command: str) -> str:
     except Exception as e:
         return f"Error executing command: {str(e)}"
 
-"
- 
-"
+"""
+    Projects types: 
+    1. Full-stack web applications
+    2. Mobile applications
+    3. Desktop applications
+    4. Libraries and packages
+    5. Scripts and automation tools
+    
+
+"""
