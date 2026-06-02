@@ -173,6 +173,7 @@ export class AgentClient {
       req.end();
     });
   }
+  
 
   async updateConfig(settings: any): Promise<any> {
     return new Promise((resolve, reject) => {
