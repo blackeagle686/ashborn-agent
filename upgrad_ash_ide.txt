@@ -589,7 +589,7 @@ planner:
       "description": "task_description",
       "status":["pending", "in_progress", "completed", "failed"],
       "dependencies": ["task_id1", "task_id2", ...] ,
-      "
+      
 
     }
   }
