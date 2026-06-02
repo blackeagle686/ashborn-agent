@@ -655,6 +655,7 @@ planner:
       "code_hash": "code_hash", 
       "code_length": "code_length", 
       "code_token": "code_token",
+      "code_description": "code_description",  #in summary
       
     }
   }
