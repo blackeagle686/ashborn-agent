@@ -643,7 +643,7 @@ planner:
       "dependencies": ["block_id1", "block_id2", ...], # based on problem_id.tech_meta.dependencies 
       "code_hash": "code_hash", 
       "code_length": "code_length", 
-      "code_token": "code_token",
+      "code_tokens": "code_tokens",
       "code_description": "code_description",  # in summary
       "rank":{ # this will be updated later from the reflector evaluation. 
         "security_score": "score", # based on reflector evaluation
