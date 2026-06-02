@@ -628,8 +628,12 @@ planner:
   }
 
   memory: {
-    
+    project_id:{
+      task_id:{
+
+      }
+    }
   }
-  
+
 
 }
