@@ -588,10 +588,12 @@ planner:
       "title": "task_title",
       "description": "task_description",
       "the_problem": "problem_description", 
-      
-      "best_approach": "best_approach_description", 
-      "why_best_approach": "why_best_approach_description", 
-      "best_algorithm": "best_algorithm_description", 
+      "tech_meta":{
+        "best_approach": "best_approach_description", 
+        "why_best_approach": "why_best_approach_description", 
+        "best_algorithm": "best_algorithm_description", 
+        "best_design
+      }
       
       "priority": ["high", "medium", "low"],
       "status":["pending", "in_progress", "completed", "failed"],
