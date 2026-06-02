@@ -61,7 +61,10 @@ def terminal_tool(command: str) -> str:
                     - utils
                     - styles
                     - tests
-             1.1.2. Vue 
+             1.1.2. Vue: 
+                architecture:
+                    - components
+                    
              1.1.3. Angular
          1.2. Backend 
              1.2.1. Node.js 
