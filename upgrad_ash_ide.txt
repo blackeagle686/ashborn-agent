@@ -648,7 +648,15 @@ planner:
   }
   
   "file_tasks":{
-    "
+    "file_task_id":{
+      "problem_id": "problem_id", 
+      "file_path": "file_path",
+      "operation": "operation",
+      "content": "content",
+      "search_query": "search_query",
+      "replace_query": "replace_query",
+      "dependencies": ["file_task_id1", "file_task_id2", ...], # based on problem_id.tech_meta.dependencies 
+    }
   }
 
   "code_tasks":{
