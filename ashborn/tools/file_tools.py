@@ -27,7 +27,7 @@ def _try_open_in_vscode(file_path: str) -> None:
         pass
 
 
-# ── Tool 1: Read with line numbers ────────────────────────────────────────────
+#  Tool 1: Read with line numbers 
 
 @tool(
     name="file_read_lines",
