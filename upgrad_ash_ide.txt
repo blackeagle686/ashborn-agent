@@ -629,10 +629,7 @@ planner:
 
   memory: {
     project_id:{
-      task_id:{
-        status: "pending",
-        bloack_id:
-      }
+      
     }
   }
 
