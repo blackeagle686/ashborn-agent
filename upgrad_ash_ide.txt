@@ -649,7 +649,8 @@ planner:
   
   "solutions_bloks":{
     "block_id":{
-      "problem_id": 
+      "problem_id": "problem_id", 
+      
     }
   }
 }
