@@ -627,11 +627,5 @@ planner:
     ...
   }
 
-  memory: {
-    project_id:{
-      
-    }
-  }
-
 
 }
