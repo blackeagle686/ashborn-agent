@@ -603,14 +603,13 @@ planner:
   tasks:{
     "task_id": {
       "project_id": "uuid", 
-      "task_id": "uuid", 
       "title": "task_title", # based on user prompt
       "description": "task_description", # based on user prompt
       "the_problem": "problem_description", # this is very important as it will help to understand the problem space and constraints. 
       "complexity": ["low", "medium", "high", "very high"], # based on problem description. 
       "tech_meta":{ # No code just description how the solution should be.
         "tech_config": {
-          
+          need_algo: []
         }
         "best_approach": "best_approach_description", 
         "why_best_approach": "why_best_approach_description", 
