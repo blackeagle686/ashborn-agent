@@ -583,7 +583,7 @@ The approval process must occur before command execution, not after.
 
 planner:
 {
-  project_meta:
+  project_meta: # this is a configration for the project based on the user prompt. NOT A CODE.
   {   "project_id": "uuid",
       "project_title": "project_title",
       "project_description": "project_description",
