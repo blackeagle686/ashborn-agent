@@ -642,7 +642,7 @@ planner:
       "task_id": "task_id",
       "problem_description": "problem_description",
       "solution_description": "solution_description", # No code just description how the solution should be. 
-      "tools_required": ["tool_name1", "tool_name2", ...], # based on problem solution.
+      "task_type": ["t", "tool_name2", ...], # based on problem solution.
     }
   }
   
