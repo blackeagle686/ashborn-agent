@@ -50,3 +50,6 @@ def terminal_tool(command: str) -> str:
     except Exception as e:
         return f"Error executing command: {str(e)}"
 
+"
+ 
+"
