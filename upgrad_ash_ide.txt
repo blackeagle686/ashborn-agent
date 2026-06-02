@@ -585,10 +585,11 @@ planner:
 {
   tasks:{
     "task_id": {
-      title, 
+      title: "task_title",
       description, 
       status, 
-      dependencies: []
+      dependencies: ["task_id1", "task_id2", ...] ,
+
     }
   }
 }
