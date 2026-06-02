@@ -594,7 +594,7 @@ planner:
           "need_algo": [false, true], # based on problem description. 
           "need_dp": [false, true], # based on problem description & complexity. 
           "current_tech_stack": ["tech_stack1", "tech_stack2", ...], # based on project description. 
-          "is
+          "is_use_framework": [false, true], # based on project description. 
         }
         "best_approach": "best_approach_description", 
         "why_best_approach": "why_best_approach_description", 
