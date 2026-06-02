@@ -600,8 +600,8 @@ planner:
           "is_need_db": [false, true], # based on problem description & complexity. 
           "is_need_storage": [false, true], # based on problem description & complexity. 
           "is_need_auth": [false, true], # based on problem description & complexity. 
-          "is_need_payment": [false, true], # based on problem description & complexity. 
-          "is_need_payment": [false, true], # based on problem description & complexity. 
+          
+
         }
         "best_approach": "best_approach_description", 
         "why_best_approach": "why_best_approach_description", 
