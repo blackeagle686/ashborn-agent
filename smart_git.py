@@ -113,6 +113,8 @@ def generate_commit_message(payload):
         
         full_message = ""
         for chunk in response:
+            if not chunk.choices:
+                continue
             content = chunk.choices[0].delta.content
             if content:
                 sys.stdout.write(content)
