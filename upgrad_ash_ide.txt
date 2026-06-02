@@ -643,13 +643,14 @@ planner:
       "code_hash": "code_hash", 
       "code_length": "code_length", 
       "code_token": "code_token",
-      "code_description": "code_description",  #in summary
-      "rank":{ # this will be updated 
+      "code_description": "code_description",  # in summary
+      "rank":{ # this will be updated later from the reflector evaluation. 
         "security_score": "score", # based on reflector evaluation
         "readability_score": "score", # based on reflector evaluation
         "complexity_score": "score", # based on reflector evaluation
         "optimized_score": "score" # based on reflector evaluation
       }
+      "is_code_complete" [true, false] # this will be updated later from the reflector evaluation. 
     }
   }
 }
