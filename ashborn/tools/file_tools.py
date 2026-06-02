@@ -66,7 +66,7 @@ def file_read_lines_tool(file_path: str, start_line: int = None, end_line: int =
         _try_open_in_vscode(file_path)
 
 
-# ── Tool 2: Multi-block precision editor ──────────────────────────────────────
+# Tool 2: Multi-block precision editor 
 
 @tool(
     name="file_update_multi",
@@ -101,7 +101,7 @@ def file_update_multi_tool(file_path: str, edits: list) -> str:
     except Exception as ex:
         return f"ERROR reading {file_path}: {ex}"
 
-    # ── Separate and validate edits ──────────────────────────────────────────
+    # Separate and validate edits    
     line_edits = []   # (line_start, line_end, new_content)
     str_edits = []    # (search, replace)
     errors = []
@@ -137,7 +137,7 @@ def file_update_multi_tool(file_path: str, edits: list) -> str:
     if errors:
         return "ERRORS in edit spec:\n" + "\n".join(errors)
 
-    # ── Check for overlapping line edits ──────────────────────────────────────
+    #  Check for overlapping line edits 
     sorted_line_edits = sorted(line_edits, key=lambda x: x[0])
     for j in range(len(sorted_line_edits) - 1):
         if sorted_line_edits[j][1] >= sorted_line_edits[j + 1][0]:
@@ -148,7 +148,7 @@ def file_update_multi_tool(file_path: str, edits: list) -> str:
                 "Fix the edit ranges and try again."
             )
 
-    # ── Apply line-range edits in REVERSE order ───────────────────────────────
+    # Apply line-range edits in REVERSE order 
     for ls, le, nc in sorted(line_edits, key=lambda x: x[0], reverse=True):
         # Split new_content into lines, preserving trailing newline behaviour
         if nc and not nc.endswith("\n"):
@@ -158,7 +158,7 @@ def file_update_multi_tool(file_path: str, edits: list) -> str:
 
     applied_line = len(line_edits)
 
-    # ── Apply search/replace edits on the joined text ─────────────────────────
+    #  Apply search/replace edits on the joined text 
     content = "".join(lines)
     applied_str = 0
     str_errors = []
