@@ -638,8 +638,8 @@ planner:
   }
 
   tasks_problems:{
-    task_id:{
-      problem:
+    problem_id:{
+      
     }
   }
   
