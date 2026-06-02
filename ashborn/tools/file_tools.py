@@ -177,7 +177,7 @@ def file_update_multi_tool(file_path: str, edits: list) -> str:
             "Not-found searches:\n" + "\n".join(str_errors)
         )
 
-    # ── Write result ──────────────────────────────────────────────────────────
+    #  Write result 
     try:
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
@@ -192,7 +192,7 @@ def file_update_multi_tool(file_path: str, edits: list) -> str:
     )
 
 
-# ── Tool 3: Reliable File Creator ─────────────────────────────────────────────
+#  Tool 3: Reliable File Creator 
 
 @tool(
     name="file_write",
