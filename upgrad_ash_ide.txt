@@ -587,6 +587,8 @@ planner:
     "task_id": {
       "title": "task_title",
       "description": "task_description",
+      "the_problem": "problem_description", 
+      "
       "priority": ["high", "medium", "low"],
       "status":["pending", "in_progress", "completed", "failed"],
       "dependencies": ["task_id1", "task_id2", ...] ,
