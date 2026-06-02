@@ -609,7 +609,8 @@ planner:
       "complexity": ["low", "medium", "high", "very high"], # based on problem description. 
       "tech_meta":{ # No code just description how the solution should be.
         "tech_config": {
-          need_algo: []
+          "is_need_algo": [false, true],
+          "is_need_dp": [false, true],  
         }
         "best_approach": "best_approach_description", 
         "why_best_approach": "why_best_approach_description", 
