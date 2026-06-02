@@ -650,11 +650,11 @@ planner:
   "file_tasks":{
     "file_task_id":{
       "problem_id": "problem_id", 
-      "file_path": "file_path",
-      "operation": "operation",
-      "content": "content",
-      "search_query": "search_query",
-      "replace_query": "replace_query",
+      "file_path": "path_to_the_file",
+      "operation": ["create", "edit", "append", "read", "delete", "search", "update"],
+      "content": "content_to_write_or_append_optional",
+      "search_query": "search_query_optional",
+      "replace_query": "replace_query_optional",
       "dependencies": ["file_task_id1", "file_task_id2", ...], # based on problem_id.tech_meta.dependencies 
     }
   }
