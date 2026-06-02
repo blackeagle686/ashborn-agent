@@ -652,7 +652,10 @@ planner:
       "problem_id": "problem_id", 
       "code": "code_in_base64", # encoded in base64
       "dependencies": ["block_id1", "block_id2", ...], # based on problem_id.tech_meta.dependencies 
-      "code_
+      "code_hash": "code_hash", 
+      "code_length": "code_length", 
+      "code_token": "code_token",
+      
     }
   }
 }
