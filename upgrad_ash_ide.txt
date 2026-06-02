@@ -585,8 +585,8 @@ planner:
 {
   tasks:{
     "task_id": {
-      "title": "task_title",
-      "description": "task_description",
+      "title": "task_title", # based on user prompt
+      "description": "task_description", # based on user prompt
       "the_problem": "problem_description", # this is very important as it will help to understand the problem space and constraints. 
 
       "tech_meta":{ # No code just description how the solution should be.
