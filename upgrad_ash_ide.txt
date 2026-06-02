@@ -647,9 +647,7 @@ planner:
     ...
   }
   
-  "tasks_solutions":{
-    task_id:{
-      
-    }
+  "solutions_bloks":{
+    block_id
   }
 }
