@@ -606,33 +606,10 @@ planner:
       "title": "task_title", # based on user prompt
       "description": "task_description", # based on user prompt
       "complexity": ["low", "medium", "high", "very high"], # based on problem description. 
-      "tech_meta":{ # No code just description how the solution should be.
-        "tech_config": {
-          "is_need_algo": [false, true], # based on problem description. 
-          "is_need_dp": [false, true],  # based on problem description. 
-          "frameworks_required": ["framework1", "framework2", ...], # based on project_meta.frame_works_used 
-          "database_required": ["database1", "database2", ...], # based on project_meta.project_is_need_db 
-        },
-        "best_approach": "best_approach_description", 
-        "why_best_approach": "why_best_approach_description", 
-        "best_algorithm": "best_algorithm_description", 
-        "best_design_patterns": ["design_pattern1", "design_pattern2", ...], 
-      },
-
       "priority": ["high", "medium", "low"],
       "status":["pending", "in_progress", "completed", "failed"],
       "dependencies": ["task_id1", "task_id2", ...],
-      "tools_required": ["tool_name1", "tool_name2", ...],
-      "output": "expected_output_of_task",
-      "file_tasks": [
-        {
-          "file_path": "path/to/file",
-          "operation": ["create", "edit", "append", "read", "delete", "search", "update"],
-          "content": "content_to_write_or_append_optional",
-          "search_query": "search_query_optional",
-          "replace_query": "replace_query_optional"
-        }
-      ]
+      
     }
   }
 
