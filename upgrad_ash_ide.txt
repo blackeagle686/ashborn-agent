@@ -650,7 +650,8 @@ planner:
         "complexity_score": "score", # based on reflector evaluation
         "optimized_score": "score" # based on reflector evaluation
       }
-      "is_code_complete" [true, false] # this will be updated later from the reflector evaluation. 
+      "is_code_complete" [true, false] # this will be updated based on the rank. 
+      
     }
   }
 }
