@@ -583,6 +583,22 @@ The approval process must occur before command execution, not after.
 
 planner:
 {
+  project_meta:
+    "project_id": "uuid",
+    "project_title": "project_title",
+    "project_description": "project_description",
+    "project_complexity": ["low", "medium", "high", "very high"],
+    "project_tech_stack": ["tech_stack1", "tech_stack2", ...],  # based on project description.
+    "project_programming_language": "language", # based on project description. 
+    "project_is_use_framework": [false, true], # based on project description. 
+    "project_is_need_cache": [false, true], # based on problem description & complexity. 
+    "project_is_need_queue": [false, true], # based on problem description & complexity. 
+    "project_is_need_db": [false, true], # based on problem description & complexity. 
+    "project_is_need_storage": [false, true], # based on problem description & complexity. 
+    "project_is_need_auth": [false, true], # based on problem description & complexity. 
+    
+
+
   tasks:{
     "task_id": {
       "title": "task_title", # based on user prompt
