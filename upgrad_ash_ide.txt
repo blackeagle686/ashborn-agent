@@ -641,7 +641,12 @@ planner:
       "code_str": "code_string", # this is very important as it will help to understand the code. this is the real code not encoded.
       "code": "code_in_base64",  # encoded in base64
       "dependencies": ["block_id1", "block_id2", ...], # based on problem_id.tech_meta.dependencies 
-      
+      code_location:{
+        "file_path": "file_path", 
+        "from_line": "from_line", # 1-indexed
+        "to_line": "to_line", # 1-indexed
+        "
+      }
       "code_hash": "code_hash", 
       "code_length": "code_length", 
       "code_tokens_ammount": "code_tokens_ammount",
