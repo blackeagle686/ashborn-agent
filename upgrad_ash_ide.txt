@@ -588,7 +588,7 @@ planner:
       title, 
       description, 
       status, 
-      
+      dependencies: []
     }
   }
 }
