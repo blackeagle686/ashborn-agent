@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 # TEST IT 
 # Configuration
 load_dotenv()
-API_KEY = os.getenv("OPENAI_API_KEY", "sk-ws-H.HLXLMP.bsb6.MEUCIQDGgGDCO-IC4PgfH3-M_zdsFm3vWz7z9-sL9Eb99c4keQIgDgWfWhyQwFh3gYngwdr_P82ItOMgnm_Mz38U2_jgJdQ")
-BASE_URL = os.getenv("OPENAI_BASE_URL", "https://ws-42lzhzj2fbhedgko.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1")
+API_KEY =  "sk-ws-H.HLXLMP.bsb6.MEUCIQDGgGDCO-IC4PgfH3-M_zdsFm3vWz7z9-sL9Eb99c4keQIgDgWfWhyQwFh3gYngwdr_P82ItOMgnm_Mz38U2_jgJdQ"
+BASE_URL = os.getenv("OPENAI_BASE_URL", "https://ws-42lzhzj2fbhedgko.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1"
 MODEL = os.getenv("OPENAI_LLM_MODEL", "qwen3.6-flash")
 INTERVAL = 5  # Seconds
 MAX_DIFF_BYTES = int(os.getenv("SMART_GIT_MAX_DIFF_BYTES", "12000"))
