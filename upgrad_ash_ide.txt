@@ -581,82 +581,81 @@ The approval process must occur before command execution, not after.
 
 
 
-planner:
-{
-  project_meta: # this is a configration for the project based on the user prompt. NOT A CODE. 
-  {   "project_id": "uuid",
-      "project_title": "project_title",
-      "project_description": "project_description",
-      "project_complexity": ["low", "medium", "high", "very high"],
-      "project_tech_stack": ["tech_stack1", "tech_stack2", ...],  # based on project description.
-      "project_programming_language": ["language1", "language2", ...], # based on project description. 
-      "project_is_use_framework": [false, true], # based on project description. 
-      "frame_works_used": ["frame_work1", "frame_work2", ...], # based on project description. 
-      "project_is_need_cache": [false, true], # based on problem description & complexity. 
-      "project_is_need_queue": [false, true], # based on problem description & complexity. 
-      "project_is_need_db": [false, true], # based on problem description & complexity. 
-      "project_is_need_storage": [false, true], # based on problem description & complexity. 
-      "project_is_need_auth": [false, true], # based on problem description & complexity. 
-  }    
+"planner": {
+  "project_meta": { # this is a configuration for the project based on the user prompt. NOT A CODE. 
+    "project_id": "uuid",
+    "project_title": "project_title",
+    "project_description": "project_description",
+    "project_complexity": ["low", "medium", "high", "very high"],
+    "project_tech_stack": ["tech_stack1", "tech_stack2", "..."],  # based on project description.
+    "project_programming_language": ["language1", "language2", "..."], # based on project description. 
+    "project_is_use_framework": "boolean", # based on project description. 
+    "frameworks_used": ["framework1", "framework2", "..."], # based on project description. 
+    "project_is_need_cache": "boolean", # based on problem description & complexity. 
+    "project_is_need_queue": "boolean", # based on problem description & complexity. 
+    "project_is_need_db": "boolean", # based on problem description & complexity. 
+    "project_is_need_storage": "boolean", # based on problem description & complexity. 
+    "project_is_need_auth": "boolean" # based on problem description & complexity. 
+  },
 
-
-  tasks:{
+  "tasks": {
     "task_id": {
       "project_id": "uuid", 
       "title": "task_title", # based on user prompt
       "description": "task_description", # based on user prompt
       "complexity": ["low", "medium", "high", "very high"], # based on problem description. 
       "priority": ["high", "medium", "low"],
-      "status":["pending", "in_progress", "completed", "failed"],
-      "dependencies": ["task_id1", "task_id2", ...],
+      "status": ["pending", "in_progress", "completed", "failed"],
+      "dependencies": ["task_id1", "task_id2", "..."]
     }
-  }
+  },
 
-  "tasks_problems":{
-    "problem_id":{
+  "tasks_problems": {
+    "problem_id": {
       "task_id": "task_id",
       "problem_description": "problem_description",
       "solution_description": "solution_description", # No code just description how the solution should be. 
       "task_type": ["file_task", "code_task", "search_task"], # based on problem solution.
-    }, 
-    ...
-  }
+      "status": ["pending", "in_progress", "completed", "failed"]
+    }
+  },
   
-  "file_tasks":{
-    "file_task_id":{
+  "file_tasks": {
+    "file_task_id": {
       "problem_id": "problem_id", 
       "file_path": "path_to_the_file",
       "operation": ["create", "edit", "append", "read", "delete", "search", "update"],
       "content": "content_to_write_or_append_optional",
       "search_query": "search_query_optional",
       "replace_query": "replace_query_optional",
-      "dependencies": ["file_task_id1", "file_task_id2", ...], 
+      "dependencies": ["file_task_id1", "file_task_id2", "..."],
+      "status": ["pending", "in_progress", "completed", "failed"]
     }
-  }
+  },
 
-  "code_tasks":{
-    "block_id":{
-      "code_location":{
-        "file_path": "file_path",  
-        "from_line": "from_line", # 1-indexed
-        "to_line": "to_line", # 1-indexed
-      },
+  "code_tasks": {
+    "block_id": {
       "problem_id": "problem_id", 
+      "code_location": {
+        "file_path": "file_path",  
+        "from_line": "integer", # 1-indexed
+        "to_line": "integer" # 1-indexed
+      },
       "code_str": "code_string", # this is very important as it will help to understand the code. this is the real code not encoded.
       "code": "code_in_base64",  # encoded in base64
-      "dependencies": ["block_id1", "block_id2", ...], # based on problem_id.tech_meta.dependencies 
+      "dependencies": ["block_id1", "block_id2", "..."], # based on problem_id.tech_meta.dependencies 
       "code_hash": "code_hash", 
-      "code_length": "code_length", 
-      "code_tokens_ammount": "code_tokens_ammount",
+      "code_length": "integer", 
+      "code_tokens_amount": "integer",
       "code_description": "code_description",  # in summary
-      "rank":{ # this will be updated later from the reflector evaluation. 
-        "security_score": "score", # based on reflector evaluation
-        "readability_score": "score", # based on reflector evaluation
-        "complexity_score": "score", # based on reflector evaluation
-        "optimized_score": "score" # based on reflector evaluation
-      }
-      "is_code_complete" [true, false] # this will be updated based on the rank. 
-      
+      "status": ["pending", "in_progress", "completed", "failed"],
+      "rank": { # this will be updated later from the reflector evaluation. 
+        "security_score": "float", # based on reflector evaluation
+        "readability_score": "float", # based on reflector evaluation
+        "complexity_score": "float", # based on reflector evaluation
+        "optimized_score": "float" # based on reflector evaluation
+      },
+      "is_code_complete": "boolean" # this will be updated based on the rank. 
     }
   }
 }
