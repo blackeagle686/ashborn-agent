@@ -629,10 +629,7 @@ planner:
   
   tasks_solutions:{
     task_id:{
-      code: {
-        "language": "language",
-        
-      }
+      
     }
   }
 }
