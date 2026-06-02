@@ -583,8 +583,10 @@ The approval process must occur before command execution, not after.
 
 plane:
 {
-  task_id: int, 
+  tasks:
   task: {
-    
+    task_id: int, 
+    "title
+    "description":""
   }
 }
