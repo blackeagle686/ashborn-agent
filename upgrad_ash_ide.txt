@@ -625,11 +625,5 @@ planner:
       "dependencies": ["task_id1", "task_id2", ...],
     }, 
     ...
-  }, 
-  "flow":{ 
-    blok_id: {
-      task_id: "task_id", 
-      
-    }
   }
 }
