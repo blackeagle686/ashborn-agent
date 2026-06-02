@@ -592,7 +592,7 @@ planner:
       "tech_meta":{ # No code just description how the solution should be.
         "tech_config": {
           "need_algo": [false, true], # based on problem description. 
-          "need_dp": [false, true], # based on problem description. 
+          "need_dp": [false, true], # based on problem description & complexity. 
           "need_graph": [false, true], # based on problem description. 
           
         }
