@@ -2,12 +2,17 @@ from phoenix import Agent, init_phoenix, startup_phoenix
 from .tools.project_generator import project_generator_tool
 from .tools.file_tools import file_read_lines_tool, file_update_multi_tool
 
+_phoenix_initialized = False
+
 async def get_ashborn_agent(on_startup_progress=None):
     """
     Initializes the Phoenix framework, starts up services, and returns the Ashborn agent.
     """
-    init_phoenix()
-    await startup_phoenix()
+    global _phoenix_initialized
+    if not _phoenix_initialized:
+        init_phoenix()
+        await startup_phoenix()
+        _phoenix_initialized = True
     from .cognition import AshbornThinker, AshbornPlanner, AshbornReflector, AshbornLoop, AshbornGenerator
     
     # Create the agent with the task-file driven loop and upgraded cognition modules

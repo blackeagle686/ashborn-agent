@@ -160,7 +160,13 @@ export class AgentClient {
         (res) => {
           let data = "";
           res.on("data", (c) => (data += c));
-          res.on("end", () => resolve(JSON.parse(data)));
+          res.on("end", () => {
+            try {
+              resolve(JSON.parse(data));
+            } catch (err) {
+              reject(new Error(`Parse error: ${err.message}`));
+            }
+          });
         }
       );
       req.on("error", reject);
@@ -185,7 +191,13 @@ export class AgentClient {
         (res) => {
           let data = "";
           res.on("data", (c) => (data += c));
-          res.on("end", () => resolve(JSON.parse(data)));
+          res.on("end", () => {
+            try {
+              resolve(JSON.parse(data));
+            } catch (err) {
+              reject(new Error(`Parse error: ${err.message}`));
+            }
+          });
         }
       );
       req.on("error", reject);
