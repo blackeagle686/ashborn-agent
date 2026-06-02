@@ -592,12 +592,12 @@ planner:
         "best_approach": "best_approach_description", 
         "why_best_approach": "why_best_approach_description", 
         "best_algorithm": "best_algorithm_description", 
-        "best_design
+        "best_design_patterns": ["design_pattern1", "design_pattern2", ...], 
       }
       
       "priority": ["high", "medium", "low"],
       "status":["pending", "in_progress", "completed", "failed"],
-      "dependencies": ["task_id1", "task_id2", ...] ,
+      "dependencies": ["task_id1", "task_id2", ...],
     }, 
     ...
   }, 
