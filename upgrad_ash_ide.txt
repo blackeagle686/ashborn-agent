@@ -636,7 +636,6 @@ planner:
 
   "code_tasks":{
     "block_id":{
-      "code_file_path": "path_to_the_code_file", # based on file tasks. 
       "file_task_id": "file_task_id", # based on file tasks. 
       "problem_id": "problem_id", 
       "code_str": "code_string", # this is very important as it will help to understand the code. this is the real code not encoded.
