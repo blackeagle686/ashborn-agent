@@ -594,6 +594,7 @@ planner:
           "need_algo": [false, true], # based on problem description. 
           "need_dp": [false, true], # based on problem description & complexity. 
           "current_tech_stack": ["tech_stack1", "tech_stack2", ...], # based on project description. 
+          "programming_language": "language", # based on project description. 
           "is_use_framework": [false, true], # based on project description. 
           "is_need_cache": [false, true], # based on problem description & complexity. 
           "is_need_queue": [false, true], # based on problem description & complexity. 
