@@ -645,7 +645,10 @@ planner:
       "code_token": "code_token",
       "code_description": "code_description",  #in summary
       "rank":{
-        "security_score":
+        "security_score": "score", # based on reflector evaluation
+        "readability_score": "score", # based on reflector evaluation
+        "complexity_score": "score", # based on reflector evaluation
+        "optimized_score": "score" # based on reflector evaluation
       }
     }
   }
