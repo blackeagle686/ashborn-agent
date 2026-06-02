@@ -111,6 +111,7 @@ def generate_commit_message(payload):
             stream=True,
         )
         
+        
         full_message = ""
         for chunk in response:
             if not chunk.choices:
