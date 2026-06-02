@@ -53,7 +53,15 @@ def terminal_tool(command: str) -> str:
 """
     Projects types: 
     1. Full-stack web applications
-     - 
+         1.1. Frontend 
+             1.1.1. React 
+             1.1.2. Vue 
+             1.1.3. Angular
+         1.2. Backend 
+             1.2.1. Node.js 
+             1.2.2. Express 
+             1.2.3. Django 
+             1.2.4. Flask 
     2. Mobile applications
     3. Desktop applications
     4. Libraries and packages
