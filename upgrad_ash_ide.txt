@@ -594,5 +594,8 @@ planner:
     ...
   }, 
   "tools": {
-    
+    "tool_id":{
+      for_task: "task_id", 
+      
+    }
 }
