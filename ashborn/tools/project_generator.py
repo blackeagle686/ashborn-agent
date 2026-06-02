@@ -53,10 +53,11 @@ def terminal_tool(command: str) -> str:
 """
     Projects types: 
     1. Full-stack web applications
+     - 
     2. Mobile applications
     3. Desktop applications
     4. Libraries and packages
     5. Scripts and automation tools
-    
+
 
 """
