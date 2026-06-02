@@ -589,7 +589,7 @@ planner:
       "project_description": "project_description",
       "project_complexity": ["low", "medium", "high", "very high"],
       "project_tech_stack": ["tech_stack1", "tech_stack2", ...],  # based on project description.
-      "project_programming_language": "language", # based on project description. 
+      "project_programming_language": ["language1", "language2", ...], # based on project description. 
       "project_is_use_framework": [false, true], # based on project description. 
       "project_is_need_cache": [false, true], # based on problem description & complexity. 
       "project_is_need_queue": [false, true], # based on problem description & complexity. 
