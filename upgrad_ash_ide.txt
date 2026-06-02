@@ -593,7 +593,8 @@ planner:
         "tech_config": {
           "need_algo": [false, true], # based on problem description. 
           "need_dp": [false, true], # based on problem description & complexity. 
-          
+          "current_tech_stack": ["tech_stack1", "tech_stack2", ...], # based on project description. 
+          "is
         }
         "best_approach": "best_approach_description", 
         "why_best_approach": "why_best_approach_description", 
