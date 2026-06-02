@@ -639,7 +639,8 @@ planner:
 
   tasks_problems:{
     problem_id:{
-      
+      task_id: "task_id",
+      task_des
     }
   }
   
