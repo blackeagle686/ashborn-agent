@@ -611,8 +611,8 @@ planner:
         "tech_config": {
           "is_need_algo": [false, true], # based on problem description. 
           "is_need_dp": [false, true],  # based on problem description. 
-          "frameworks_required": ["framework1", "framework2", ...], # based on project description. 
-          "database_required": ["database1", "database2", ...], # based on problem description. 
+          "frameworks_required": ["framework1", "framework2", ...], # based on project_meta.frame_works_used 
+          "database_required": ["database1", "database2", ...], # based on project_meta.project_is_need_db 
         },
         "best_approach": "best_approach_description", 
         "why_best_approach": "why_best_approach_description", 
