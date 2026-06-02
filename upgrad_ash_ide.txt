@@ -584,7 +584,7 @@ The approval process must occur before command execution, not after.
 planner:
 {
   project_meta:
-  {    "project_id": "uuid",
+  {   "project_id": "uuid",
       "project_title": "project_title",
       "project_description": "project_description",
       "project_complexity": ["low", "medium", "high", "very high"],
