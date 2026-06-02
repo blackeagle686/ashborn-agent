@@ -584,6 +584,11 @@ The approval process must occur before command execution, not after.
 planner:
 {
   tasks:{
-    task_id: 
+    "task_id": {
+      title, 
+      description, 
+      status, 
+      
+    }
   }
 }
