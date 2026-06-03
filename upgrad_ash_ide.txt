@@ -580,9 +580,10 @@ The approval process must occur before command execution, not after.
 
 
 user = {
-  "user_id": "user_id"
-  "username": "username"
-  "password": "password"
+  "user_id": "user_id",
+  "username": "username",
+  "password": "password",
+  "full_name": "full name",
 }
 
 project = {
