@@ -13,6 +13,9 @@ planning steps:
  - planning -> in this phase it create how to solve the prbolems NO CODE or massive llm generations  [allow to generat command lines here]
  - generating -> in this phase it create the code for each problem if need 
 
+Actor steps: 
+ - 
+
 user = { # store in db
   "user_id": "user_id",
   "username": "username",
