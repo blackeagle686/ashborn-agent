@@ -614,7 +614,7 @@ prompt = {
 }
 
 task = {
-  
+  "prompt_id": "prompt id",
 }
 
 planner = {
