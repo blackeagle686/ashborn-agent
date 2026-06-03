@@ -643,7 +643,7 @@ task = {
   "description": "task description",
   "status": "pending | in_progress | completed | failed",
   "dependencies": ["task_id1", "task_id2", "..."], 
-  "tools": ["tool1", "tool2", "..."], 
+  "tools": ["tool1", "tool2", "..."],  # tools required for this task, based on task description. 
 }
 
 problem = {
