@@ -682,7 +682,11 @@ algorithm = {
 code_blocks = {
   "problem_id": "problem_id", 
   "algorithm": algorithm, 
-  
+  "code_config": {
+    "language": "language", 
+    "framework": "framework_id", 
+
+  }
   "code": "code in string format", 
   
 }
