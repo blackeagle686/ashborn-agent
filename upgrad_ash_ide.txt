@@ -599,7 +599,7 @@ frameworks = {
   "description": "framework description", 
   "language": "framework language", 
   "type": "framework type", # llm | ai_agent | web_app | game, 
-  
+  "media_content": ["media id1", "media id2", "..."], 
 }
 
 project = {
