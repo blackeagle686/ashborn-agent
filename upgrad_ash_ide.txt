@@ -583,8 +583,15 @@ project = {
   "id": "project id", 
   "name": "project name",
   "description": "project description",
-  "status": "active | inactive",
-  "created_at": "timestamp",
+  "status": "active | inactive"
+}
+
+file = {
+  "id": "file id", 
+  "name": "file name",
+  "path": "file path",
+  "content": "file content",
+  "language": "file language", 
 }
 
 
