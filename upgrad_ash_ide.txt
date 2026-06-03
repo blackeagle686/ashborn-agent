@@ -633,7 +633,7 @@ tools = {
   "id": "tool id", 
   "name": "tool name", 
   "description": "tool description", 
-  "type": "tool type", # terminal | web_app | llm | ai_agent 
+  "type": "tool type", # terminal | web search | file |  
 }
 
 task = {
