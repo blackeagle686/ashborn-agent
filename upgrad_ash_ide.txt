@@ -586,7 +586,11 @@ user = {
   "full_name": "full name",
 }
 
-media
+media_content = {
+  "id": "media id", 
+  "type": "media type", # image | video | audio | documentation | other 
+  
+}
 
 frameworks = {
   "id": "framework id", 
