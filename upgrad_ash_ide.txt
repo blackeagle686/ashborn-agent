@@ -654,7 +654,6 @@ problem_config = {
   "is_need_file_delete": [true, false], # based on problem description. 
   "is_need_file_search": [true, false], # based on problem description. 
   "is_need_terminal_command": [true, false], # based on problem description. 
-  
 }
 
 problem = {
