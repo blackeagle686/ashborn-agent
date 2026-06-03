@@ -11,7 +11,7 @@ planning steps:
  - thinking -> in this phase it create tasks NO CODE  
  - analysis -> in this phase it create the problems NO CODE 
  - planning -> in this phase it create how to solve the prbolems NO CODE or massive llm generations  [allow to generat command lines here]
- - generating -> in this phase it create the code for each problem if need [it specify the ]
+ - generating -> in this phase it create the code for each problem if need [it specify the file locations and meta configrations of the files tasks]
 
 Actor steps: 
  - 
