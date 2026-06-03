@@ -647,6 +647,8 @@ task = {
 }
 
 prboem_config = {
+  "is_need_algorithm": [true, false], # based on problem description.   
+  "is_need_web_search": [true, false], # based on problem description. 
   
 }
 
