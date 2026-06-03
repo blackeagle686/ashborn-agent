@@ -681,14 +681,7 @@ algorithm = {
 
 code_blocks = {
   "problem_id": "problem_id", 
-  "algorithm": algorithm, 
-  "code_config": {
-    "language": "language", 
-    "is_use_framework": [true, false], 
-
-  }
   "code": "code in string format", 
-  
 }
 
 
@@ -779,4 +772,9 @@ planner = {
     ""
   }
   
+}
+
+task_queue = {
+  ("task_id", "task_priority", "task_status", "task_dependencies_count"), 
+  ... 
 }
