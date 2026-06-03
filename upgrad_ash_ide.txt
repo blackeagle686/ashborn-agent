@@ -584,11 +584,8 @@ prompt = {
   "id": "uuid", 
   "user_message": "user message", 
   "system_message": "system message", 
-  "tokens_length": "length of user pormpt ", 
+  "tokens_length": "length of user pormpt + length of system message", 
 }
-
-
-
 
 
 planner = {
