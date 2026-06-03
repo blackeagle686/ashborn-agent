@@ -650,7 +650,7 @@ task = {
 problem = {
   "task_id": "task_id",
   "problem_description": "problem description",
-  
+  "" 
 }
 
 planner = {
