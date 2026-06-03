@@ -593,7 +593,7 @@ media_content = { # store in db
   "description": "description of the media", 
 }
 
-frameworks = {
+frameworks = { # store in db
   "id": "framework id", 
   "title": "framework name", 
   "description": "framework description", 
@@ -601,7 +601,7 @@ frameworks = {
   "media_content": ["media id1", "media id2", "..."], 
 }
 
-project = {
+project = { # store in db
   "user_id": "user id",
   "id": "project id", 
   "name": "project name",
@@ -610,7 +610,7 @@ project = {
   "type": "llm | ai_agent | web_app",
 }
 
-file = {
+file = { # store in db
   "id": "file id", 
   "project_id": "project id", 
   "name": "file name",
@@ -620,7 +620,7 @@ file = {
   "lines_count": "number of lines in the file"
 }
 
-prompt = {
+prompt = { 
   "id": "uuid", 
   "user_id": "user_id",
   "project_id": "project_id", 
