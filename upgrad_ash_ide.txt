@@ -765,14 +765,6 @@ planner = {
 }
 
 
-"context_memory":{
-  "message":{
-    "user_prompt":"user_prompt", 
-    "tasks_ids": [], 
-    ""
-  }
-  
-}
 
 task_queue = {
   ("task_id", "task_priority", "task_status", "task_dependencies_count"), 
