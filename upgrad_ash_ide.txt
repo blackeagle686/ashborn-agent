@@ -764,8 +764,6 @@ planner = {
   }
 }
 
-
-
 task_queue = {
   ("task_id", "task_priority", "task_status", "task_dependencies_count"), 
   ... 
