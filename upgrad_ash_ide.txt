@@ -646,22 +646,21 @@ task = {
   "dependencies": ["task_id1", "task_id2", "..."], # tasks that need to be completed before this task, based on task description. 
 }
 
-problem_config = {
-  "is_need_algorithm": [true, false], # based on problem description.   
-  "is_need_web_search": [true, false], # based on problem description. 
-  "is_need_file_create": [true, false], # based on problem description. 
-  "is_need_file_edit": [true, false], # based on problem description. 
-  "is_need_file_delete": [true, false], # based on problem description. 
-  "is_need_file_search": [true, false], # based on problem description. 
-  "is_need_terminal_command": [true, false], # based on problem description. 
-}
 
 problem = {
   "task_id": "task_id",
   "problem_description": "problem description",
   "complexity": "low | medium | high | very high", 
-  "is_need_algorithm": [true, false], # based on problem description.   
-  "is_need_web_search": [true, false], # based on problem description. 
+  "problem_config": {
+    "is_need_algorithm": [true, false], # based on problem description.   
+    "is_need_web_search": [true, false], # based on problem description. 
+    "is_need_file_create": [true, false], # based on problem description. 
+    "is_need_file_edit": [true, false], # based on problem description. 
+    "is_need_file_delete": [true, false], # based on problem description. 
+    "is_need_file_search": [true, false], # based on problem description. 
+    "is_need_terminal_command": [true, false], # based on problem description. 
+  }
+  
     
 }
 
