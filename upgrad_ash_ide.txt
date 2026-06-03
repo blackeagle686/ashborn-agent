@@ -586,7 +586,7 @@ project = {
   "status": "active | inactive",
   "created_at": "timestamp",
   "updated_at": "timestamp", 
-  "files_length": 
+  "files_length": "number of files in the project", 
 }
 
 
