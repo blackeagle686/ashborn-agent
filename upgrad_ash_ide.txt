@@ -641,7 +641,7 @@ task = {
   "id": "task_id", 
   "title": "task title",
   "description": "task description",
-  
+  "priority": "high | medium | low", # priority of the task, based on task description. 
   "status": "pending | in_progress | completed | failed", 
   "dependencies": ["task_id1", "task_id2", "..."], # tasks that need to be completed before this task, based on task description. 
   "tools": ["tool1", "tool2", "..."],  # tools required for this task, based on task description. 
