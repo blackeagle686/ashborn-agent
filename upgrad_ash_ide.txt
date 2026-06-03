@@ -633,7 +633,7 @@ tools = {
   "id": "tool id", 
   "name": "tool name", 
   "description": "tool description", 
-  "type": "tool type", # terminal | web search | file |  
+  "type": "tool type", # terminal | web search | file  
 }
 
 task = {
