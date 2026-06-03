@@ -586,13 +586,17 @@ user = {
   "full_name": "full name",
 }
 
+frameworks = {
+  
+}
+
 project = {
   "user_id": "user id",
   "id": "project id", 
   "name": "project name",
   "description": "project description",
   "status": "active | inactive", 
-  "type": "llm | ai_agent | web_app", 
+  "type": "llm | ai_agent | web_app",
 }
 
 file = {
