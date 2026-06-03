@@ -586,12 +586,14 @@ user = {
   "full_name": "full name",
 }
 
+media
+
 frameworks = {
   "id": "framework id", 
   "title": "framework name", 
   "description": "framework description", 
   "language": "framework language", 
-  "type": "framework type",
+  "type": "framework type", # llm | ai_agent | web_app | game
 }
 
 project = {
