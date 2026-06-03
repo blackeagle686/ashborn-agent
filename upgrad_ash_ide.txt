@@ -579,14 +579,14 @@ The system must not execute any sensitive command without user approval.
 The approval process must occur before command execution, not after.
 
 
-user = {
+user = { # store in db
   "user_id": "user_id",
   "username": "username",
   "password": "password",
   "full_name": "full name",
 }
 
-media_content = {
+media_content = { # store in db
   "id": "media id", 
   "type": "media type", # image | video | audio | documentation | other 
   "path": "media path", 
