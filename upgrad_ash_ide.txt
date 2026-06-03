@@ -660,11 +660,10 @@ problem = {
     "is_need_file_search": [true, false], # based on problem description. 
     "is_need_terminal_command": [true, false], # based on problem description. 
   }, 
-  "constraints": "constraints related to the problem", 
-
-
-    
+  "constraints": "constraints related to the problem",     
 }
+
+
 
 planner = {
   "project_meta": { # this is a configuration for the project based on the user prompt. NOT A CODE. 
