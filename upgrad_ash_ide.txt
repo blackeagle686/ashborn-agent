@@ -579,9 +579,13 @@ The system must not execute any sensitive command without user approval.
 The approval process must occur before command execution, not after.
 
 
+project
+
 
 prompt = {
   "id": "uuid", 
+  "user_id": "user_id",
+  "project_id": "project_id", 
   "user_message": "user message", 
   "system_message": "system message", 
   "tokens_length": "length of user pormpt + length of system message", 
