@@ -620,7 +620,7 @@ file = { # store in db
   "lines_count": "number of lines in the file"
 }
 
-prompt = {  # store in db
+prompt = {  # store in vector db
   "id": "uuid", 
   "user_id": "user_id",
   "project_id": "project_id", 
@@ -636,7 +636,7 @@ tools = { # store in db
   "type": "tool type", # terminal | web search | file  
 }
 
-task = { # store in 
+task = { # store in memory
   "prompt_id": "prompt id", 
   "id": "task_id", 
   "title": "task title",
