@@ -663,7 +663,19 @@ problem = {
   "constraints": "constraints related to the problem",     
 }
 
-
+algorithm = {
+  "title": "algorithm title", 
+  "description": "algorithm description", 
+  "complexity": "low | medium | high | very high", 
+  "algorithm_config": {
+    "is_need_data_structures": [true, false], # based on problem description.   
+    "is_need_graph": [true, false], # based on problem description. 
+    "is_need_dynamic_programming": [true, false], # based on problem description. 
+    "is_need_sorting": [true, false], # based on problem description. 
+    "is_need_searching": [true, false], # based on problem description. 
+    "is_need_backtracking": [true, false], # based on problem description. 
+  } 
+}
 
 planner = {
   "project_meta": { # this is a configuration for the project based on the user prompt. NOT A CODE. 
