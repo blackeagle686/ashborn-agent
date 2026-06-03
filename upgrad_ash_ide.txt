@@ -8,7 +8,9 @@ Pipeline:
   # 7. finish 
 }
 planning steps: 
- - t
+ - thinking -> in this phase it create tasks 
+ - analysisin -> in this phase it create the problems 
+ - plannine
 
 user = { # store in db
   "user_id": "user_id",
