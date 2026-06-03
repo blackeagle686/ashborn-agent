@@ -581,7 +581,7 @@ The approval process must occur before command execution, not after.
 
 
 
-"planner": {
+planner = {
   "project_meta": { # this is a configuration for the project based on the user prompt. NOT A CODE. 
     "project_id": "uuid",
     "project_title": "project_title",
@@ -658,4 +658,14 @@ The approval process must occur before command execution, not after.
       "is_code_complete": "boolean" # this will be updated based on the rank. 
     }
   }
+}
+
+
+"context_memory":{
+  "message":{
+    "user_prompt":"user_prompt", 
+    "tasks_ids": [], 
+    ""
+  }
+  
 }
