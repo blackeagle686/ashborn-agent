@@ -579,6 +579,7 @@ The system must not execute any sensitive command without user approval.
 The approval process must occur before command execution, not after.
 
 
+
 project = {
   "id": "project id", 
   "name": "project name",
@@ -595,7 +596,6 @@ file = {
   "language": "file language", 
   "lines_count": "number of lines in the file"
 }
-
 
 prompt = {
   "id": "uuid", 
