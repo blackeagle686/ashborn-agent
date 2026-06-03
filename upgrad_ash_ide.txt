@@ -620,7 +620,7 @@ file = { # store in db
   "lines_count": "number of lines in the file"
 }
 
-prompt = { 
+prompt = {  # store in db
   "id": "uuid", 
   "user_id": "user_id",
   "project_id": "project_id", 
@@ -629,14 +629,14 @@ prompt = {
   "tokens_length": "length of user pormpt + length of system message", 
 }
 
-tools = {
+tools = { # store in db
   "id": "tool id", 
   "name": "tool name", 
   "description": "tool description", 
   "type": "tool type", # terminal | web search | file  
 }
 
-task = {
+task = { # store in 
   "prompt_id": "prompt id", 
   "id": "task_id", 
   "title": "task title",
