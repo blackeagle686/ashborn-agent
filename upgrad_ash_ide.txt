@@ -680,7 +680,13 @@ algorithm = {
 }
 
 code_blocks = {
-  
+  "problem_id": "problem_id", 
+  "code_blocks": [
+    {
+      "task_id": "task_id", 
+      "code_block": "code block", 
+    }
+  ]
 }
 
 
