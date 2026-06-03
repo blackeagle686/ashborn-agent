@@ -579,8 +579,14 @@ The system must not execute any sensitive command without user approval.
 The approval process must occur before command execution, not after.
 
 
+user = {
+  "user_id": "user_id"
+  "username": "username"
+  "password": "password"
+}
 
 project = {
+  "user_id": "user id",
   "id": "project id", 
   "name": "project name",
   "description": "project description",
