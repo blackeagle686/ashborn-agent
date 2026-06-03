@@ -5,7 +5,7 @@ Pipeline:
   # 4. Actor 
   # 5. reflector
   # 6. self-heal
-  # 7. 
+  # 7. finish 
 }
 
 
