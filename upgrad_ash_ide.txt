@@ -591,7 +591,8 @@ project = {
   "id": "project id", 
   "name": "project name",
   "description": "project description",
-  "status": "active | inactive"
+  "status": "active | inactive", 
+  "type": 
 }
 
 file = {
