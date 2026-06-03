@@ -644,8 +644,9 @@ task = {
   "priority": "high | medium | low", # priority of the task, based on task description. 
   "status": "pending | in_progress | completed | failed", 
   "dependencies": ["task_id1", "task_id2", "..."], # tasks that need to be completed before this task, based on task description. 
-  "tools": ["tool1", "tool2", "..."],  # tools required for this task, based on task description. 
 }
+
+
 
 problem = {
   "task_id": "task_id",
@@ -653,7 +654,6 @@ problem = {
   "complexity": "low | medium | high | very high", 
   "is_need_algorithm": [true, false], # based on problem description.   
   "is_need_web_search": [true, false], # based on problem description. 
-  "is_need_file_io": [true, false], # based on problem description. 
     
 }
 
