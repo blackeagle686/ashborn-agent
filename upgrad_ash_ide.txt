@@ -649,7 +649,10 @@ task = {
 prboem_config = {
   "is_need_algorithm": [true, false], # based on problem description.   
   "is_need_web_search": [true, false], # based on problem description. 
-  
+  "is_need_file_create": [true, false], # based on problem description. 
+  "is_need_file_edit": [true, false], # based on problem description. 
+  "is_need_file_delete": [true, false], # based on problem description. 
+  "is_need_file_
 }
 
 problem = {
