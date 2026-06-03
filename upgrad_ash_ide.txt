@@ -629,6 +629,13 @@ prompt = {
   "tokens_length": "length of user pormpt + length of system message", 
 }
 
+tools = {
+  "id": "tool id", 
+  "name": "tool name", 
+  "description": "tool description", 
+  "type": "tool type", # terminal | web_app | llm | ai_agent 
+}
+
 task = {
   "prompt_id": "prompt id", 
   "id": "task_id", 
