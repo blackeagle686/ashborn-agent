@@ -589,7 +589,8 @@ user = {
 media_content = {
   "id": "media id", 
   "type": "media type", # image | video | audio | documentation | other 
-  
+  "path": "media path", 
+  "description": "description of the media", 
 }
 
 frameworks = {
