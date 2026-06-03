@@ -592,7 +592,7 @@ project = {
   "name": "project name",
   "description": "project description",
   "status": "active | inactive", 
-  "type": 
+  "type": "llm | ai_agent | web_app", 
 }
 
 file = {
