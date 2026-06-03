@@ -681,8 +681,10 @@ algorithm = {
 
 code_blocks = {
   "problem_id": "problem_id", 
-  "algorithm
-  "code": "code in string format"
+  "algorithm": algorithm, 
+  
+  "code": "code in string format", 
+  
 }
 
 
