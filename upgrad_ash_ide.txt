@@ -679,6 +679,9 @@ algorithm = {
   "pseudocode": "pseudocode of the algorithm",
 }
 
+
+
+
 planner = {
   "project_meta": { # this is a configuration for the project based on the user prompt. NOT A CODE. 
     "project_id": "uuid",
