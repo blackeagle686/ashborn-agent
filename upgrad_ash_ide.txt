@@ -674,7 +674,9 @@ algorithm = {
     "is_need_sorting": [true, false], # based on problem description. 
     "is_need_searching": [true, false], # based on problem description. 
     "is_need_backtracking": [true, false], # based on problem description. 
-  } 
+  } , 
+  "constraints": "constraints related to the algorithm",     
+  "
 }
 
 planner = {
