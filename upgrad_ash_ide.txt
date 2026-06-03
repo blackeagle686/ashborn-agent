@@ -581,7 +581,8 @@ The approval process must occur before command execution, not after.
 
 
 prompt = {
-  "id": 
+  "id": "uuid", 
+  
 }
 
 
