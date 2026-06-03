@@ -587,6 +587,9 @@ prompt = {
   "tokens_length": "length of user pormpt + length of system message", 
 }
 
+task = {
+  "user_id"
+}
 
 planner = {
   "project_meta": { # this is a configuration for the project based on the user prompt. NOT A CODE. 
