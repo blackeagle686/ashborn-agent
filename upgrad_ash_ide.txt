@@ -684,7 +684,7 @@ code_blocks = {
   "code": "code in string format", 
 }
 
-
+#Planner Output
 planner = {
   "project_meta": { # this is a configuration for the project based on the user prompt. NOT A CODE. 
     "project_id": "uuid",
