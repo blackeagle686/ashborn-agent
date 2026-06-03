@@ -591,8 +591,9 @@ file = {
   "project_id": "project id", 
   "name": "file name",
   "path": "file path",
-  "content": "file content",
+  "summary": "summary of the file", 
   "language": "file language", 
+  "
 }
 
 
