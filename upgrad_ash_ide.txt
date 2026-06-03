@@ -650,7 +650,9 @@ task = {
 problem = {
   "task_id": "task_id",
   "problem_description": "problem description",
-  "" 
+  "complexity": "low | medium | high | very high", 
+  "algorithms": ["algorithm1", "algorithm2", "..."], # algorithms used for this task, based on task description. 
+  
 }
 
 planner = {
