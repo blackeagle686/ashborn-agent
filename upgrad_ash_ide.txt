@@ -651,7 +651,9 @@ problem = {
   "task_id": "task_id",
   "problem_description": "problem description",
   "complexity": "low | medium | high | very high", 
-  "is_need_algorithm": "boolean",  
+  "is_need_algorithm": [true, false], # based on problem description.   
+  "is_need_web_search": [true, false], # based on problem description. 
+    
 }
 
 planner = {
