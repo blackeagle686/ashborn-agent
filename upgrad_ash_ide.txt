@@ -588,6 +588,7 @@ project = {
 
 file = {
   "id": "file id", 
+  "project_id": "project id", 
   "name": "file name",
   "path": "file path",
   "content": "file content",
