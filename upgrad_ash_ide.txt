@@ -593,7 +593,7 @@ file = {
   "path": "file path",
   "summary": "summary of the file", 
   "language": "file language", 
-  "lines_count": "number of lines in the file",
+  "lines_count": "number of lines in the file"
 }
 
 
