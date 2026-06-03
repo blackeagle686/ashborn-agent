@@ -579,7 +579,15 @@ The system must not execute any sensitive command without user approval.
 The approval process must occur before command execution, not after.
 
 
-project
+project = {
+  "id": "project id", 
+  "name": "project name",
+  "description": "project description",
+  "status": "active | inactive",
+  "created_at": "timestamp",
+  "updated_at": "timestamp", 
+  "files_length": 
+}
 
 
 prompt = {
