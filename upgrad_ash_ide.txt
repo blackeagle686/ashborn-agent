@@ -587,7 +587,9 @@ user = {
 }
 
 frameworks = {
-  
+  "id": "framework id", 
+  "title": "framework name", 
+  "description": "llm | ai_agent | web_app", 
 }
 
 project = {
