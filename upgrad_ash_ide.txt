@@ -3,8 +3,9 @@ Pipeline:
   # 1. User Message
   # 2. Planner 
   # 4. Actor 
-  # 5. Code
-  # 6. 
+  # 5. reflector
+  # 6. self-heal
+  # 7. 
 }
 
 
