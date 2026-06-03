@@ -11,7 +11,7 @@ planning steps:
  - thinking -> in this phase it create tasks NO CODE  
  - analysis -> in this phase it create the problems NO CODE 
  - planning -> in this phase it create how to solve the prbolems NO CODE
-
+ - generating -> in this phase 
 user = { # store in db
   "user_id": "user_id",
   "username": "username",
