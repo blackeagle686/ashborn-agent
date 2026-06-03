@@ -7,7 +7,7 @@ Pipeline:
   # 6. self-heal
   # 7. finish 
 }
-
+planning
 
 user = { # store in db
   "user_id": "user_id",
