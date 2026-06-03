@@ -684,8 +684,9 @@ code_blocks = {
   "algorithm": algorithm, 
   "code_config": {
     "language": "language", 
-    "framework": "frameworks", 
-    
+    "framework": ["framework1", "framework2", "..."],
+    "is_use_framework": [true, false], 
+
 
   }
   "code": "code in string format", 
