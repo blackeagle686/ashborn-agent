@@ -639,7 +639,11 @@ task = {
   
 }
 
-pro
+problem = {
+  "task_id": "task_id",
+  "problem_description": "problem description",
+  
+}
 
 planner = {
   "project_meta": { # this is a configuration for the project based on the user prompt. NOT A CODE. 
