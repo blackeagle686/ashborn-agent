@@ -652,7 +652,9 @@ prboem_config = {
   "is_need_file_create": [true, false], # based on problem description. 
   "is_need_file_edit": [true, false], # based on problem description. 
   "is_need_file_delete": [true, false], # based on problem description. 
-  "is_need_file_
+  "is_need_file_search": [true, false], # based on problem description. 
+  "is_need_terminal_command": [true, false], # based on problem description. 
+  "is_
 }
 
 problem = {
