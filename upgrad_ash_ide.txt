@@ -34,7 +34,11 @@ planner output schema:
     - result 
 
 actor input schema:
-  - tasks: 
+  - tasks 
+  - tools 
+  - solution 
+
+
 
 planning steps: 
  - thinking -> in this phase it create tasks NO CODE  
