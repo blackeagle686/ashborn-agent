@@ -8,7 +8,10 @@ Pipeline:
   # 7. finish 
 }
 
-tasks memory
+tasks memory:
+  - tasks with ids 
+
+task
 
 planner memory: 
 
