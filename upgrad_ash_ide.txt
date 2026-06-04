@@ -21,6 +21,8 @@ planner input schema:
     - action 
     - description 
 
+planner 
+
 planner output schema: 
   - prompt: 
     - tasks 
