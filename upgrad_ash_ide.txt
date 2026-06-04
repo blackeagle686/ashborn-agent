@@ -7,6 +7,7 @@ Pipeline:
   # 6. self-heal
   # 7. finish 
 }
+
 planning steps: 
  - thinking -> in this phase it create tasks NO CODE  
  - analysis -> in this phase it create the problems NO CODE 
@@ -14,7 +15,7 @@ planning steps:
  - generating -> in this phase it create the code for each problem if need [it specify the file locations and meta configrations of the files tasks]
 
 Actor steps: 
- - 
+ 
 
 user = { # store in db
   "user_id": "user_id",
