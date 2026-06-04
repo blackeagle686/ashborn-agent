@@ -17,7 +17,7 @@ planner input schema:
     - tool
     - problem
 
-  - reflector:     # from reflector 
+  - reflector:       # from reflector 
     - action 
     - description 
 
