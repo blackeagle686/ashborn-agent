@@ -19,7 +19,7 @@ planner input schema:
 
   - reflector: 
     - action 
-    - 
+    - description 
 
 planning steps: 
  - thinking -> in this phase it create tasks NO CODE  
