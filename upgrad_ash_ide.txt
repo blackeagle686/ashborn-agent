@@ -9,7 +9,7 @@ Pipeline:
 }
 
 task_memoryCell: 
-  - 
+  
 planner memory: 
 
 planner input schema: 
