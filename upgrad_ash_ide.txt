@@ -25,9 +25,9 @@ reflections memory:
   - reflections with ids 
 
 planner memory: 
-  - task memory 
-  - problem memory 
-  - solution memory 
+  - tasks memory 
+  - problems memory 
+  - solutions memory 
   
 planner input schema: 
   - pormpt:                # from user  
