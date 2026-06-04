@@ -21,7 +21,8 @@ planner input schema:
     - action 
     - description 
 
-planner 
+planner class: 
+  - init()
 
 planner output schema: 
   - prompt: 
