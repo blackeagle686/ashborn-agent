@@ -17,10 +17,11 @@ problems memory:
 actions memory:
   - actions with ids 
 
-
+reflections memory:
+  - reflections with ids 
 
 planner memory: 
-
+  
 planner input schema: 
   - pormpt:                # from user  
     - user prompt 
