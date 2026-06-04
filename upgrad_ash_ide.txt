@@ -9,11 +9,8 @@ Pipeline:
 }
 
 planner input schema: 
-
-{
-  "user_message": "user message",
-  "system_message": "system message", 
-}
+  - pormpt: 
+    - user prompt 
 
 planning steps: 
  - thinking -> in this phase it create tasks NO CODE  
