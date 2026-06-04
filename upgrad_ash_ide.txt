@@ -33,7 +33,9 @@ planner output schema:
     - action 
     - result 
 
-  
+actor input schema:
+  - planner: 
+    
 
 planning steps: 
  - thinking -> in this phase it create tasks NO CODE  
