@@ -8,6 +8,13 @@ Pipeline:
   # 7. finish 
 }
 
+planner input schema: 
+
+{
+  "user_message": "user message",
+  "system_message": "system message", 
+}
+
 planning steps: 
  - thinking -> in this phase it create tasks NO CODE  
  - analysis -> in this phase it create the problems NO CODE 
