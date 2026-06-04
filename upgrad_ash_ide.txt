@@ -17,6 +17,7 @@ problems memory:
 solutions memory:
   - solutions with ids 
 
+
 actions memory:
   - actions with ids 
 
@@ -26,6 +27,7 @@ reflections memory:
 planner memory: 
   - task memory 
   - problem memory 
+  - solution memory 
   
 planner input schema: 
   - pormpt:                # from user  
