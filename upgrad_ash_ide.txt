@@ -51,6 +51,8 @@ reflector input schema:
 
 reflector output schema: 
   - action
+  - confidence 
+  - reflection 
 
 
 planning steps: 
