@@ -16,7 +16,9 @@ planner input schema:
   - actor context: 
     - tool
     - problem
-    - soloution 
+
+  - reflector: 
+    - action 
     - 
 
 planning steps: 
