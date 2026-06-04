@@ -29,7 +29,11 @@ planner output schema:
     - problem
     - solution 
   
-  - 
+  - reflector: 
+    - action 
+    - result 
+
+  
 
 planning steps: 
  - thinking -> in this phase it create tasks NO CODE  
