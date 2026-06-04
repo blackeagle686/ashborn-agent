@@ -103,10 +103,10 @@ def generate_commit_message(payload):
         response = client.chat.completions.create(
             model=MODEL,
             messages=[
-                {"role": "system", "content": "Write a 1-line git commit message (<50 chars). No quotes, no markdown, plain text only."},
+                {"role": "system", "content": "You are a git commit message generator. Output EXACTLY ONE LINE containing the commit message (under 50 characters). Do NOT output any thought process, draft ideas, or explanations. Do NOT wrap in quotes. plain text ONLY."},
                 {"role": "user", "content": payload},
             ],
-            max_tokens=30,
+            max_tokens=60,
             temperature=0,
             stream=True,
         )
