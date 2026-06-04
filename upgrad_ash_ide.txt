@@ -9,7 +9,7 @@ Pipeline:
 }
 
 planner input schema: 
-  - pormpt:      # from user  
+  - pormpt:          # from user  
     - user prompt 
     - system prompt 
   
