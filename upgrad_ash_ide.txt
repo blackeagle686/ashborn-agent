@@ -21,7 +21,11 @@ planner input schema:
     - action 
     - description 
 
-
+planner output schema: 
+  - prompt: 
+    - tasks 
+  
+  -
 
 planning steps: 
  - thinking -> in this phase it create tasks NO CODE  
