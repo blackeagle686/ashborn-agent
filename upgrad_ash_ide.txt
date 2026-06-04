@@ -42,7 +42,11 @@ actor output schema:
     - problem
     - tool 
   
-  -reflector
+  -reflector 
+    - action 
+
+
+
 reflector input schema:
   - action 
   - result 
