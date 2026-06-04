@@ -11,6 +11,9 @@ Pipeline:
 planner input schema: 
   - pormpt: 
     - user prompt 
+    - system prompt 
+  
+  
 
 planning steps: 
  - thinking -> in this phase it create tasks NO CODE  
