@@ -11,7 +11,13 @@ Pipeline:
 tasks memory:
   - tasks with ids 
 
-task
+problems memory:
+  - problems with ids 
+
+actions memory:
+  - actions with ids 
+
+
 
 planner memory: 
 
