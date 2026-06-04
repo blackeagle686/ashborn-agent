@@ -21,6 +21,8 @@ planner input schema:
     - action 
     - description 
 
+
+
 planning steps: 
  - thinking -> in this phase it create tasks NO CODE  
  - analysis -> in this phase it create the problems NO CODE 
