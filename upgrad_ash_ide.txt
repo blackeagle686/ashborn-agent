@@ -46,11 +46,11 @@ actor output schema:
     - action 
 
 
-
 reflector input schema:
   - action 
-  - result 
 
+reflector output schema: 
+  - action
 
 
 planning steps: 
