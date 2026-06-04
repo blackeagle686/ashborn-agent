@@ -9,11 +9,11 @@ Pipeline:
 }
 
 planner input schema: 
-  - pormpt: 
+  - pormpt:# from user  
     - user prompt 
     - system prompt 
   
-  - actor context: 
+  - actor context:# from actor  
     - tool
     - problem
 
