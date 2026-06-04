@@ -8,8 +8,8 @@ Pipeline:
   # 7. finish 
 }
 
-task_memoryCell: 
-  
+tasks memory
+
 planner memory: 
 
 planner input schema: 
