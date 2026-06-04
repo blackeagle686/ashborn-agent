@@ -25,7 +25,8 @@ planner output schema:
   - prompt: 
     - tasks 
   
-  -
+  - actor: 
+    - 
 
 planning steps: 
  - thinking -> in this phase it create tasks NO CODE  
