@@ -8,6 +8,9 @@ Pipeline:
   # 7. finish 
 }
 
+task_memoryCell: 
+  - 
+planner memory: 
 
 planner input schema: 
   - pormpt:                # from user  
