@@ -34,7 +34,6 @@ planner output schema:
     - result 
 
 actor input schema:
-  - tasks 
   - tools 
   - solution 
 
