@@ -9,15 +9,15 @@ Pipeline:
 }
 
 planner input schema: 
-  - pormpt:     # from user  
+  - pormpt:      # from user  
     - user prompt 
     - system prompt 
   
-  - actor context:# from actor  
+  - actor context:   # from actor  
     - tool
     - problem
 
-  - reflector: # from reflector 
+  - reflector:     # from reflector 
     - action 
     - description 
 
