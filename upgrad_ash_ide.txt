@@ -39,6 +39,7 @@ actor input schema:
 
 actor output schema: 
   - planner 
+    - problem
     - 
 reflector input schema:
   - action 
