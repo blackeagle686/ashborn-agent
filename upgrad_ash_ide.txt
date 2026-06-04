@@ -37,6 +37,14 @@ actor input schema:
   - tools 
   - solution 
 
+actor output schema: 
+  - action 
+  - result 
+
+reflector input schema:
+  - action 
+  - result 
+
 
 
 planning steps: 
