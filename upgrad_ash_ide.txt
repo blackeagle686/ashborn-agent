@@ -13,7 +13,8 @@ planner input schema:
     - user prompt 
     - system prompt 
   
-  
+  - actor context: 
+    - tool 
 
 planning steps: 
  - thinking -> in this phase it create tasks NO CODE  
